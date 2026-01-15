@@ -428,8 +428,10 @@ async def create_edukasi(data: EdukasiCreate, current_user: dict = Depends(get_c
     return doc
 
 @api_router.put("/edukasi/{edukasi_id}", response_model=EdukasiResponse)
-async def update_edukasi(edukasi_id: str, data: EdukasiCreate, current_user: dict = Depends(get_current_user)):
-    update_data = data.model_dump()
+async def update_edukasi(edukasi_id: str, data: EdukasiUpdate, current_user: dict = Depends(get_current_user)):
+    update_data = {k: v for k, v in data.model_dump().items() if v is not None}
+    if not update_data:
+        raise HTTPException(status_code=400, detail="Tidak ada data untuk diupdate")
     result = await db.edukasi.update_one({"id": edukasi_id}, {"$set": update_data})
     if result.matched_count == 0:
         raise HTTPException(status_code=404, detail="Edukasi tidak ditemukan")
