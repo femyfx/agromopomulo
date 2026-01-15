@@ -328,9 +328,27 @@ export const AdminPartisipasiPage = () => {
                   <p className="font-medium">{selectedPartisipasi.jenis_pohon}</p>
                 </div>
                 <div className="col-span-2">
+                  <p className="text-sm text-slate-500">Sumber Bibit</p>
+                  <p className="font-medium">{selectedPartisipasi.sumber_bibit || '-'}</p>
+                </div>
+                <div className="col-span-2">
                   <p className="text-sm text-slate-500">Lokasi Tanam</p>
                   <p className="font-medium">{selectedPartisipasi.lokasi_tanam}</p>
                 </div>
+                <div className="col-span-2">
+                  <p className="text-sm text-slate-500">Titik Koordinat</p>
+                  <p className="font-medium">{selectedPartisipasi.titik_lokasi || '-'}</p>
+                </div>
+                {selectedPartisipasi.bukti_url && (
+                  <div className="col-span-2">
+                    <p className="text-sm text-slate-500 mb-2">Bukti Penanaman</p>
+                    <img 
+                      src={selectedPartisipasi.bukti_url} 
+                      alt="Bukti" 
+                      className="w-full max-h-48 object-cover rounded-lg"
+                    />
+                  </div>
+                )}
                 <div>
                   <p className="text-sm text-slate-500">Status</p>
                   <span className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(selectedPartisipasi.status)}`}>
