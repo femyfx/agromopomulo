@@ -264,6 +264,79 @@ export const AdminSettingsPage = () => {
             </CardContent>
           </Card>
         </TabsContent>
+
+        <TabsContent value="tentang">
+          <Card>
+            <CardHeader>
+              <CardTitle>Halaman Tentang Program</CardTitle>
+              <CardDescription>Atur konten yang ditampilkan di halaman "Tentang Program"</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <div className="space-y-2">
+                <Label htmlFor="tentang_title">Judul Halaman</Label>
+                <Input
+                  id="tentang_title"
+                  value={settings.tentang_title || ''}
+                  onChange={(e) => setSettings({ ...settings, tentang_title: e.target.value })}
+                  placeholder="Program Agro Mopomulo"
+                  data-testid="input-tentang-title"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="tentang_content">Deskripsi Program</Label>
+                <Textarea
+                  id="tentang_content"
+                  value={settings.tentang_content || ''}
+                  onChange={(e) => setSettings({ ...settings, tentang_content: e.target.value })}
+                  placeholder="Jelaskan tentang program Agro Mopomulo..."
+                  className="min-h-[150px]"
+                  data-testid="input-tentang-content"
+                />
+                <p className="text-xs text-slate-500">
+                  Gunakan enter untuk membuat paragraf baru
+                </p>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="tentang_visi">Visi</Label>
+                <Textarea
+                  id="tentang_visi"
+                  value={settings.tentang_visi || ''}
+                  onChange={(e) => setSettings({ ...settings, tentang_visi: e.target.value })}
+                  placeholder="Tuliskan visi program..."
+                  className="min-h-[100px]"
+                  data-testid="input-tentang-visi"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="tentang_misi">Misi</Label>
+                <Textarea
+                  id="tentang_misi"
+                  value={settings.tentang_misi || ''}
+                  onChange={(e) => setSettings({ ...settings, tentang_misi: e.target.value })}
+                  placeholder="- Misi pertama&#10;- Misi kedua&#10;- Misi ketiga"
+                  className="min-h-[120px]"
+                  data-testid="input-tentang-misi"
+                />
+                <p className="text-xs text-slate-500">
+                  Gunakan format "- " di awal baris untuk membuat daftar misi
+                </p>
+              </div>
+
+              <Button 
+                onClick={handleSaveTentang} 
+                disabled={savingTentang}
+                className="btn-primary"
+                data-testid="save-tentang-btn"
+              >
+                <Save className="h-4 w-4 mr-2" />
+                {savingTentang ? 'Menyimpan...' : 'Simpan Konten Tentang'}
+              </Button>
+            </CardContent>
+          </Card>
+        </TabsContent>
       </Tabs>
     </div>
   );
