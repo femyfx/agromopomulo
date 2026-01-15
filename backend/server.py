@@ -260,6 +260,7 @@ async def create_opd(opd: OPDCreate, current_user: dict = Depends(get_current_us
         "nama": opd.nama,
         "kode": opd.kode,
         "alamat": opd.alamat,
+        "jumlah_personil": opd.jumlah_personil or 0,
         "created_at": datetime.now(timezone.utc).isoformat()
     }
     await db.opd.insert_one(opd_doc)
