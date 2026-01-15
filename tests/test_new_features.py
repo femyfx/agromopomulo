@@ -127,10 +127,10 @@ class TestTentangSettings:
         assert "tentang_misi" in data, "Settings should have tentang_misi field"
         
         print(f"✓ Settings returned with tentang fields:")
-        print(f"  - tentang_title: {data.get('tentang_title', 'N/A')[:50]}...")
-        print(f"  - tentang_content: {str(data.get('tentang_content', 'N/A'))[:50]}...")
-        print(f"  - tentang_visi: {str(data.get('tentang_visi', 'N/A'))[:50]}...")
-        print(f"  - tentang_misi: {str(data.get('tentang_misi', 'N/A'))[:50]}...")
+        print(f"  - tentang_title: {str(data.get('tentang_title') or 'N/A')[:50]}...")
+        print(f"  - tentang_content: {str(data.get('tentang_content') or 'N/A')[:50]}...")
+        print(f"  - tentang_visi: {str(data.get('tentang_visi') or 'N/A')[:50]}...")
+        print(f"  - tentang_misi: {str(data.get('tentang_misi') or 'N/A')[:50]}...")
     
     def test_update_tentang_settings(self, auth_token):
         """Test updating tentang settings"""
