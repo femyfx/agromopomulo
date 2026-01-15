@@ -1,19 +1,21 @@
 import { useState, useEffect, useRef } from 'react';
-import { Search, Trash2, Eye, FileUp, CheckCircle, XCircle, Clock, Filter } from 'lucide-react';
+import { Search, Trash2, Eye, FileUp, CheckCircle, XCircle, Clock, Filter, Building2 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/card';
 import { Button } from '../../components/ui/button';
 import { Input } from '../../components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../components/ui/select';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../../components/ui/dialog';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '../../components/ui/alert-dialog';
-import { partisipasiApi, importApi } from '../../lib/api';
+import { partisipasiApi, importApi, opdApi } from '../../lib/api';
 import { toast } from 'sonner';
 
 export const AdminPartisipasiPage = () => {
   const [partisipasiList, setPartisipasiList] = useState([]);
+  const [opdList, setOpdList] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
+  const [opdFilter, setOpdFilter] = useState('all');
   const [selectedPartisipasi, setSelectedPartisipasi] = useState(null);
   const [detailDialogOpen, setDetailDialogOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
@@ -21,8 +23,24 @@ export const AdminPartisipasiPage = () => {
   const fileInputRef = useRef(null);
 
   useEffect(() => {
-    loadPartisipasi();
+    loadData();
   }, []);
+
+  const loadData = async () => {
+    try {
+      const [partisipasiRes, opdRes] = await Promise.all([
+        partisipasiApi.getAll(),
+        opdApi.getAll()
+      ]);
+      setPartisipasiList(partisipasiRes.data);
+      setOpdList(opdRes.data);
+    } catch (error) {
+      console.error('Failed to load data:', error);
+      toast.error('Gagal memuat data');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const loadPartisipasi = async () => {
     try {
@@ -31,8 +49,6 @@ export const AdminPartisipasiPage = () => {
     } catch (error) {
       console.error('Failed to load partisipasi:', error);
       toast.error('Gagal memuat data partisipasi');
-    } finally {
-      setLoading(false);
     }
   };
 
