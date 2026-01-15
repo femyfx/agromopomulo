@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link, Outlet, useLocation } from 'react-router-dom';
-import { Menu, X, TreePine, Home, Info, Building2, MapPin, FileText, Image, BookOpen, UserPlus, LogIn } from 'lucide-react';
+import { Menu, X, TreePine, Home, Info, Building2, MapPin, Image, BookOpen, UserPlus, LogIn } from 'lucide-react';
 import { Button } from '../ui/button';
 import { settingsApi } from '../../lib/api';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -10,7 +10,6 @@ const navItems = [
   { path: '/tentang', label: 'Tentang', icon: Info },
   { path: '/kontribusi-opd', label: 'Kontribusi OPD', icon: Building2 },
   { path: '/peta-penanaman', label: 'Peta Penanaman', icon: MapPin },
-  { path: '/laporan', label: 'Laporan', icon: FileText },
   { path: '/galeri', label: 'Galeri', icon: Image },
   { path: '/edukasi', label: 'Edukasi', icon: BookOpen },
   { path: '/partisipasi', label: 'Partisipasi', icon: UserPlus },
