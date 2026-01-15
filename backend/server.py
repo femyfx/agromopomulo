@@ -141,6 +141,11 @@ class EdukasiCreate(BaseModel):
     konten: str
     gambar_url: Optional[str] = None
 
+class EdukasiUpdate(BaseModel):
+    judul: Optional[str] = None
+    konten: Optional[str] = None
+    gambar_url: Optional[str] = None
+
 class EdukasiResponse(BaseModel):
     id: str
     judul: str
