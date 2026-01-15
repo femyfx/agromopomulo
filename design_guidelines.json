@@ -1,0 +1,168 @@
+{
+  "identity": {
+    "persona": "E1",
+    "role": "Anti-AI Creative Designer",
+    "philosophy": "Fusion over Imitation. Emotion First. Content is King."
+  },
+  "typography": {
+    "fonts": {
+      "heading": {
+        "family": "Outfit",
+        "weights": ["400", "600", "800"],
+        "usage": "All headings (h1-h6), Hero text, Big Stats",
+        "cdn_import": "@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&display=swap');"
+      },
+      "body": {
+        "family": "Plus Jakarta Sans",
+        "weights": ["400", "500", "700"],
+        "usage": "Paragraphs, UI elements, Buttons, Data tables",
+        "cdn_import": "@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;700&display=swap');"
+      }
+    },
+    "rules": [
+      "Headings > 32px must use tracking-tight",
+      "Overlines must be uppercase + tracking-widest + text-xs",
+      "Never use Inter for headings",
+      "Use font-light for large display numbers to add elegance"
+    ]
+  },
+  "colors": {
+    "palette": {
+      "primary": {
+        "name": "Gorontalo Emerald",
+        "hex": "#059669",
+        "tailwind": "emerald-600",
+        "usage": "Primary buttons, Active states, Key icons"
+      },
+      "secondary": {
+        "name": "Prosperity Gold",
+        "hex": "#F59E0B",
+        "tailwind": "amber-500",
+        "usage": "Accents, Warnings, Highlights, Government insignia details"
+      },
+      "neutral": {
+        "name": "Official Slate",
+        "hex": "#475569",
+        "tailwind": "slate-600",
+        "usage": "Body text, Subtitles"
+      },
+      "background": {
+        "light": "#F8FAFC",
+        "tailwind": "slate-50",
+        "usage": "Main app background"
+      },
+      "surface": {
+        "light": "#FFFFFF",
+        "tailwind": "white",
+        "usage": "Cards, Sidebar, Header"
+      }
+    },
+    "gradients": {
+      "hero": "bg-gradient-to-br from-emerald-50 to-slate-50",
+      "card_hover": "hover:bg-gradient-to-br hover:from-white hover:to-emerald-50/50"
+    },
+    "forbidden": ["#7351B7", "#1B93A4"]
+  },
+  "visual_enhancers": {
+    "glassmorphism": {
+      "classes": "bg-white/80 backdrop-blur-xl border border-white/20 shadow-sm",
+      "usage": "Sticky Navbar, Floating Stats Cards"
+    },
+    "tracing_beam": {
+      "description": "Animated gradient border for high-priority cards",
+      "usage": "Top Contributing OPD Card, Call to Action"
+    },
+    "textures": {
+      "noise": "Use a subtle noise overlay on the hero section to reduce digital flatness",
+      "pattern": "Topographic map lines (SVG) at 5% opacity in the background of the dashboard"
+    },
+    "shadows": {
+      "soft": "shadow-[0_8px_30px_rgb(0,0,0,0.04)]",
+      "sharp": "shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] (Use sparingly for 'Neo-Brutalist' accents if needed)"
+    }
+  },
+  "layout_strategy": {
+    "spacing": {
+      "base": "Generous. Use p-8 or p-12 for section padding.",
+      "containers": "p-6 or p-8 internal padding for cards."
+    },
+    "grids": {
+      "dashboard": {
+        "name": "Control Room Grid (Mode B)",
+        "classes": "grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6",
+        "rules": "Dense data. No jagged bottoms. Use col-span-2 for main charts."
+      },
+      "landing": {
+        "name": "Tetris Grid (Mode A)",
+        "classes": "grid grid-cols-1 md:grid-cols-12 gap-8",
+        "rules": "Asymmetry. Hero = col-span-full. Stats = col-span-4. Images = col-span-6."
+      }
+    }
+  },
+  "components": {
+    "buttons": {
+      "style": "Pill-shaped or slightly rounded (rounded-lg).",
+      "interaction": "Scale down slightly on click (active:scale-95). Hover: lift (-translate-y-0.5)."
+    },
+    "cards": {
+      "style": "Flat white background, 1px border (slate-200), soft shadow.",
+      "hover": "Border color shifts to Emerald-200, shadow increases."
+    },
+    "inputs": {
+      "style": "bg-slate-50 border-slate-200 focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all"
+    },
+    "charts": {
+      "library": "Recharts (via Shadcn Charts)",
+      "palette": ["#059669", "#10B981", "#34D399", "#F59E0B", "#64748B"]
+    },
+    "maps": {
+      "library": "React Leaflet or Simple SVG Map",
+      "style": "Clean, light mode tiles. Custom markers (Tree icons)."
+    }
+  },
+  "images": {
+    "hero_bg": {
+      "url": "https://images.unsplash.com/photo-1765333534690-ad3a985e7c42?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDQ2NDJ8MHwxfHNlYXJjaHwxfHxsdXNoJTIwZ3JlZW4lMjBmb3Jlc3QlMjBsYW5kc2NhcGUlMjBpbmRvbmVzaWF8ZW58MHx8fHwxNzY4NDQ1ODE1fDA&ixlib=rb-4.1.0&q=85",
+      "alt": "Aerial view of lush green forest road",
+      "usage": "Hero Section Background (with overlay)"
+    },
+    "community": {
+      "url": "https://images.unsplash.com/photo-1758599668234-68f52db62425?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NTYxODh8MHwxfHNlYXJjaHwxfHxwbGFudGluZyUyMHRyZWVzJTIwY29tbXVuaXR5fGVufDB8fHx8MTc2ODQ0NTgxMnww&ixlib=rb-4.1.0&q=85",
+      "alt": "Volunteers planting trees",
+      "usage": "About Program Section"
+    },
+    "participation": {
+      "url": "https://images.unsplash.com/photo-1631401551847-78450ef649d8?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2Nzd8MHwxfHNlYXJjaHwxfHxzZWVkbGluZyUyMGluJTIwaGFuZHxlbnwwfHx8fDE3Njg0NDU4MTh8MA&ixlib=rb-4.1.0&q=85",
+      "alt": "Hands holding seedling",
+      "usage": "Call to Action / Participation Form Header"
+    },
+    "gallery": [
+      "https://images.unsplash.com/photo-1717566196437-60ba72e8f1d5?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDQ2NDJ8MHwxfHNlYXJjaHwyfHxsdXNoJTIwZ3JlZW4lMjBmb3Jlc3QlMjBsYW5kc2NhcGUlMjBpbmRvbmVzaWF8ZW58MHx8fHwxNzY4NDQ1ODE1fDA&ixlib=rb-4.1.0&q=85",
+      "https://images.unsplash.com/photo-1758599668356-c8c919e24dda?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NTYxODh8MHwxfHNlYXJjaHwyfHxwbGFudGluZyUyMHRyZWVzJTIwY29tbXVuaXR5fGVufDB8fHx8MTc2ODQ0NTgxMnww&ixlib=rb-4.1.0&q=85",
+      "https://images.unsplash.com/photo-1728051767709-32ef3258277c?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDQ2NDJ8MHwxfHNlYXJjaHw0fHxsdXNoJTIwZ3JlZW4lMjBmb3Jlc3QlMjBsYW5kc2NhcGUlMjBpbmRvbmVzaWF8ZW58MHx8fHwxNzY4NDQ1ODE1fDA&ixlib=rb-4.1.0&q=85"
+    ]
+  },
+  "motion": {
+    "library": "Framer Motion",
+    "guidelines": [
+      "Use layoutId for smooth transitions between tabs/pages.",
+      "Stagger children animations for lists (staggerChildren: 0.1).",
+      "Micro-interactions: Scale 0.98 on tap for buttons.",
+      "Page transitions: Simple opacity fade + y-axis slide (y: 20 -> y: 0)."
+    ]
+  },
+  "universal_guidelines": {
+    "accessibility": "Ensure text contrast ratio > 4.5:1. Use aria-labels for icon-only buttons.",
+    "responsive": "Mobile-first. Images max-h-[80vh] on mobile.",
+    "testing": "Add data-testid to all interactive elements (e.g., 'submit-participation-btn').",
+    "code_style": "Use named exports for components, default exports for pages. No 'Inter' font."
+  },
+  "instructions_to_main_agent": [
+    "Implement the 'Form Partisipasi ASN' with fields: Email, Nama, NIP, OPD (dropdown), Alamat, WhatsApp, Jumlah Pohon, Jenis Pohon, Lokasi Tanam.",
+    "Create a 'Super Admin' panel with JWT auth (mocked is fine if backend not ready, but structure it for real auth).",
+    "Use 'Recharts' for the Tree Statistics (Bar chart for OPD contribution, Pie chart for Tree Types).",
+    "The 'Peta Penanaman' should be simple (as per user choice) - use a static map image with interactive pins or a simple Leaflet map.",
+    "Export functionality: Use 'jspdf' for PDF and 'xlsx' for Excel export.",
+    "Ensure the 'Hero Section' is editable by Admin (store text/image URL in state/db)."
+  ]
+}
