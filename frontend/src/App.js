@@ -12,7 +12,6 @@ import { HomePage } from "./pages/public/HomePage";
 import { TentangPage } from "./pages/public/TentangPage";
 import { KontribusiOPDPage } from "./pages/public/KontribusiOPDPage";
 import { PetaPenanamanPage } from "./pages/public/PetaPenanamanPage";
-import { LaporanPage } from "./pages/public/LaporanPage";
 import { GaleriPage } from "./pages/public/GaleriPage";
 import { EdukasiPage } from "./pages/public/EdukasiPage";
 import { PartisipasiPage } from "./pages/public/PartisipasiPage";
@@ -25,6 +24,7 @@ import { AdminPartisipasiPage } from "./pages/admin/AdminPartisipasiPage";
 import { AdminSettingsPage } from "./pages/admin/AdminSettingsPage";
 import { AdminGaleriPage } from "./pages/admin/AdminGaleriPage";
 import { AdminEdukasiPage } from "./pages/admin/AdminEdukasiPage";
+import { LaporanPage } from "./pages/public/LaporanPage";
 
 // Protected Route Component
 const ProtectedRoute = ({ children }) => {
@@ -54,7 +54,6 @@ function AppRoutes() {
         <Route path="/tentang" element={<TentangPage />} />
         <Route path="/kontribusi-opd" element={<KontribusiOPDPage />} />
         <Route path="/peta-penanaman" element={<PetaPenanamanPage />} />
-        <Route path="/laporan" element={<LaporanPage />} />
         <Route path="/galeri" element={<GaleriPage />} />
         <Route path="/edukasi" element={<EdukasiPage />} />
         <Route path="/partisipasi" element={<PartisipasiPage />} />
@@ -75,6 +74,7 @@ function AppRoutes() {
         <Route index element={<AdminDashboardPage />} />
         <Route path="opd" element={<AdminOPDPage />} />
         <Route path="partisipasi" element={<AdminPartisipasiPage />} />
+        <Route path="laporan" element={<LaporanPage />} />
         <Route path="galeri" element={<AdminGaleriPage />} />
         <Route path="edukasi" element={<AdminEdukasiPage />} />
         <Route path="settings" element={<AdminSettingsPage />} />
