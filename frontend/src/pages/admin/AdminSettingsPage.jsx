@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { Upload, Save, Image as ImageIcon, Type, FileText } from 'lucide-react';
+import { Upload, Save, Image as ImageIcon, Type, FileText, Info } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '../../components/ui/card';
 import { Button } from '../../components/ui/button';
 import { Input } from '../../components/ui/input';
@@ -14,10 +14,15 @@ export const AdminSettingsPage = () => {
     logo_url: '',
     hero_title: '',
     hero_subtitle: '',
-    hero_image_url: ''
+    hero_image_url: '',
+    tentang_title: '',
+    tentang_content: '',
+    tentang_visi: '',
+    tentang_misi: ''
   });
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [savingTentang, setSavingTentang] = useState(false);
   const [uploading, setUploading] = useState(false);
   const logoInputRef = useRef(null);
 
