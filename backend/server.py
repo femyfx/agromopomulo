@@ -127,6 +127,10 @@ class SettingsUpdate(BaseModel):
     hero_title: Optional[str] = None
     hero_subtitle: Optional[str] = None
     hero_image_url: Optional[str] = None
+    tentang_title: Optional[str] = None
+    tentang_content: Optional[str] = None
+    tentang_visi: Optional[str] = None
+    tentang_misi: Optional[str] = None
 
 class SettingsResponse(BaseModel):
     id: str
@@ -134,6 +138,10 @@ class SettingsResponse(BaseModel):
     hero_title: str
     hero_subtitle: str
     hero_image_url: Optional[str] = None
+    tentang_title: Optional[str] = None
+    tentang_content: Optional[str] = None
+    tentang_visi: Optional[str] = None
+    tentang_misi: Optional[str] = None
 
 class GalleryCreate(BaseModel):
     title: str
@@ -347,7 +355,11 @@ async def get_settings():
             "logo_url": None,
             "hero_title": "Gerakan Agro Mopomulo",
             "hero_subtitle": "Satu Orang Sepuluh Pohon untuk Masa Depan Daerah",
-            "hero_image_url": "https://images.unsplash.com/photo-1765333534690-ad3a985e7c42?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDQ2NDJ8MHwxfHNlYXJjaHwxfHxsdXNoJTIwZ3JlZW4lMjBmb3Jlc3QlMjBsYW5kc2NhcGUlMjBpbmRvbmVzaWF8ZW58MHx8fHwxNzY4NDQ1ODE1fDA&ixlib=rb-4.1.0&q=85"
+            "hero_image_url": "https://images.unsplash.com/photo-1765333534690-ad3a985e7c42?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDQ2NDJ8MHwxfHNlYXJjaHwxfHxsdXNoJTIwZ3JlZW4lMjBmb3Jlc3QlMjBsYW5kc2NhcGUlMjBpbmRvbmVzaWF8ZW58MHx8fHwxNzY4NDQ1ODE1fDA&ixlib=rb-4.1.0&q=85",
+            "tentang_title": "Program Agro Mopomulo",
+            "tentang_content": "Mopomulo berasal dari bahasa Gorontalo yang berarti \"menanam\". Program Agro Mopomulo adalah inisiatif Pemerintah Kabupaten Gorontalo Utara untuk meningkatkan kesadaran dan partisipasi masyarakat dalam pelestarian lingkungan.\n\nDengan konsep \"Satu Orang Sepuluh Pohon\", program ini menargetkan setiap ASN dan warga untuk berkontribusi menanam minimal 10 pohon, baik pohon produktif maupun pohon pelindung.",
+            "tentang_visi": "Mewujudkan Kabupaten Gorontalo Utara sebagai daerah yang hijau, asri, dan berkelanjutan dengan partisipasi aktif seluruh lapisan masyarakat dalam pelestarian lingkungan.",
+            "tentang_misi": "- Meningkatkan kesadaran lingkungan masyarakat\n- Memperluas area hijau di seluruh wilayah\n- Mendukung ketahanan pangan daerah\n- Membangun budaya peduli lingkungan"
         }
         await db.settings.insert_one(default_settings)
         return default_settings
@@ -369,7 +381,11 @@ async def update_settings(data: SettingsUpdate, current_user: dict = Depends(get
             "logo_url": data.logo_url,
             "hero_title": data.hero_title or "Gerakan Agro Mopomulo",
             "hero_subtitle": data.hero_subtitle or "Satu Orang Sepuluh Pohon untuk Masa Depan Daerah",
-            "hero_image_url": data.hero_image_url
+            "hero_image_url": data.hero_image_url,
+            "tentang_title": data.tentang_title or "Program Agro Mopomulo",
+            "tentang_content": data.tentang_content,
+            "tentang_visi": data.tentang_visi,
+            "tentang_misi": data.tentang_misi
         }
         await db.settings.insert_one(new_settings)
         return new_settings
