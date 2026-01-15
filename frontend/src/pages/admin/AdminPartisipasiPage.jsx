@@ -105,7 +105,8 @@ export const AdminPartisipasiPage = () => {
                        p.nip.includes(searchTerm) ||
                        p.opd_nama?.toLowerCase().includes(searchTerm.toLowerCase());
     const matchStatus = statusFilter === 'all' || p.status === statusFilter;
-    return matchSearch && matchStatus;
+    const matchOpd = opdFilter === 'all' || p.opd_id === opdFilter;
+    return matchSearch && matchStatus && matchOpd;
   });
 
   const getStatusIcon = (status) => {
