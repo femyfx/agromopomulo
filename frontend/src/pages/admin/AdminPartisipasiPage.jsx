@@ -168,6 +168,18 @@ export const AdminPartisipasiPage = () => {
                 data-testid="search-partisipasi"
               />
             </div>
+            <Select value={opdFilter} onValueChange={setOpdFilter}>
+              <SelectTrigger className="w-full sm:w-[220px]" data-testid="filter-opd">
+                <Building2 className="h-4 w-4 mr-2" />
+                <SelectValue placeholder="Filter OPD" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Semua OPD</SelectItem>
+                {opdList.map((opd) => (
+                  <SelectItem key={opd.id} value={opd.id}>{opd.nama}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
             <Select value={statusFilter} onValueChange={setStatusFilter}>
               <SelectTrigger className="w-full sm:w-[180px]" data-testid="filter-status">
                 <Filter className="h-4 w-4 mr-2" />
