@@ -5,7 +5,7 @@ from datetime import datetime
 import io
 
 class AgroMopumuloAPITester:
-    def __init__(self, base_url="https://agromopomulo.preview.emergentagent.com"):
+    def __init__(self, base_url="https://smartagro.preview.emergentagent.com"):
         self.base_url = base_url
         self.token = None
         self.tests_run = 0
