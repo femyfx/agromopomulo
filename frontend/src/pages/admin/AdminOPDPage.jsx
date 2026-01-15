@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Plus, Pencil, Trash2, Building2, Search } from 'lucide-react';
+import { Plus, Pencil, Trash2, Building2, Search, Users } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/card';
 import { Button } from '../../components/ui/button';
 import { Input } from '../../components/ui/input';
@@ -16,7 +16,7 @@ export const AdminOPDPage = () => {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [selectedOPD, setSelectedOPD] = useState(null);
-  const [formData, setFormData] = useState({ nama: '', kode: '', alamat: '' });
+  const [formData, setFormData] = useState({ nama: '', kode: '', alamat: '', jumlah_personil: 0 });
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
