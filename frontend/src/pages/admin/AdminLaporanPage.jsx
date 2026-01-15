@@ -1,13 +1,15 @@
 import { useState, useEffect } from 'react';
-import { FileText, TreePine, Users, Building2, Calendar, FileDown } from 'lucide-react';
+import { FileText, TreePine, Users, Building2, Calendar, FileDown, TrendingUp, Target } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/card';
 import { Button } from '../../components/ui/button';
+import { Progress } from '../../components/ui/progress';
 import { statsApi, partisipasiApi, exportApi } from '../../lib/api';
 import { toast } from 'sonner';
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip, BarChart, Bar, XAxis, YAxis, CartesianGrid } from 'recharts';
 
 export const AdminLaporanPage = () => {
   const [stats, setStats] = useState(null);
+  const [progress, setProgress] = useState(null);
   const [partisipasi, setPartisipasi] = useState([]);
   const [loading, setLoading] = useState(true);
   const [exporting, setExporting] = useState(false);
@@ -18,12 +20,14 @@ export const AdminLaporanPage = () => {
 
   const loadData = async () => {
     try {
-      const [statsRes, partisipasiRes] = await Promise.all([
+      const [statsRes, partisipasiRes, progressRes] = await Promise.all([
         statsApi.get(),
-        partisipasiApi.getAll()
+        partisipasiApi.getAll(),
+        statsApi.getProgress()
       ]);
       setStats(statsRes.data);
       setPartisipasi(partisipasiRes.data);
+      setProgress(progressRes.data);
     } catch (error) {
       console.error('Failed to load data:', error);
     } finally {
