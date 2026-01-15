@@ -55,8 +55,20 @@ export const statsApi = {
 
 // Export API
 export const exportApi = {
-  excel: () => axios.get(`${API}/export/excel`, { responseType: 'blob' }),
-  pdf: () => axios.get(`${API}/export/pdf`, { responseType: 'blob' }),
+  excel: () => {
+    const token = localStorage.getItem('token');
+    return axios.get(`${API}/export/excel`, { 
+      responseType: 'blob',
+      headers: token ? { 'Authorization': `Bearer ${token}` } : {}
+    });
+  },
+  pdf: () => {
+    const token = localStorage.getItem('token');
+    return axios.get(`${API}/export/pdf`, { 
+      responseType: 'blob',
+      headers: token ? { 'Authorization': `Bearer ${token}` } : {}
+    });
+  },
 };
 
 // Import API
