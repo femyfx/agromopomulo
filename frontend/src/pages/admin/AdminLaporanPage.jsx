@@ -297,6 +297,98 @@ export const AdminLaporanPage = () => {
         </CardContent>
       </Card>
 
+      {/* Progress Table - Target vs Actual */}
+      <Card className="mb-8">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <TrendingUp className="h-5 w-5 text-emerald-600" />
+            Progress Penanaman per OPD
+          </CardTitle>
+          <p className="text-sm text-slate-500">
+            Rumus: Target = 10 pohon × Jumlah Personil
+          </p>
+        </CardHeader>
+        <CardContent>
+          {/* Summary Stats */}
+          {progress?.summary && (
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6 p-4 bg-slate-50 rounded-lg">
+              <div className="text-center">
+                <p className="text-2xl font-bold text-slate-800">{formatNumber(progress.summary.total_personil)}</p>
+                <p className="text-xs text-slate-500">Total Personil</p>
+              </div>
+              <div className="text-center">
+                <p className="text-2xl font-bold text-blue-600">{formatNumber(progress.summary.total_target)}</p>
+                <p className="text-xs text-slate-500">Target Pohon</p>
+              </div>
+              <div className="text-center">
+                <p className="text-2xl font-bold text-emerald-600">{formatNumber(progress.summary.total_tertanam)}</p>
+                <p className="text-xs text-slate-500">Sudah Tertanam</p>
+              </div>
+              <div className="text-center">
+                <p className="text-2xl font-bold text-amber-600">{progress.summary.overall_progress}%</p>
+                <p className="text-xs text-slate-500">Progress Keseluruhan</p>
+              </div>
+            </div>
+          )}
+
+          {progress?.progress_list?.length > 0 ? (
+            <div className="overflow-x-auto">
+              <table className="data-table">
+                <thead>
+                  <tr>
+                    <th>Nama OPD</th>
+                    <th className="text-center">Jumlah Personil</th>
+                    <th className="text-center">Target Pohon</th>
+                    <th className="text-center">Tertanam</th>
+                    <th className="w-[200px]">Progress</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {progress.progress_list.map((item) => (
+                    <tr key={item.opd_id}>
+                      <td className="font-medium">{item.opd_nama}</td>
+                      <td className="text-center">
+                        <span className="inline-flex items-center gap-1 text-blue-600">
+                          <Users className="h-4 w-4" />
+                          {formatNumber(item.jumlah_personil)}
+                        </span>
+                      </td>
+                      <td className="text-center">
+                        <span className="inline-flex items-center gap-1 text-slate-600">
+                          <Target className="h-4 w-4" />
+                          {formatNumber(item.target_pohon)}
+                        </span>
+                      </td>
+                      <td className="text-center font-semibold text-emerald-600">
+                        {formatNumber(item.pohon_tertanam)}
+                      </td>
+                      <td>
+                        <div className="flex items-center gap-2">
+                          <Progress 
+                            value={item.progress_persen} 
+                            className="flex-1 h-3"
+                          />
+                          <span className={`text-sm font-semibold min-w-[50px] text-right ${
+                            item.progress_persen >= 100 ? 'text-emerald-600' :
+                            item.progress_persen >= 50 ? 'text-amber-600' : 'text-red-500'
+                          }`}>
+                            {item.progress_persen}%
+                          </span>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          ) : (
+            <p className="text-slate-500 text-center py-8">
+              Belum ada data. Tambahkan jumlah personil di menu Kelola OPD.
+            </p>
+          )}
+        </CardContent>
+      </Card>
+
       {/* Recent Participations */}
       <Card>
         <CardHeader>
