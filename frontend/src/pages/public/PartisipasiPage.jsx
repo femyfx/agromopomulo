@@ -1,21 +1,36 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { TreePine, Send, CheckCircle } from 'lucide-react';
+import { TreePine, Send, CheckCircle, User, Building2, Leaf, MapPin, ChevronRight, ChevronLeft, Upload, X } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '../../components/ui/card';
 import { Button } from '../../components/ui/button';
 import { Input } from '../../components/ui/input';
 import { Label } from '../../components/ui/label';
 import { Textarea } from '../../components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../components/ui/select';
+import { Progress } from '../../components/ui/progress';
 import { opdApi, partisipasiApi } from '../../lib/api';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
+import axios from 'axios';
+
+const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
+
+const steps = [
+  { id: 1, title: 'Data Pribadi', icon: User },
+  { id: 2, title: 'Instansi', icon: Building2 },
+  { id: 3, title: 'Data Pohon', icon: Leaf },
+  { id: 4, title: 'Lokasi & Bukti', icon: MapPin },
+];
 
 export const PartisipasiPage = () => {
   const navigate = useNavigate();
   const [opdList, setOpdList] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [uploading, setUploading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [currentStep, setCurrentStep] = useState(1);
+  const fileInputRef = useRef(null);
+  
   const [formData, setFormData] = useState({
     email: '',
     nama_lengkap: '',
@@ -25,8 +40,13 @@ export const PartisipasiPage = () => {
     nomor_whatsapp: '',
     jumlah_pohon: '',
     jenis_pohon: '',
-    lokasi_tanam: ''
+    sumber_bibit: '',
+    lokasi_tanam: '',
+    titik_lokasi: '',
+    bukti_url: ''
   });
+
+  const [errors, setErrors] = useState({});
 
   useEffect(() => {
     loadOPD();
@@ -44,22 +64,103 @@ export const PartisipasiPage = () => {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
+    // Clear error when user types
+    if (errors[name]) {
+      setErrors(prev => ({ ...prev, [name]: '' }));
+    }
   };
 
   const handleSelectChange = (name, value) => {
     setFormData(prev => ({ ...prev, [name]: value }));
+    if (errors[name]) {
+      setErrors(prev => ({ ...prev, [name]: '' }));
+    }
+  };
+
+  const handleFileUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      toast.error('File harus berupa gambar');
+      return;
+    }
+
+    // Validate file size (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error('Ukuran file maksimal 5MB');
+      return;
+    }
+
+    setUploading(true);
+    try {
+      const formDataUpload = new FormData();
+      formDataUpload.append('file', file);
+      const res = await axios.post(`${API}/upload/image`, formDataUpload, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      });
+      setFormData(prev => ({ ...prev, bukti_url: res.data.url }));
+      toast.success('Bukti berhasil diupload');
+    } catch (error) {
+      console.error('Upload failed:', error);
+      toast.error('Gagal mengupload bukti');
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const removeBukti = () => {
+    setFormData(prev => ({ ...prev, bukti_url: '' }));
+    if (fileInputRef.current) fileInputRef.current.value = '';
+  };
+
+  const validateStep = (step) => {
+    const newErrors = {};
+    
+    switch (step) {
+      case 1:
+        if (!formData.email) newErrors.email = 'Email wajib diisi';
+        else if (!/\S+@\S+\.\S+/.test(formData.email)) newErrors.email = 'Email tidak valid';
+        if (!formData.nama_lengkap) newErrors.nama_lengkap = 'Nama lengkap wajib diisi';
+        if (!formData.nip) newErrors.nip = 'NIP wajib diisi';
+        break;
+      case 2:
+        if (!formData.opd_id) newErrors.opd_id = 'OPD wajib dipilih';
+        if (!formData.alamat) newErrors.alamat = 'Alamat wajib diisi';
+        if (!formData.nomor_whatsapp) newErrors.nomor_whatsapp = 'Nomor WhatsApp wajib diisi';
+        break;
+      case 3:
+        if (!formData.jumlah_pohon) newErrors.jumlah_pohon = 'Jumlah pohon wajib diisi';
+        else if (parseInt(formData.jumlah_pohon) < 1) newErrors.jumlah_pohon = 'Jumlah minimal 1 pohon';
+        if (!formData.jenis_pohon) newErrors.jenis_pohon = 'Jenis pohon wajib dipilih';
+        if (!formData.sumber_bibit) newErrors.sumber_bibit = 'Sumber bibit wajib dipilih';
+        break;
+      case 4:
+        if (!formData.lokasi_tanam) newErrors.lokasi_tanam = 'Lokasi tanam wajib diisi';
+        break;
+      default:
+        break;
+    }
+    
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const nextStep = () => {
+    if (validateStep(currentStep)) {
+      setCurrentStep(prev => Math.min(prev + 1, 4));
+    }
+  };
+
+  const prevStep = () => {
+    setCurrentStep(prev => Math.max(prev - 1, 1));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     
-    // Validation
-    if (!formData.email || !formData.nama_lengkap || !formData.nip || !formData.opd_id || 
-        !formData.alamat || !formData.nomor_whatsapp || !formData.jumlah_pohon || 
-        !formData.jenis_pohon || !formData.lokasi_tanam) {
-      toast.error('Mohon lengkapi semua field');
-      return;
-    }
+    if (!validateStep(4)) return;
 
     setLoading(true);
     try {
@@ -76,6 +177,8 @@ export const PartisipasiPage = () => {
       setLoading(false);
     }
   };
+
+  const progressPercentage = (currentStep / 4) * 100;
 
   if (submitted) {
     return (
@@ -111,7 +214,7 @@ export const PartisipasiPage = () => {
   return (
     <div className="min-h-screen" data-testid="partisipasi-page">
       {/* Hero */}
-      <section className="relative py-16 overflow-hidden">
+      <section className="relative py-12 overflow-hidden">
         <div 
           className="absolute inset-0 bg-cover bg-center"
           style={{
@@ -125,196 +228,399 @@ export const PartisipasiPage = () => {
             animate={{ opacity: 1, y: 0 }}
             className="text-center"
           >
-            <div className="h-16 w-16 rounded-full bg-white/10 flex items-center justify-center mx-auto mb-6">
-              <TreePine className="h-8 w-8 text-white" />
+            <div className="h-14 w-14 rounded-full bg-white/10 flex items-center justify-center mx-auto mb-4">
+              <TreePine className="h-7 w-7 text-white" />
             </div>
-            <h1 className="text-4xl sm:text-5xl font-bold text-white tracking-tight mb-4">
+            <h1 className="text-3xl sm:text-4xl font-bold text-white tracking-tight mb-2">
               Form Partisipasi
             </h1>
-            <p className="text-lg text-emerald-100 max-w-2xl mx-auto">
+            <p className="text-emerald-100 max-w-xl mx-auto">
               Daftarkan partisipasi Anda dalam program Agro Mopomulo
             </p>
           </motion.div>
         </div>
       </section>
 
-      <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-12 -mt-8 relative z-10">
+      <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-8 -mt-6 relative z-10">
         <Card className="stat-card">
-          <CardHeader>
-            <CardTitle>Data Partisipasi ASN</CardTitle>
-            <CardDescription>
-              Lengkapi form berikut untuk mendaftarkan partisipasi Anda
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="space-y-2">
-                  <Label htmlFor="email">Email *</Label>
-                  <Input
-                    id="email"
-                    name="email"
-                    type="email"
-                    placeholder="email@example.com"
-                    value={formData.email}
-                    onChange={handleChange}
-                    className="form-input"
-                    data-testid="input-email"
-                    required
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="nama_lengkap">Nama Lengkap *</Label>
-                  <Input
-                    id="nama_lengkap"
-                    name="nama_lengkap"
-                    placeholder="Nama lengkap Anda"
-                    value={formData.nama_lengkap}
-                    onChange={handleChange}
-                    className="form-input"
-                    data-testid="input-nama"
-                    required
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="space-y-2">
-                  <Label htmlFor="nip">NIP *</Label>
-                  <Input
-                    id="nip"
-                    name="nip"
-                    placeholder="Nomor Induk Pegawai"
-                    value={formData.nip}
-                    onChange={handleChange}
-                    className="form-input"
-                    data-testid="input-nip"
-                    required
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="opd_id">OPD *</Label>
-                  <Select 
-                    value={formData.opd_id} 
-                    onValueChange={(value) => handleSelectChange('opd_id', value)}
-                  >
-                    <SelectTrigger className="form-input" data-testid="select-opd">
-                      <SelectValue placeholder="Pilih OPD" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {opdList.map((opd) => (
-                        <SelectItem key={opd.id} value={opd.id}>
-                          {opd.nama}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-
+          {/* Progress Section */}
+          <CardHeader className="pb-4">
+            <div className="space-y-4">
+              {/* Progress Bar */}
               <div className="space-y-2">
-                <Label htmlFor="alamat">Alamat *</Label>
-                <Textarea
-                  id="alamat"
-                  name="alamat"
-                  placeholder="Alamat lengkap Anda"
-                  value={formData.alamat}
-                  onChange={handleChange}
-                  className="form-input min-h-[80px]"
-                  data-testid="input-alamat"
-                  required
-                />
+                <div className="flex justify-between text-sm">
+                  <span className="text-slate-600 font-medium">Langkah {currentStep} dari 4</span>
+                  <span className="text-emerald-600 font-semibold">{Math.round(progressPercentage)}%</span>
+                </div>
+                <Progress value={progressPercentage} className="h-2" />
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="space-y-2">
-                  <Label htmlFor="nomor_whatsapp">Nomor WhatsApp *</Label>
-                  <Input
-                    id="nomor_whatsapp"
-                    name="nomor_whatsapp"
-                    placeholder="08xxxxxxxxxx"
-                    value={formData.nomor_whatsapp}
-                    onChange={handleChange}
-                    className="form-input"
-                    data-testid="input-wa"
-                    required
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="jumlah_pohon">Jumlah Pohon *</Label>
-                  <Input
-                    id="jumlah_pohon"
-                    name="jumlah_pohon"
-                    type="number"
-                    min="1"
-                    placeholder="Minimal 10 pohon"
-                    value={formData.jumlah_pohon}
-                    onChange={handleChange}
-                    className="form-input"
-                    data-testid="input-jumlah"
-                    required
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="space-y-2">
-                  <Label htmlFor="jenis_pohon">Jenis Pohon *</Label>
-                  <Select 
-                    value={formData.jenis_pohon} 
-                    onValueChange={(value) => handleSelectChange('jenis_pohon', value)}
+              {/* Step Indicators */}
+              <div className="flex justify-between">
+                {steps.map((step) => (
+                  <div 
+                    key={step.id}
+                    className={`flex flex-col items-center gap-1 ${
+                      step.id <= currentStep ? 'text-emerald-600' : 'text-slate-400'
+                    }`}
                   >
-                    <SelectTrigger className="form-input" data-testid="select-jenis">
-                      <SelectValue placeholder="Pilih jenis pohon" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="Mangga">Mangga</SelectItem>
-                      <SelectItem value="Durian">Durian</SelectItem>
-                      <SelectItem value="Kelapa">Kelapa</SelectItem>
-                      <SelectItem value="Mahoni">Mahoni</SelectItem>
-                      <SelectItem value="Jati">Jati</SelectItem>
-                      <SelectItem value="Trembesi">Trembesi</SelectItem>
-                      <SelectItem value="Rambutan">Rambutan</SelectItem>
-                      <SelectItem value="Jambu">Jambu</SelectItem>
-                      <SelectItem value="Kakao">Kakao</SelectItem>
-                      <SelectItem value="Cengkeh">Cengkeh</SelectItem>
-                      <SelectItem value="Lainnya">Lainnya</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="lokasi_tanam">Lokasi Tanam *</Label>
-                  <Input
-                    id="lokasi_tanam"
-                    name="lokasi_tanam"
-                    placeholder="Lokasi penanaman pohon"
-                    value={formData.lokasi_tanam}
-                    onChange={handleChange}
-                    className="form-input"
-                    data-testid="input-lokasi"
-                    required
-                  />
-                </div>
+                    <div className={`h-10 w-10 rounded-full flex items-center justify-center transition-all duration-300 ${
+                      step.id < currentStep 
+                        ? 'bg-emerald-600 text-white' 
+                        : step.id === currentStep 
+                          ? 'bg-emerald-100 text-emerald-600 ring-2 ring-emerald-600' 
+                          : 'bg-slate-100 text-slate-400'
+                    }`}>
+                      {step.id < currentStep ? (
+                        <CheckCircle className="h-5 w-5" />
+                      ) : (
+                        <step.icon className="h-5 w-5" />
+                      )}
+                    </div>
+                    <span className="text-xs font-medium hidden sm:block">{step.title}</span>
+                  </div>
+                ))}
               </div>
+            </div>
+          </CardHeader>
 
-              <Button 
-                type="submit" 
-                className="btn-primary w-full"
-                disabled={loading}
-                data-testid="submit-partisipasi-btn"
-              >
-                {loading ? (
-                  <span className="flex items-center gap-2">
-                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                    Mengirim...
-                  </span>
-                ) : (
-                  <span className="flex items-center gap-2">
-                    <Send className="h-4 w-4" />
-                    Daftarkan Partisipasi
-                  </span>
+          <CardContent>
+            <form onSubmit={handleSubmit}>
+              <AnimatePresence mode="wait">
+                {/* Step 1: Data Pribadi */}
+                {currentStep === 1 && (
+                  <motion.div
+                    key="step1"
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: -20 }}
+                    className="space-y-5"
+                  >
+                    <div className="mb-6">
+                      <h3 className="text-lg font-semibold text-slate-800">Data Pribadi</h3>
+                      <p className="text-sm text-slate-500">Masukkan informasi data diri Anda</p>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="email">Email <span className="text-red-500">*</span></Label>
+                      <Input
+                        id="email"
+                        name="email"
+                        type="email"
+                        placeholder="email@example.com"
+                        value={formData.email}
+                        onChange={handleChange}
+                        className={`form-input ${errors.email ? 'border-red-500' : ''}`}
+                        data-testid="input-email"
+                      />
+                      {errors.email && <p className="text-sm text-red-500">{errors.email}</p>}
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="nama_lengkap">Nama Lengkap <span className="text-red-500">*</span></Label>
+                      <Input
+                        id="nama_lengkap"
+                        name="nama_lengkap"
+                        placeholder="Nama lengkap Anda"
+                        value={formData.nama_lengkap}
+                        onChange={handleChange}
+                        className={`form-input ${errors.nama_lengkap ? 'border-red-500' : ''}`}
+                        data-testid="input-nama"
+                      />
+                      {errors.nama_lengkap && <p className="text-sm text-red-500">{errors.nama_lengkap}</p>}
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="nip">NIP <span className="text-red-500">*</span></Label>
+                      <Input
+                        id="nip"
+                        name="nip"
+                        placeholder="Nomor Induk Pegawai"
+                        value={formData.nip}
+                        onChange={handleChange}
+                        className={`form-input ${errors.nip ? 'border-red-500' : ''}`}
+                        data-testid="input-nip"
+                      />
+                      {errors.nip && <p className="text-sm text-red-500">{errors.nip}</p>}
+                    </div>
+                  </motion.div>
                 )}
-              </Button>
+
+                {/* Step 2: Instansi */}
+                {currentStep === 2 && (
+                  <motion.div
+                    key="step2"
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: -20 }}
+                    className="space-y-5"
+                  >
+                    <div className="mb-6">
+                      <h3 className="text-lg font-semibold text-slate-800">Data Instansi</h3>
+                      <p className="text-sm text-slate-500">Masukkan informasi instansi dan kontak Anda</p>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="opd_id">OPD <span className="text-red-500">*</span></Label>
+                      <Select 
+                        value={formData.opd_id} 
+                        onValueChange={(value) => handleSelectChange('opd_id', value)}
+                      >
+                        <SelectTrigger className={`form-input ${errors.opd_id ? 'border-red-500' : ''}`} data-testid="select-opd">
+                          <SelectValue placeholder="Pilih OPD" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {opdList.map((opd) => (
+                            <SelectItem key={opd.id} value={opd.id}>
+                              {opd.nama}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      {errors.opd_id && <p className="text-sm text-red-500">{errors.opd_id}</p>}
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="alamat">Alamat <span className="text-red-500">*</span></Label>
+                      <Textarea
+                        id="alamat"
+                        name="alamat"
+                        placeholder="Alamat lengkap Anda"
+                        value={formData.alamat}
+                        onChange={handleChange}
+                        className={`form-input min-h-[80px] ${errors.alamat ? 'border-red-500' : ''}`}
+                        data-testid="input-alamat"
+                      />
+                      {errors.alamat && <p className="text-sm text-red-500">{errors.alamat}</p>}
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="nomor_whatsapp">Nomor WhatsApp <span className="text-red-500">*</span></Label>
+                      <Input
+                        id="nomor_whatsapp"
+                        name="nomor_whatsapp"
+                        placeholder="08xxxxxxxxxx"
+                        value={formData.nomor_whatsapp}
+                        onChange={handleChange}
+                        className={`form-input ${errors.nomor_whatsapp ? 'border-red-500' : ''}`}
+                        data-testid="input-wa"
+                      />
+                      {errors.nomor_whatsapp && <p className="text-sm text-red-500">{errors.nomor_whatsapp}</p>}
+                    </div>
+                  </motion.div>
+                )}
+
+                {/* Step 3: Data Pohon */}
+                {currentStep === 3 && (
+                  <motion.div
+                    key="step3"
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: -20 }}
+                    className="space-y-5"
+                  >
+                    <div className="mb-6">
+                      <h3 className="text-lg font-semibold text-slate-800">Data Pohon</h3>
+                      <p className="text-sm text-slate-500">Informasi tentang pohon yang akan ditanam</p>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="jumlah_pohon">Jumlah Pohon <span className="text-red-500">*</span></Label>
+                      <Input
+                        id="jumlah_pohon"
+                        name="jumlah_pohon"
+                        type="number"
+                        min="1"
+                        placeholder="Minimal 10 pohon"
+                        value={formData.jumlah_pohon}
+                        onChange={handleChange}
+                        className={`form-input ${errors.jumlah_pohon ? 'border-red-500' : ''}`}
+                        data-testid="input-jumlah"
+                      />
+                      {errors.jumlah_pohon && <p className="text-sm text-red-500">{errors.jumlah_pohon}</p>}
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="jenis_pohon">Jenis Pohon <span className="text-red-500">*</span></Label>
+                      <Select 
+                        value={formData.jenis_pohon} 
+                        onValueChange={(value) => handleSelectChange('jenis_pohon', value)}
+                      >
+                        <SelectTrigger className={`form-input ${errors.jenis_pohon ? 'border-red-500' : ''}`} data-testid="select-jenis">
+                          <SelectValue placeholder="Pilih jenis pohon" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="Mangga">Mangga</SelectItem>
+                          <SelectItem value="Durian">Durian</SelectItem>
+                          <SelectItem value="Kelapa">Kelapa</SelectItem>
+                          <SelectItem value="Mahoni">Mahoni</SelectItem>
+                          <SelectItem value="Jati">Jati</SelectItem>
+                          <SelectItem value="Trembesi">Trembesi</SelectItem>
+                          <SelectItem value="Rambutan">Rambutan</SelectItem>
+                          <SelectItem value="Jambu">Jambu</SelectItem>
+                          <SelectItem value="Kakao">Kakao</SelectItem>
+                          <SelectItem value="Cengkeh">Cengkeh</SelectItem>
+                          <SelectItem value="Lainnya">Lainnya</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      {errors.jenis_pohon && <p className="text-sm text-red-500">{errors.jenis_pohon}</p>}
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="sumber_bibit">Sumber Bibit <span className="text-red-500">*</span></Label>
+                      <Select 
+                        value={formData.sumber_bibit} 
+                        onValueChange={(value) => handleSelectChange('sumber_bibit', value)}
+                      >
+                        <SelectTrigger className={`form-input ${errors.sumber_bibit ? 'border-red-500' : ''}`} data-testid="select-sumber-bibit">
+                          <SelectValue placeholder="Pilih sumber bibit" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="Pemerintah Daerah">Pemerintah Daerah</SelectItem>
+                          <SelectItem value="Dinas Pertanian">Dinas Pertanian</SelectItem>
+                          <SelectItem value="Dinas Kehutanan">Dinas Kehutanan</SelectItem>
+                          <SelectItem value="Swadaya Masyarakat">Swadaya Masyarakat</SelectItem>
+                          <SelectItem value="Bantuan CSR">Bantuan CSR</SelectItem>
+                          <SelectItem value="Pembelian Mandiri">Pembelian Mandiri</SelectItem>
+                          <SelectItem value="Lainnya">Lainnya</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      {errors.sumber_bibit && <p className="text-sm text-red-500">{errors.sumber_bibit}</p>}
+                    </div>
+                  </motion.div>
+                )}
+
+                {/* Step 4: Lokasi & Bukti */}
+                {currentStep === 4 && (
+                  <motion.div
+                    key="step4"
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: -20 }}
+                    className="space-y-5"
+                  >
+                    <div className="mb-6">
+                      <h3 className="text-lg font-semibold text-slate-800">Lokasi & Bukti</h3>
+                      <p className="text-sm text-slate-500">Informasi lokasi penanaman dan bukti dokumentasi</p>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="lokasi_tanam">Lokasi Tanam <span className="text-red-500">*</span></Label>
+                      <Input
+                        id="lokasi_tanam"
+                        name="lokasi_tanam"
+                        placeholder="Nama lokasi penanaman (Desa/Kelurahan)"
+                        value={formData.lokasi_tanam}
+                        onChange={handleChange}
+                        className={`form-input ${errors.lokasi_tanam ? 'border-red-500' : ''}`}
+                        data-testid="input-lokasi"
+                      />
+                      {errors.lokasi_tanam && <p className="text-sm text-red-500">{errors.lokasi_tanam}</p>}
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="titik_lokasi">Titik Koordinat (Opsional)</Label>
+                      <Input
+                        id="titik_lokasi"
+                        name="titik_lokasi"
+                        placeholder="Contoh: -0.5432, 123.4567"
+                        value={formData.titik_lokasi}
+                        onChange={handleChange}
+                        className="form-input"
+                        data-testid="input-titik"
+                      />
+                      <p className="text-xs text-slate-500">Koordinat GPS lokasi penanaman (latitude, longitude)</p>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label>Upload Bukti Penanaman (Opsional)</Label>
+                      <div className="mt-2">
+                        {formData.bukti_url ? (
+                          <div className="relative inline-block">
+                            <img 
+                              src={formData.bukti_url} 
+                              alt="Bukti"
+                              className="w-full max-w-xs h-40 object-cover rounded-lg border border-slate-200"
+                            />
+                            <button
+                              type="button"
+                              onClick={removeBukti}
+                              className="absolute -top-2 -right-2 h-6 w-6 bg-red-500 text-white rounded-full flex items-center justify-center hover:bg-red-600"
+                            >
+                              <X className="h-4 w-4" />
+                            </button>
+                          </div>
+                        ) : (
+                          <div
+                            onClick={() => fileInputRef.current?.click()}
+                            className="border-2 border-dashed border-slate-300 rounded-lg p-8 text-center cursor-pointer hover:border-emerald-500 hover:bg-emerald-50/50 transition-colors"
+                          >
+                            <input
+                              type="file"
+                              accept="image/*"
+                              onChange={handleFileUpload}
+                              ref={fileInputRef}
+                              className="hidden"
+                              id="bukti-upload"
+                            />
+                            <Upload className="h-10 w-10 text-slate-400 mx-auto mb-2" />
+                            <p className="text-sm text-slate-600">
+                              {uploading ? 'Mengupload...' : 'Klik untuk upload foto bukti penanaman'}
+                            </p>
+                            <p className="text-xs text-slate-400 mt-1">PNG, JPG (max 5MB)</p>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+
+              {/* Navigation Buttons */}
+              <div className="flex justify-between mt-8 pt-6 border-t border-slate-200">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={prevStep}
+                  disabled={currentStep === 1}
+                  className={currentStep === 1 ? 'invisible' : ''}
+                  data-testid="btn-prev"
+                >
+                  <ChevronLeft className="h-4 w-4 mr-1" />
+                  Sebelumnya
+                </Button>
+
+                {currentStep < 4 ? (
+                  <Button
+                    type="button"
+                    onClick={nextStep}
+                    className="btn-primary"
+                    data-testid="btn-next"
+                  >
+                    Selanjutnya
+                    <ChevronRight className="h-4 w-4 ml-1" />
+                  </Button>
+                ) : (
+                  <Button 
+                    type="submit" 
+                    className="btn-primary"
+                    disabled={loading}
+                    data-testid="submit-partisipasi-btn"
+                  >
+                    {loading ? (
+                      <span className="flex items-center gap-2">
+                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                        Mengirim...
+                      </span>
+                    ) : (
+                      <span className="flex items-center gap-2">
+                        <Send className="h-4 w-4" />
+                        Kirim Data
+                      </span>
+                    )}
+                  </Button>
+                )}
+              </div>
             </form>
           </CardContent>
         </Card>
