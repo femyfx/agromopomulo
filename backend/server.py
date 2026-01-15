@@ -279,10 +279,12 @@ async def delete_opd(opd_id: str, current_user: dict = Depends(get_current_user)
 @api_router.get("/partisipasi", response_model=List[PartisipasiResponse])
 async def get_all_partisipasi():
     partisipasi_list = await db.partisipasi.find({}, {"_id": 0}).to_list(10000)
-    # Enrich with OPD nama
+    # Fetch all OPDs once to avoid N+1 query
+    opd_list = await db.opd.find({}, {"_id": 0, "id": 1, "nama": 1}).to_list(1000)
+    opd_map = {o["id"]: o["nama"] for o in opd_list}
+    # Enrich with OPD nama using the map
     for p in partisipasi_list:
-        opd = await db.opd.find_one({"id": p.get("opd_id")}, {"_id": 0})
-        p["opd_nama"] = opd["nama"] if opd else "Unknown"
+        p["opd_nama"] = opd_map.get(p.get("opd_id"), "Unknown")
     return partisipasi_list
 
 @api_router.get("/partisipasi/{partisipasi_id}", response_model=PartisipasiResponse)
