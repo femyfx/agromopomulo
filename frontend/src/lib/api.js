@@ -51,6 +51,7 @@ export const edukasiApi = {
 // Stats API
 export const statsApi = {
   get: () => axios.get(`${API}/stats`),
+  getProgress: () => axios.get(`${API}/progress`),
 };
 
 // Export API
