@@ -38,10 +38,15 @@ export const AdminOPDPage = () => {
   const handleOpenDialog = (opd = null) => {
     if (opd) {
       setSelectedOPD(opd);
-      setFormData({ nama: opd.nama, kode: opd.kode || '', alamat: opd.alamat || '' });
+      setFormData({ 
+        nama: opd.nama, 
+        kode: opd.kode || '', 
+        alamat: opd.alamat || '',
+        jumlah_personil: opd.jumlah_personil || 0
+      });
     } else {
       setSelectedOPD(null);
-      setFormData({ nama: '', kode: '', alamat: '' });
+      setFormData({ nama: '', kode: '', alamat: '', jumlah_personil: 0 });
     }
     setDialogOpen(true);
   };
