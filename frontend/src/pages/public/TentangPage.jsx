@@ -1,8 +1,46 @@
+import { useState, useEffect } from 'react';
 import { TreePine, Target, Users, Leaf, Globe, Award } from 'lucide-react';
 import { Card, CardContent } from '../../components/ui/card';
 import { motion } from 'framer-motion';
+import { settingsApi } from '../../lib/api';
 
 export const TentangPage = () => {
+  const [settings, setSettings] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    loadSettings();
+  }, []);
+
+  const loadSettings = async () => {
+    try {
+      const res = await settingsApi.get();
+      setSettings(res.data);
+    } catch (error) {
+      console.error('Failed to load settings:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Parse misi dari format string ke array
+  const parseMisi = (misiText) => {
+    if (!misiText) return [];
+    return misiText
+      .split('\n')
+      .map(line => line.replace(/^[-•]\s*/, '').trim())
+      .filter(line => line.length > 0);
+  };
+
+  // Parse content ke paragraf
+  const parseContent = (content) => {
+    if (!content) return [];
+    return content.split('\n\n').filter(p => p.trim().length > 0);
+  };
+
+  const misiList = parseMisi(settings?.tentang_misi);
+  const contentParagraphs = parseContent(settings?.tentang_content);
+
   return (
     <div className="min-h-screen" data-testid="tentang-page">
       {/* Hero */}
@@ -15,7 +53,7 @@ export const TentangPage = () => {
           >
             <p className="overline mb-4">TENTANG PROGRAM</p>
             <h1 className="text-4xl sm:text-5xl font-bold text-slate-800 tracking-tight mb-6">
-              Program Agro Mopomulo
+              {settings?.tentang_title || 'Program Agro Mopomulo'}
             </h1>
             <p className="text-lg text-slate-600">
               Gerakan penghijauan yang mengajak seluruh ASN dan masyarakat 
@@ -31,20 +69,30 @@ export const TentangPage = () => {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div>
               <h2 className="section-title mb-6">Apa itu Mopomulo?</h2>
-              <p className="text-slate-600 mb-4 leading-relaxed">
-                <strong>Mopomulo</strong> berasal dari bahasa Gorontalo yang berarti "menanam". 
-                Program Agro Mopomulo adalah inisiatif Pemerintah Kabupaten Gorontalo Utara 
-                untuk meningkatkan kesadaran dan partisipasi masyarakat dalam pelestarian lingkungan.
-              </p>
-              <p className="text-slate-600 mb-4 leading-relaxed">
-                Dengan konsep <strong>"Satu Orang Sepuluh Pohon"</strong>, program ini menargetkan 
-                setiap ASN dan warga untuk berkontribusi menanam minimal 10 pohon, baik pohon 
-                produktif maupun pohon pelindung.
-              </p>
-              <p className="text-slate-600 leading-relaxed">
-                Program ini tidak hanya berfokus pada kuantitas pohon yang ditanam, tetapi juga 
-                pada keberlanjutan dan pemeliharaan pohon hingga tumbuh dengan baik.
-              </p>
+              {contentParagraphs.length > 0 ? (
+                contentParagraphs.map((paragraph, index) => (
+                  <p key={index} className="text-slate-600 mb-4 leading-relaxed">
+                    {paragraph}
+                  </p>
+                ))
+              ) : (
+                <>
+                  <p className="text-slate-600 mb-4 leading-relaxed">
+                    <strong>Mopomulo</strong> berasal dari bahasa Gorontalo yang berarti "menanam". 
+                    Program Agro Mopomulo adalah inisiatif Pemerintah Kabupaten Gorontalo Utara 
+                    untuk meningkatkan kesadaran dan partisipasi masyarakat dalam pelestarian lingkungan.
+                  </p>
+                  <p className="text-slate-600 mb-4 leading-relaxed">
+                    Dengan konsep <strong>"Satu Orang Sepuluh Pohon"</strong>, program ini menargetkan 
+                    setiap ASN dan warga untuk berkontribusi menanam minimal 10 pohon, baik pohon 
+                    produktif maupun pohon pelindung.
+                  </p>
+                  <p className="text-slate-600 leading-relaxed">
+                    Program ini tidak hanya berfokus pada kuantitas pohon yang ditanam, tetapi juga 
+                    pada keberlanjutan dan pemeliharaan pohon hingga tumbuh dengan baik.
+                  </p>
+                </>
+              )}
             </div>
             <div className="relative">
               <img
@@ -72,9 +120,7 @@ export const TentangPage = () => {
                 </div>
                 <h3 className="text-xl font-bold text-slate-800 mb-4">Visi</h3>
                 <p className="text-slate-600 leading-relaxed">
-                  Mewujudkan Kabupaten Gorontalo Utara sebagai daerah yang hijau, asri, 
-                  dan berkelanjutan dengan partisipasi aktif seluruh lapisan masyarakat 
-                  dalam pelestarian lingkungan.
+                  {settings?.tentang_visi || 'Mewujudkan Kabupaten Gorontalo Utara sebagai daerah yang hijau, asri, dan berkelanjutan dengan partisipasi aktif seluruh lapisan masyarakat dalam pelestarian lingkungan.'}
                 </p>
               </CardContent>
             </Card>
@@ -85,22 +131,33 @@ export const TentangPage = () => {
                 </div>
                 <h3 className="text-xl font-bold text-slate-800 mb-4">Misi</h3>
                 <ul className="text-slate-600 space-y-2">
-                  <li className="flex items-start gap-2">
-                    <Leaf className="h-5 w-5 text-emerald-500 flex-shrink-0 mt-0.5" />
-                    <span>Meningkatkan kesadaran lingkungan masyarakat</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <Leaf className="h-5 w-5 text-emerald-500 flex-shrink-0 mt-0.5" />
-                    <span>Memperluas area hijau di seluruh wilayah</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <Leaf className="h-5 w-5 text-emerald-500 flex-shrink-0 mt-0.5" />
-                    <span>Mendukung ketahanan pangan daerah</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <Leaf className="h-5 w-5 text-emerald-500 flex-shrink-0 mt-0.5" />
-                    <span>Membangun budaya peduli lingkungan</span>
-                  </li>
+                  {misiList.length > 0 ? (
+                    misiList.map((misi, index) => (
+                      <li key={index} className="flex items-start gap-2">
+                        <Leaf className="h-5 w-5 text-emerald-500 flex-shrink-0 mt-0.5" />
+                        <span>{misi}</span>
+                      </li>
+                    ))
+                  ) : (
+                    <>
+                      <li className="flex items-start gap-2">
+                        <Leaf className="h-5 w-5 text-emerald-500 flex-shrink-0 mt-0.5" />
+                        <span>Meningkatkan kesadaran lingkungan masyarakat</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <Leaf className="h-5 w-5 text-emerald-500 flex-shrink-0 mt-0.5" />
+                        <span>Memperluas area hijau di seluruh wilayah</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <Leaf className="h-5 w-5 text-emerald-500 flex-shrink-0 mt-0.5" />
+                        <span>Mendukung ketahanan pangan daerah</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <Leaf className="h-5 w-5 text-emerald-500 flex-shrink-0 mt-0.5" />
+                        <span>Membangun budaya peduli lingkungan</span>
+                      </li>
+                    </>
+                  )}
                 </ul>
               </CardContent>
             </Card>
