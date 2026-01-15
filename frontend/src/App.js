@@ -24,7 +24,7 @@ import { AdminPartisipasiPage } from "./pages/admin/AdminPartisipasiPage";
 import { AdminSettingsPage } from "./pages/admin/AdminSettingsPage";
 import { AdminGaleriPage } from "./pages/admin/AdminGaleriPage";
 import { AdminEdukasiPage } from "./pages/admin/AdminEdukasiPage";
-import { LaporanPage } from "./pages/public/LaporanPage";
+import { AdminLaporanPage } from "./pages/admin/AdminLaporanPage";
 
 // Protected Route Component
 const ProtectedRoute = ({ children }) => {
@@ -74,7 +74,7 @@ function AppRoutes() {
         <Route index element={<AdminDashboardPage />} />
         <Route path="opd" element={<AdminOPDPage />} />
         <Route path="partisipasi" element={<AdminPartisipasiPage />} />
-        <Route path="laporan" element={<LaporanPage />} />
+        <Route path="laporan" element={<AdminLaporanPage />} />
         <Route path="galeri" element={<AdminGaleriPage />} />
         <Route path="edukasi" element={<AdminEdukasiPage />} />
         <Route path="settings" element={<AdminSettingsPage />} />
