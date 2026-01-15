@@ -24,6 +24,8 @@ Membangun aplikasi web dashboard profesional bergaya e-Government / Smart City u
 7. ✅ Edit Hero Section
 8. ✅ Export PDF/Excel
 9. ✅ Import Excel
+10. ✅ Filter Partisipasi berdasarkan OPD
+11. ✅ Edit Halaman Tentang Program
 
 ### What's Been Implemented (January 2026)
 - Full-stack e-Government dashboard
@@ -31,10 +33,12 @@ Membangun aplikasi web dashboard profesional bergaya e-Government / Smart City u
 - Admin panel with 6 sections: Dashboard, Kelola OPD, Kelola Partisipasi, Kelola Galeri, Kelola Edukasi, Pengaturan
 - JWT authentication system
 - All CRUD operations for OPD, Partisipasi, Galeri, Edukasi
-- Settings management (logo upload, hero section customization)
+- Settings management (logo upload, hero section customization, tentang page content)
 - Export PDF/Excel dan Import Excel functionality
 - Real-time statistics dashboard
 - Responsive design with professional e-Government styling
+- **NEW** Filter partisipasi berdasarkan OPD di admin panel
+- **NEW** Edit konten halaman Tentang (Judul, Deskripsi, Visi, Misi) di Pengaturan
 
 ### Prioritized Backlog
 **P0 (Implemented):**
@@ -42,6 +46,8 @@ Membangun aplikasi web dashboard profesional bergaya e-Government / Smart City u
 - Form partisipasi ✅
 - Admin CRUD operations ✅
 - Export/Import ✅
+- Filter OPD di partisipasi ✅
+- Edit halaman Tentang ✅
 
 **P1 (Future):**
 - WhatsApp notification integration
@@ -53,7 +59,11 @@ Membangun aplikasi web dashboard profesional bergaya e-Government / Smart City u
 - Photo upload for partisipasi evidence
 - Dashboard analytics with trends
 
+### Test Credentials
+- Admin Email: admin2@test.com
+- Admin Password: admin123
+
 ### Next Tasks
-1. Add sample OPD data for demo
-2. Test all admin workflows
-3. Add date range filtering for reports
+1. Add date range filtering for reports
+2. Test multi-step participation form end-to-end
+3. WhatsApp notification integration
