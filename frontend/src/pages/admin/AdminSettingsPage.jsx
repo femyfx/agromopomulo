@@ -58,6 +58,24 @@ export const AdminSettingsPage = () => {
     }
   };
 
+  const handleSaveTentang = async () => {
+    setSavingTentang(true);
+    try {
+      await settingsApi.update({
+        tentang_title: settings.tentang_title,
+        tentang_content: settings.tentang_content,
+        tentang_visi: settings.tentang_visi,
+        tentang_misi: settings.tentang_misi
+      });
+      toast.success('Konten Tentang berhasil disimpan');
+    } catch (error) {
+      console.error('Save failed:', error);
+      toast.error('Gagal menyimpan konten Tentang');
+    } finally {
+      setSavingTentang(false);
+    }
+  };
+
   const handleLogoUpload = async (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
