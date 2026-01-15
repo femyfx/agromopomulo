@@ -549,6 +549,65 @@ async def get_stats():
         "lokasi_stats": sorted(lokasi_list, key=lambda x: x["jumlah_pohon"], reverse=True)
     }
 
+@api_router.get("/progress")
+async def get_progress():
+    """Get progress per OPD based on formula: target = 10 trees × personnel"""
+    # Get all OPDs with personnel count
+    opd_list = await db.opd.find({}, {"_id": 0}).to_list(1000)
+    
+    # Get all verified/approved partisipasi
+    partisipasi_list = await db.partisipasi.find(
+        {"status": {"$in": ["pending", "verified", "approved", "imported"]}}, 
+        {"_id": 0}
+    ).to_list(10000)
+    
+    # Calculate planted trees per OPD
+    opd_planted = {}
+    for p in partisipasi_list:
+        opd_id = p.get("opd_id")
+        if opd_id not in opd_planted:
+            opd_planted[opd_id] = 0
+        opd_planted[opd_id] += p.get("jumlah_pohon", 0)
+    
+    # Build progress list
+    progress_list = []
+    total_target = 0
+    total_planted = 0
+    
+    for opd in opd_list:
+        jumlah_personil = opd.get("jumlah_personil", 0) or 0
+        target = jumlah_personil * 10  # 1 orang = 10 pohon
+        planted = opd_planted.get(opd["id"], 0)
+        progress_pct = round((planted / target * 100), 1) if target > 0 else 0
+        
+        total_target += target
+        total_planted += planted
+        
+        progress_list.append({
+            "opd_id": opd["id"],
+            "opd_nama": opd["nama"],
+            "jumlah_personil": jumlah_personil,
+            "target_pohon": target,
+            "pohon_tertanam": planted,
+            "progress_persen": min(progress_pct, 100)  # Cap at 100%
+        })
+    
+    # Sort by progress percentage descending
+    progress_list = sorted(progress_list, key=lambda x: x["progress_persen"], reverse=True)
+    
+    # Calculate overall progress
+    overall_progress = round((total_planted / total_target * 100), 1) if total_target > 0 else 0
+    
+    return {
+        "progress_list": progress_list,
+        "summary": {
+            "total_personil": sum(o.get("jumlah_personil", 0) or 0 for o in opd_list),
+            "total_target": total_target,
+            "total_tertanam": total_planted,
+            "overall_progress": min(overall_progress, 100)
+        }
+    }
+
 # ============== EXPORT ENDPOINTS ==============
 
 @api_router.get("/export/excel")
