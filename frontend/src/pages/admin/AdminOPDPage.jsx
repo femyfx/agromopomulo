@@ -222,6 +222,19 @@ export const AdminOPDPage = () => {
                 data-testid="input-opd-alamat"
               />
             </div>
+            <div className="space-y-2">
+              <Label htmlFor="jumlah_personil">Jumlah Personil *</Label>
+              <Input
+                id="jumlah_personil"
+                type="number"
+                min="0"
+                value={formData.jumlah_personil}
+                onChange={(e) => setFormData({ ...formData, jumlah_personil: parseInt(e.target.value) || 0 })}
+                placeholder="Jumlah ASN/Personil"
+                data-testid="input-opd-personil"
+              />
+              <p className="text-xs text-slate-500">Target pohon = Jumlah Personil × 10</p>
+            </div>
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setDialogOpen(false)}>Batal</Button>
