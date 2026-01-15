@@ -143,6 +143,10 @@ export const AdminOPDPage = () => {
                     <h4 className="font-semibold text-slate-800 truncate">{opd.nama}</h4>
                     {opd.kode && <p className="text-sm text-slate-500">Kode: {opd.kode}</p>}
                     {opd.alamat && <p className="text-sm text-slate-400 truncate">{opd.alamat}</p>}
+                    <div className="flex items-center gap-1 mt-1 text-sm text-blue-600">
+                      <Users className="h-4 w-4" />
+                      <span>{opd.jumlah_personil || 0} Personil</span>
+                    </div>
                   </div>
                 </div>
                 <div className="flex gap-2 mt-4 pt-4 border-t border-slate-100">
