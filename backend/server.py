@@ -62,17 +62,20 @@ class OPDCreate(BaseModel):
     nama: str
     kode: Optional[str] = None
     alamat: Optional[str] = None
+    jumlah_personil: Optional[int] = 0
 
 class OPDUpdate(BaseModel):
     nama: Optional[str] = None
     kode: Optional[str] = None
     alamat: Optional[str] = None
+    jumlah_personil: Optional[int] = None
 
 class OPDResponse(BaseModel):
     id: str
     nama: str
     kode: Optional[str] = None
     alamat: Optional[str] = None
+    jumlah_personil: Optional[int] = 0
     created_at: str
 
 class PartisipasiCreate(BaseModel):
