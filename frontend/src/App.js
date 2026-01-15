@@ -1,53 +1,108 @@
-import { useEffect } from "react";
 import "@/App.css";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import axios from "axios";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { Toaster } from "sonner";
+import { AuthProvider, useAuth } from "./contexts/AuthContext";
 
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
-const API = `${BACKEND_URL}/api`;
+// Layouts
+import { PublicLayout } from "./components/layout/PublicLayout";
+import { AdminLayout } from "./components/layout/AdminLayout";
 
-const Home = () => {
-  const helloWorldApi = async () => {
-    try {
-      const response = await axios.get(`${API}/`);
-      console.log(response.data.message);
-    } catch (e) {
-      console.error(e, `errored out requesting / api`);
-    }
-  };
+// Public Pages
+import { HomePage } from "./pages/public/HomePage";
+import { TentangPage } from "./pages/public/TentangPage";
+import { KontribusiOPDPage } from "./pages/public/KontribusiOPDPage";
+import { PetaPenanamanPage } from "./pages/public/PetaPenanamanPage";
+import { LaporanPage } from "./pages/public/LaporanPage";
+import { GaleriPage } from "./pages/public/GaleriPage";
+import { EdukasiPage } from "./pages/public/EdukasiPage";
+import { PartisipasiPage } from "./pages/public/PartisipasiPage";
 
-  useEffect(() => {
-    helloWorldApi();
-  }, []);
+// Admin Pages
+import { AdminLoginPage } from "./pages/admin/AdminLoginPage";
+import { AdminDashboardPage } from "./pages/admin/AdminDashboardPage";
+import { AdminOPDPage } from "./pages/admin/AdminOPDPage";
+import { AdminPartisipasiPage } from "./pages/admin/AdminPartisipasiPage";
+import { AdminSettingsPage } from "./pages/admin/AdminSettingsPage";
+import { AdminGaleriPage } from "./pages/admin/AdminGaleriPage";
+import { AdminEdukasiPage } from "./pages/admin/AdminEdukasiPage";
 
-  return (
-    <div>
-      <header className="App-header">
-        <a
-          className="App-link"
-          href="https://emergent.sh"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <img src="https://avatars.githubusercontent.com/in/1201222?s=120&u=2686cf91179bbafbc7a71bfbc43004cf9ae1acea&v=4" />
-        </a>
-        <p className="mt-5">Building something incredible ~!</p>
-      </header>
-    </div>
-  );
+// Protected Route Component
+const ProtectedRoute = ({ children }) => {
+  const { user, loading } = useAuth();
+  
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-slate-50">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-600"></div>
+      </div>
+    );
+  }
+  
+  if (!user) {
+    return <Navigate to="/admin/login" replace />;
+  }
+  
+  return children;
 };
+
+function AppRoutes() {
+  return (
+    <Routes>
+      {/* Public Routes */}
+      <Route element={<PublicLayout />}>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/tentang" element={<TentangPage />} />
+        <Route path="/kontribusi-opd" element={<KontribusiOPDPage />} />
+        <Route path="/peta-penanaman" element={<PetaPenanamanPage />} />
+        <Route path="/laporan" element={<LaporanPage />} />
+        <Route path="/galeri" element={<GaleriPage />} />
+        <Route path="/edukasi" element={<EdukasiPage />} />
+        <Route path="/partisipasi" element={<PartisipasiPage />} />
+      </Route>
+
+      {/* Admin Login */}
+      <Route path="/admin/login" element={<AdminLoginPage />} />
+
+      {/* Protected Admin Routes */}
+      <Route
+        path="/admin"
+        element={
+          <ProtectedRoute>
+            <AdminLayout />
+          </ProtectedRoute>
+        }
+      >
+        <Route index element={<AdminDashboardPage />} />
+        <Route path="opd" element={<AdminOPDPage />} />
+        <Route path="partisipasi" element={<AdminPartisipasiPage />} />
+        <Route path="galeri" element={<AdminGaleriPage />} />
+        <Route path="edukasi" element={<AdminEdukasiPage />} />
+        <Route path="settings" element={<AdminSettingsPage />} />
+      </Route>
+
+      {/* Catch all */}
+      <Route path="*" element={<Navigate to="/" replace />} />
+    </Routes>
+  );
+}
 
 function App() {
   return (
-    <div className="App">
+    <AuthProvider>
       <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Home />}>
-            <Route index element={<Home />} />
-          </Route>
-        </Routes>
+        <AppRoutes />
+        <Toaster 
+          position="top-right" 
+          richColors 
+          closeButton
+          toastOptions={{
+            style: {
+              fontFamily: 'Plus Jakarta Sans, sans-serif'
+            }
+          }}
+        />
       </BrowserRouter>
-    </div>
+    </AuthProvider>
   );
 }
 
