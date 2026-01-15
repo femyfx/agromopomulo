@@ -82,7 +82,10 @@ class PartisipasiCreate(BaseModel):
     nomor_whatsapp: str
     jumlah_pohon: int
     jenis_pohon: str
+    sumber_bibit: str
     lokasi_tanam: str
+    titik_lokasi: Optional[str] = None
+    bukti_url: Optional[str] = None
 
 class PartisipasiUpdate(BaseModel):
     email: Optional[EmailStr] = None
@@ -93,7 +96,10 @@ class PartisipasiUpdate(BaseModel):
     nomor_whatsapp: Optional[str] = None
     jumlah_pohon: Optional[int] = None
     jenis_pohon: Optional[str] = None
+    sumber_bibit: Optional[str] = None
     lokasi_tanam: Optional[str] = None
+    titik_lokasi: Optional[str] = None
+    bukti_url: Optional[str] = None
     status: Optional[str] = None
 
 class PartisipasiResponse(BaseModel):
@@ -107,7 +113,10 @@ class PartisipasiResponse(BaseModel):
     nomor_whatsapp: str
     jumlah_pohon: int
     jenis_pohon: str
+    sumber_bibit: Optional[str] = None
     lokasi_tanam: str
+    titik_lokasi: Optional[str] = None
+    bukti_url: Optional[str] = None
     status: str
     created_at: str
 
@@ -360,6 +369,14 @@ async def update_settings(data: SettingsUpdate, current_user: dict = Depends(get
         }
         await db.settings.insert_one(new_settings)
         return new_settings
+
+@api_router.post("/upload/image")
+async def upload_image(file: UploadFile = File(...)):
+    contents = await file.read()
+    base64_data = base64.b64encode(contents).decode('utf-8')
+    content_type = file.content_type or 'image/png'
+    data_url = f"data:{content_type};base64,{base64_data}"
+    return {"url": data_url}
 
 @api_router.post("/settings/upload-logo")
 async def upload_logo(file: UploadFile = File(...), current_user: dict = Depends(get_current_user)):
