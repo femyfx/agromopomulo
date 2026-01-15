@@ -131,6 +131,10 @@ export const AdminSettingsPage = () => {
             <Type className="h-4 w-4" />
             Hero Section
           </TabsTrigger>
+          <TabsTrigger value="tentang" className="flex items-center gap-2">
+            <Info className="h-4 w-4" />
+            Tentang
+          </TabsTrigger>
         </TabsList>
 
         <TabsContent value="branding">
