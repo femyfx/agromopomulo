@@ -115,18 +115,23 @@ export const KontribusiOPDPage = () => {
                     <ResponsiveContainer width="100%" height="100%">
                       <BarChart
                         data={stats.opd_stats.slice(0, 10)}
-                        layout="vertical"
-                        margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+                        margin={{ top: 20, right: 30, left: 20, bottom: 80 }}
                       >
                         <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
-                        <XAxis type="number" stroke="#64748b" fontSize={12} />
-                        <YAxis 
-                          type="category" 
+                        <XAxis 
                           dataKey="opd_nama" 
                           stroke="#64748b" 
+                          fontSize={11}
+                          angle={-45}
+                          textAnchor="end"
+                          height={80}
+                          interval={0}
+                          tickFormatter={(value) => value.length > 15 ? value.slice(0, 15) + '...' : value}
+                        />
+                        <YAxis 
+                          stroke="#64748b" 
                           fontSize={12}
-                          width={150}
-                          tickFormatter={(value) => value.length > 20 ? value.slice(0, 20) + '...' : value}
+                          tickFormatter={(value) => formatNumber(value)}
                         />
                         <Tooltip 
                           formatter={(value) => [formatNumber(value), 'Pohon']}
@@ -136,7 +141,7 @@ export const KontribusiOPDPage = () => {
                             borderRadius: '8px'
                           }}
                         />
-                        <Bar dataKey="jumlah_pohon" radius={[0, 4, 4, 0]}>
+                        <Bar dataKey="jumlah_pohon" radius={[4, 4, 0, 0]}>
                           {stats.opd_stats.slice(0, 10).map((entry, index) => (
                             <Cell key={`cell-${index}`} fill={chartColors[index % chartColors.length]} />
                           ))}
