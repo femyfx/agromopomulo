@@ -230,22 +230,31 @@ export const AdminLaporanPage = () => {
             <CardContent>
               <div className="h-[300px]">
                 <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={stats.opd_stats.slice(0, 5)} layout="vertical">
+                  <BarChart 
+                    data={stats.opd_stats.slice(0, 5)} 
+                    margin={{ top: 20, right: 30, left: 20, bottom: 60 }}
+                  >
                     <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
-                    <XAxis type="number" stroke="#64748b" fontSize={12} />
-                    <YAxis 
-                      type="category" 
+                    <XAxis 
                       dataKey="opd_nama" 
                       stroke="#64748b" 
+                      fontSize={11}
+                      angle={-35}
+                      textAnchor="end"
+                      height={60}
+                      interval={0}
+                      tickFormatter={(value) => value.length > 12 ? value.slice(0, 12) + '...' : value}
+                    />
+                    <YAxis 
+                      stroke="#64748b" 
                       fontSize={12}
-                      width={120}
-                      tickFormatter={(value) => value.length > 15 ? value.slice(0, 15) + '...' : value}
+                      tickFormatter={(value) => formatNumber(value)}
                     />
                     <Tooltip 
                       formatter={(value) => [formatNumber(value), 'Pohon']}
                       contentStyle={{ backgroundColor: 'white', border: '1px solid #e2e8f0', borderRadius: '8px' }}
                     />
-                    <Bar dataKey="jumlah_pohon" fill="#059669" radius={[0, 4, 4, 0]} />
+                    <Bar dataKey="jumlah_pohon" fill="#059669" radius={[4, 4, 0, 0]} />
                   </BarChart>
                 </ResponsiveContainer>
               </div>
