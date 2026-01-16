@@ -5,7 +5,7 @@
 Membangun aplikasi web dashboard profesional bergaya e-Government / Smart City untuk program "Agro Mopomulo" (Satu Orang Sepuluh Pohon) di Kabupaten Gorontalo Utara.
 
 ### Architecture
-- **Frontend**: React + TailwindCSS + Shadcn UI + Framer Motion
+- **Frontend**: React + TailwindCSS + Shadcn UI + Framer Motion + Recharts
 - **Backend**: FastAPI (Python)
 - **Database**: MongoDB
 - **Authentication**: JWT-based
@@ -18,14 +18,16 @@ Membangun aplikasi web dashboard profesional bergaya e-Government / Smart City u
 1. ✅ Dashboard dengan statistik pohon
 2. ✅ Form Partisipasi ASN (Email, Nama, NIP, OPD, Alamat, WhatsApp, Jumlah Pohon, Jenis Pohon, Lokasi Tanam)
 3. ✅ Super Admin Panel dengan JWT authentication
-4. ✅ Kelola OPD (CRUD)
+4. ✅ Kelola OPD (CRUD) dengan Jumlah Personil
 5. ✅ Kelola Partisipasi (CRUD + filtering + status management)
-6. ✅ Upload Logo Pemda
-7. ✅ Edit Hero Section
-8. ✅ Export PDF/Excel
-9. ✅ Import Excel
-10. ✅ Filter Partisipasi berdasarkan OPD
-11. ✅ Edit Halaman Tentang Program
+6. ✅ Filter Partisipasi berdasarkan OPD
+7. ✅ Upload Logo Pemda
+8. ✅ Edit Hero Section
+9. ✅ Edit Halaman Tentang Program (Judul, Deskripsi, Visi, Misi)
+10. ✅ Export PDF/Excel
+11. ✅ Import Excel
+12. ✅ Progress Penanaman per OPD (Target = 10 pohon × Jumlah Personil)
+13. ✅ Grafik Vertikal Bar Chart untuk Kontribusi OPD
 
 ### What's Been Implemented (January 2026)
 - Full-stack e-Government dashboard
@@ -33,12 +35,25 @@ Membangun aplikasi web dashboard profesional bergaya e-Government / Smart City u
 - Admin panel with 6 sections: Dashboard, Kelola OPD, Kelola Partisipasi, Kelola Galeri, Kelola Edukasi, Pengaturan
 - JWT authentication system
 - All CRUD operations for OPD, Partisipasi, Galeri, Edukasi
-- Settings management (logo upload, hero section customization, tentang page content)
+- Settings management (logo upload, hero section, tentang page content)
 - Export PDF/Excel dan Import Excel functionality
 - Real-time statistics dashboard
 - Responsive design with professional e-Government styling
-- **NEW** Filter partisipasi berdasarkan OPD di admin panel
-- **NEW** Edit konten halaman Tentang (Judul, Deskripsi, Visi, Misi) di Pengaturan
+- **NEW** Jumlah Personil field di OPD management
+- **NEW** Progress Penanaman per OPD dengan rumus: Target = 10 pohon × Personil
+- **NEW** Grafik bar chart diubah menjadi vertikal di Kontribusi OPD dan Laporan
+
+### Key API Endpoints
+- `/api/opd` - CRUD OPD dengan jumlah_personil
+- `/api/partisipasi` - CRUD Partisipasi
+- `/api/settings` - Settings termasuk tentang page content
+- `/api/stats` - Statistik keseluruhan
+- `/api/progress` - Progress per OPD dengan kalkulasi target
+- `/api/export/excel`, `/api/export/pdf` - Export laporan
+
+### Progress Calculation Formula
+- **Target Pohon per OPD** = Jumlah Personil × 10
+- **Progress (%)** = (Pohon Tertanam / Target Pohon) × 100
 
 ### Prioritized Backlog
 **P0 (Implemented):**
@@ -48,6 +63,9 @@ Membangun aplikasi web dashboard profesional bergaya e-Government / Smart City u
 - Export/Import ✅
 - Filter OPD di partisipasi ✅
 - Edit halaman Tentang ✅
+- Jumlah Personil di OPD ✅
+- Progress Penanaman ✅
+- Grafik Vertikal ✅
 
 **P1 (Future):**
 - WhatsApp notification integration
