@@ -1,11 +1,9 @@
 import { useState, useEffect, useRef } from 'react';
-import { Search, Trash2, Eye, FileUp, CheckCircle, XCircle, Clock, Filter, Building2 } from 'lucide-react';
+import { Search, FileUp, CheckCircle, XCircle, Clock, Filter, Building2, MapPin, ExternalLink } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/card';
 import { Button } from '../../components/ui/button';
 import { Input } from '../../components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../components/ui/select';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../../components/ui/dialog';
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '../../components/ui/alert-dialog';
 import { partisipasiApi, importApi, opdApi } from '../../lib/api';
 import { toast } from 'sonner';
 
