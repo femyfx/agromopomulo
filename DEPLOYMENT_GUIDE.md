@@ -50,7 +50,7 @@
 4. Driver: **Python** | Version: **3.12 or later**
 5. Copy connection string, akan terlihat seperti:
 ```
-mongodb+srv://agro_admin:<password>@agro-mopomulo.xxxxx.mongodb.net/?retryWrites=true&w=majority
+mongodb+srv://Bank_Data_Admin:<Cahaya123>@bdp.it0buo0.mongodb.net/?appName=BDP
 ```
 6. **GANTI** `<password>` dengan password yang Anda buat
 7. **TAMBAHKAN** nama database setelah `.net/`:
