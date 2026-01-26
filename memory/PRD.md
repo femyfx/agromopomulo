@@ -19,7 +19,7 @@ Membangun aplikasi web dashboard profesional bergaya e-Government / Smart City u
 2. ✅ Form Partisipasi ASN dengan dropdown kategori (OPD/Desa/Publik)
 3. ✅ Super Admin Panel dengan JWT authentication
 4. ✅ Kelola OPD dengan Kategori (OPD, DESA, PUBLIK) dan Jumlah Personil
-5. ✅ Kelola Partisipasi (CRUD + filtering + status management)
+5. ✅ Kelola Partisipasi dengan kolom Cek Lokasi (link ke Google Maps)
 6. ✅ Filter Partisipasi berdasarkan OPD
 7. ✅ Upload Logo Pemda
 8. ✅ Edit Hero Section
@@ -29,9 +29,10 @@ Membangun aplikasi web dashboard profesional bergaya e-Government / Smart City u
 12. ✅ Progress Penanaman per OPD (Target = 10 pohon × Jumlah Personil)
 13. ✅ Grafik Vertikal Bar Chart untuk Kontribusi OPD
 14. ✅ Dropdown Kategori di Form Partisipasi (OPD/Desa/Publik)
-15. ✅ **NEW** Input Koordinat Manual (Latitude & Longitude terpisah)
-16. ✅ **NEW** Tombol "Pilih Lokasi Saat Ini" untuk GPS otomatis
-17. ✅ **NEW** Preview koordinat dengan link "Lihat di Maps"
+15. ✅ Input Koordinat Manual (Latitude & Longitude terpisah)
+16. ✅ Tombol "Pilih Lokasi Saat Ini" untuk GPS otomatis
+17. ✅ Preview koordinat dengan link "Lihat di Maps"
+18. ✅ **NEW** Kolom "Cek Lokasi" di Kelola Partisipasi (link ke Google Maps)
 
 ### What's Been Implemented (January 2026)
 - Full-stack e-Government dashboard
@@ -43,15 +44,22 @@ Membangun aplikasi web dashboard profesional bergaya e-Government / Smart City u
 - Export PDF/Excel dan Import Excel functionality
 - Real-time statistics dashboard
 - Responsive design with professional e-Government styling
-- **NEW** Input koordinat dengan Latitude & Longitude terpisah
-- **NEW** Tombol untuk mendapatkan lokasi GPS otomatis dari browser
-- **NEW** Preview koordinat dengan link ke Google Maps
+- **NEW** Kolom "Cek Lokasi" di tabel Kelola Partisipasi - klik untuk buka Google Maps
 
-### Koordinat GPS Feature
-- **Input Manual**: Latitude dan Longitude dalam field terpisah
-- **Lokasi Otomatis**: Tombol "Pilih Lokasi Saat Ini" menggunakan Browser Geolocation API
-- **Preview**: Menampilkan koordinat gabungan dengan link ke Google Maps
-- **Validasi**: Menerima format desimal (contoh: 0.8424, 122.7891)
+### Admin Kelola Partisipasi
+**Kolom Tabel:**
+- Nama
+- NIP
+- OPD
+- Pohon
+- Jenis
+- Status
+- **Cek Lokasi** - Tombol "Lihat Maps" yang membuka Google Maps dengan koordinat partisipan
+
+**Fitur yang Dihapus:**
+- Tombol View Detail
+- Dropdown ubah Status
+- Tombol Delete
 
 ### Key API Endpoints
 - `/api/opd` - CRUD OPD dengan jumlah_personil dan kategori
