@@ -628,18 +628,82 @@ export const PartisipasiPage = () => {
                       {errors.lokasi_tanam && <p className="text-sm text-red-500">{errors.lokasi_tanam}</p>}
                     </div>
 
-                    <div className="space-y-2">
-                      <Label htmlFor="titik_lokasi">Titik Koordinat (Opsional)</Label>
-                      <Input
-                        id="titik_lokasi"
-                        name="titik_lokasi"
-                        placeholder="Contoh: -0.5432, 123.4567"
-                        value={formData.titik_lokasi}
-                        onChange={handleChange}
-                        className="form-input"
-                        data-testid="input-titik"
-                      />
-                      <p className="text-xs text-slate-500">Koordinat GPS lokasi penanaman (latitude, longitude)</p>
+                    {/* Koordinat Section */}
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between">
+                        <Label>Titik Koordinat (Opsional)</Label>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={getCurrentLocation}
+                          disabled={gettingLocation}
+                          className="text-emerald-600 border-emerald-300 hover:bg-emerald-50"
+                          data-testid="btn-get-location"
+                        >
+                          {gettingLocation ? (
+                            <>
+                              <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                              Mencari Lokasi...
+                            </>
+                          ) : (
+                            <>
+                              <Navigation className="h-4 w-4 mr-2" />
+                              Pilih Lokasi Saat Ini
+                            </>
+                          )}
+                        </Button>
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-3">
+                        <div className="space-y-1">
+                          <Label htmlFor="latitude" className="text-xs text-slate-500">Latitude</Label>
+                          <Input
+                            id="latitude"
+                            name="latitude"
+                            type="text"
+                            placeholder="Contoh: 0.5432"
+                            value={formData.latitude}
+                            onChange={handleChange}
+                            className="form-input"
+                            data-testid="input-latitude"
+                          />
+                        </div>
+                        <div className="space-y-1">
+                          <Label htmlFor="longitude" className="text-xs text-slate-500">Longitude</Label>
+                          <Input
+                            id="longitude"
+                            name="longitude"
+                            type="text"
+                            placeholder="Contoh: 123.4567"
+                            value={formData.longitude}
+                            onChange={handleChange}
+                            className="form-input"
+                            data-testid="input-longitude"
+                          />
+                        </div>
+                      </div>
+                      <p className="text-xs text-slate-500">
+                        Masukkan koordinat secara manual atau klik "Pilih Lokasi Saat Ini" untuk mengambil lokasi GPS Anda
+                      </p>
+                      
+                      {/* Preview coordinates if both filled */}
+                      {formData.latitude && formData.longitude && (
+                        <div className="flex items-center gap-2 p-2 bg-emerald-50 rounded-lg border border-emerald-200">
+                          <MapPin className="h-4 w-4 text-emerald-600 flex-shrink-0" />
+                          <span className="text-sm text-emerald-700">
+                            Koordinat: {formData.latitude}, {formData.longitude}
+                          </span>
+                          <a 
+                            href={`https://www.google.com/maps?q=${formData.latitude},${formData.longitude}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="ml-auto text-xs text-emerald-600 hover:underline"
+                          >
+                            Lihat di Maps
+                          </a>
+                        </div>
+                      )}
                     </div>
 
                     <div className="space-y-2">
