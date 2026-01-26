@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { TreePine, Send, CheckCircle, User, Building2, Leaf, MapPin, ChevronRight, ChevronLeft, Upload, X } from 'lucide-react';
+import { TreePine, Send, CheckCircle, User, Building2, Leaf, MapPin, ChevronRight, ChevronLeft, Upload, X, Navigation, Loader2 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '../../components/ui/card';
 import { Button } from '../../components/ui/button';
 import { Input } from '../../components/ui/input';
