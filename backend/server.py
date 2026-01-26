@@ -41,6 +41,21 @@ app = FastAPI(title="Dashboard Agro Mopomulo API")
 api_router = APIRouter(prefix="/api")
 security = HTTPBearer()
 
+# CORS Configuration - Support for deployment
+cors_origins_env = os.environ.get('CORS_ORIGINS', '*')
+if cors_origins_env == '*':
+    cors_origins = ["*"]
+else:
+    cors_origins = [origin.strip() for origin in cors_origins_env.split(',')]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=cors_origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 # ============== MODELS ==============
 
 class UserCreate(BaseModel):
