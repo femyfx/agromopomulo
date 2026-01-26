@@ -16,8 +16,14 @@ export const AdminOPDPage = () => {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [selectedOPD, setSelectedOPD] = useState(null);
-  const [formData, setFormData] = useState({ nama: '', kode: '', alamat: '', jumlah_personil: 0 });
+  const [formData, setFormData] = useState({ nama: '', kode: '', alamat: '', jumlah_personil: 0, kategori: 'OPD' });
   const [saving, setSaving] = useState(false);
+
+  const kategoriOptions = [
+    { value: 'OPD', label: 'OPD', color: 'bg-emerald-100 text-emerald-700' },
+    { value: 'DESA', label: 'Desa', color: 'bg-blue-100 text-blue-700' },
+    { value: 'PUBLIK', label: 'Publik', color: 'bg-amber-100 text-amber-700' }
+  ];
 
   useEffect(() => {
     loadOPD();
