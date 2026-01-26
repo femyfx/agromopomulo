@@ -47,32 +47,6 @@ export const AdminPartisipasiPage = () => {
     }
   };
 
-  const handleStatusChange = async (id, newStatus) => {
-    try {
-      await partisipasiApi.update(id, { status: newStatus });
-      toast.success('Status berhasil diupdate');
-      loadPartisipasi();
-    } catch (error) {
-      console.error('Update failed:', error);
-      toast.error('Gagal mengupdate status');
-    }
-  };
-
-  const handleDelete = async () => {
-    if (!selectedPartisipasi) return;
-    
-    try {
-      await partisipasiApi.delete(selectedPartisipasi.id);
-      toast.success('Partisipasi berhasil dihapus');
-      setDeleteDialogOpen(false);
-      setSelectedPartisipasi(null);
-      loadPartisipasi();
-    } catch (error) {
-      console.error('Delete failed:', error);
-      toast.error('Gagal menghapus partisipasi');
-    }
-  };
-
   const handleImport = async (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
