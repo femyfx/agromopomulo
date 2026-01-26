@@ -28,7 +28,10 @@ Membangun aplikasi web dashboard profesional bergaya e-Government / Smart City u
 11. ✅ Import Excel
 12. ✅ Progress Penanaman per OPD (Target = 10 pohon × Jumlah Personil)
 13. ✅ Grafik Vertikal Bar Chart untuk Kontribusi OPD
-14. ✅ **NEW** Dropdown Kategori di Form Partisipasi (OPD/Desa/Publik)
+14. ✅ Dropdown Kategori di Form Partisipasi (OPD/Desa/Publik)
+15. ✅ **NEW** Input Koordinat Manual (Latitude & Longitude terpisah)
+16. ✅ **NEW** Tombol "Pilih Lokasi Saat Ini" untuk GPS otomatis
+17. ✅ **NEW** Preview koordinat dengan link "Lihat di Maps"
 
 ### What's Been Implemented (January 2026)
 - Full-stack e-Government dashboard
@@ -40,46 +43,35 @@ Membangun aplikasi web dashboard profesional bergaya e-Government / Smart City u
 - Export PDF/Excel dan Import Excel functionality
 - Real-time statistics dashboard
 - Responsive design with professional e-Government styling
-- **NEW** Kategori instansi: OPD, DESA, PUBLIK
-- **NEW** Form partisipasi dengan dropdown kategori + filter instansi
+- **NEW** Input koordinat dengan Latitude & Longitude terpisah
+- **NEW** Tombol untuk mendapatkan lokasi GPS otomatis dari browser
+- **NEW** Preview koordinat dengan link ke Google Maps
 
-### OPD Kategori System
-- **OPD**: Organisasi Perangkat Daerah (Dinas, Badan, dll)
-- **DESA**: Pemerintah Desa di wilayah kabupaten
-- **PUBLIK**: Instansi publik lainnya (Sekolah, LSM, dll)
+### Koordinat GPS Feature
+- **Input Manual**: Latitude dan Longitude dalam field terpisah
+- **Lokasi Otomatis**: Tombol "Pilih Lokasi Saat Ini" menggunakan Browser Geolocation API
+- **Preview**: Menampilkan koordinat gabungan dengan link ke Google Maps
+- **Validasi**: Menerima format desimal (contoh: 0.8424, 122.7891)
 
 ### Key API Endpoints
 - `/api/opd` - CRUD OPD dengan jumlah_personil dan kategori
-- `/api/partisipasi` - CRUD Partisipasi
+- `/api/partisipasi` - CRUD Partisipasi (titik_lokasi = latitude + longitude)
 - `/api/settings` - Settings termasuk tentang page content
 - `/api/stats` - Statistik keseluruhan
 - `/api/progress` - Progress per OPD dengan kalkulasi target
 - `/api/export/excel`, `/api/export/pdf` - Export laporan
 
-### Progress Calculation Formula
-- **Target Pohon per OPD** = Jumlah Personil × 10
-- **Progress (%)** = (Pohon Tertanam / Target Pohon) × 100
-
 ### Prioritized Backlog
 **P0 (Implemented):**
-- Core dashboard ✅
-- Form partisipasi dengan kategori ✅
-- Admin CRUD operations ✅
-- Export/Import ✅
-- Filter OPD di partisipasi ✅
-- Edit halaman Tentang ✅
-- Jumlah Personil di OPD ✅
-- Progress Penanaman ✅
-- Grafik Vertikal ✅
-- Dropdown Kategori (OPD/Desa/Publik) ✅
+- All core features ✅
 
 **P1 (Future):**
 - WhatsApp notification integration
 - Advanced reporting with date filters
 - Bulk status update for partisipasi
+- Interactive map with Leaflet
 
 **P2 (Nice to have):**
-- Interactive map with Leaflet
 - Photo upload for partisipasi evidence
 - Dashboard analytics with trends
 
@@ -89,5 +81,5 @@ Membangun aplikasi web dashboard profesional bergaya e-Government / Smart City u
 
 ### Next Tasks
 1. Add date range filtering for reports
-2. Test multi-step participation form end-to-end
-3. WhatsApp notification integration
+2. WhatsApp notification integration
+3. Interactive map with Leaflet showing all planting locations
