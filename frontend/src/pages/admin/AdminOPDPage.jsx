@@ -209,22 +209,40 @@ export const AdminOPDPage = () => {
           </DialogHeader>
           <div className="space-y-4 py-4">
             <div className="space-y-2">
-              <Label htmlFor="nama">Nama OPD *</Label>
+              <Label htmlFor="kategori">Kategori *</Label>
+              <Select 
+                value={formData.kategori} 
+                onValueChange={(value) => setFormData({ ...formData, kategori: value })}
+              >
+                <SelectTrigger data-testid="select-opd-kategori">
+                  <SelectValue placeholder="Pilih Kategori" />
+                </SelectTrigger>
+                <SelectContent>
+                  {kategoriOptions.map((opt) => (
+                    <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="nama">
+                {formData.kategori === 'DESA' ? 'Nama Desa *' : formData.kategori === 'PUBLIK' ? 'Nama Instansi *' : 'Nama OPD *'}
+              </Label>
               <Input
                 id="nama"
                 value={formData.nama}
                 onChange={(e) => setFormData({ ...formData, nama: e.target.value })}
-                placeholder="Nama OPD"
+                placeholder={formData.kategori === 'DESA' ? 'Nama Desa' : formData.kategori === 'PUBLIK' ? 'Nama Instansi Publik' : 'Nama OPD'}
                 data-testid="input-opd-nama"
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="kode">Kode OPD</Label>
+              <Label htmlFor="kode">Kode</Label>
               <Input
                 id="kode"
                 value={formData.kode}
                 onChange={(e) => setFormData({ ...formData, kode: e.target.value })}
-                placeholder="Kode OPD (opsional)"
+                placeholder="Kode (opsional)"
                 data-testid="input-opd-kode"
               />
             </div>
@@ -234,7 +252,7 @@ export const AdminOPDPage = () => {
                 id="alamat"
                 value={formData.alamat}
                 onChange={(e) => setFormData({ ...formData, alamat: e.target.value })}
-                placeholder="Alamat OPD (opsional)"
+                placeholder="Alamat (opsional)"
                 data-testid="input-opd-alamat"
               />
             </div>
