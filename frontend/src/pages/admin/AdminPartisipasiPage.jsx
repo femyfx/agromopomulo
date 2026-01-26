@@ -14,9 +14,6 @@ export const AdminPartisipasiPage = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [opdFilter, setOpdFilter] = useState('all');
-  const [selectedPartisipasi, setSelectedPartisipasi] = useState(null);
-  const [detailDialogOpen, setDetailDialogOpen] = useState(false);
-  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [importing, setImporting] = useState(false);
   const fileInputRef = useRef(null);
 
