@@ -89,6 +89,15 @@ export const PartisipasiPage = () => {
     }
   };
 
+  const handleKategoriChange = (value) => {
+    setSelectedKategori(value);
+    // Reset opd_id when kategori changes
+    setFormData(prev => ({ ...prev, opd_id: '' }));
+    if (errors.opd_id) {
+      setErrors(prev => ({ ...prev, opd_id: '' }));
+    }
+  };
+
   const handleFileUpload = async (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
