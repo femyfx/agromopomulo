@@ -95,6 +95,26 @@ export const AdminPartisipasiPage = () => {
     }
   };
 
+  // Function to open Google Maps with coordinates
+  const openLocationInMaps = (titikLokasi, lokasiTanam) => {
+    if (titikLokasi) {
+      // Parse coordinates from titik_lokasi (format: "lat, lng")
+      const coords = titikLokasi.split(',').map(c => c.trim());
+      if (coords.length === 2) {
+        const url = `https://www.google.com/maps?q=${coords[0]},${coords[1]}`;
+        window.open(url, '_blank');
+        return;
+      }
+    }
+    // If no coordinates, search by location name
+    if (lokasiTanam) {
+      const url = `https://www.google.com/maps/search/${encodeURIComponent(lokasiTanam + ', Gorontalo Utara')}`;
+      window.open(url, '_blank');
+      return;
+    }
+    toast.error('Lokasi tidak tersedia');
+  };
+
   return (
     <div data-testid="admin-partisipasi-page">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
