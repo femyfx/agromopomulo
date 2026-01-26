@@ -43,11 +43,13 @@ export const PartisipasiPage = () => {
     jenis_pohon: '',
     sumber_bibit: '',
     lokasi_tanam: '',
-    titik_lokasi: '',
+    latitude: '',
+    longitude: '',
     bukti_url: ''
   });
 
   const [errors, setErrors] = useState({});
+  const [gettingLocation, setGettingLocation] = useState(false);
 
   const kategoriOptions = [
     { value: 'OPD', label: 'OPD' },
