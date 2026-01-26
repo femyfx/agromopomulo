@@ -16,9 +16,9 @@ Membangun aplikasi web dashboard profesional bergaya e-Government / Smart City u
 
 ### Core Requirements
 1. ✅ Dashboard dengan statistik pohon
-2. ✅ Form Partisipasi ASN (Email, Nama, NIP, OPD, Alamat, WhatsApp, Jumlah Pohon, Jenis Pohon, Lokasi Tanam)
+2. ✅ Form Partisipasi ASN dengan dropdown kategori (OPD/Desa/Publik)
 3. ✅ Super Admin Panel dengan JWT authentication
-4. ✅ Kelola OPD (CRUD) dengan Jumlah Personil
+4. ✅ Kelola OPD dengan Kategori (OPD, DESA, PUBLIK) dan Jumlah Personil
 5. ✅ Kelola Partisipasi (CRUD + filtering + status management)
 6. ✅ Filter Partisipasi berdasarkan OPD
 7. ✅ Upload Logo Pemda
@@ -28,6 +28,7 @@ Membangun aplikasi web dashboard profesional bergaya e-Government / Smart City u
 11. ✅ Import Excel
 12. ✅ Progress Penanaman per OPD (Target = 10 pohon × Jumlah Personil)
 13. ✅ Grafik Vertikal Bar Chart untuk Kontribusi OPD
+14. ✅ **NEW** Dropdown Kategori di Form Partisipasi (OPD/Desa/Publik)
 
 ### What's Been Implemented (January 2026)
 - Full-stack e-Government dashboard
@@ -39,12 +40,16 @@ Membangun aplikasi web dashboard profesional bergaya e-Government / Smart City u
 - Export PDF/Excel dan Import Excel functionality
 - Real-time statistics dashboard
 - Responsive design with professional e-Government styling
-- **NEW** Jumlah Personil field di OPD management
-- **NEW** Progress Penanaman per OPD dengan rumus: Target = 10 pohon × Personil
-- **NEW** Grafik bar chart diubah menjadi vertikal di Kontribusi OPD dan Laporan
+- **NEW** Kategori instansi: OPD, DESA, PUBLIK
+- **NEW** Form partisipasi dengan dropdown kategori + filter instansi
+
+### OPD Kategori System
+- **OPD**: Organisasi Perangkat Daerah (Dinas, Badan, dll)
+- **DESA**: Pemerintah Desa di wilayah kabupaten
+- **PUBLIK**: Instansi publik lainnya (Sekolah, LSM, dll)
 
 ### Key API Endpoints
-- `/api/opd` - CRUD OPD dengan jumlah_personil
+- `/api/opd` - CRUD OPD dengan jumlah_personil dan kategori
 - `/api/partisipasi` - CRUD Partisipasi
 - `/api/settings` - Settings termasuk tentang page content
 - `/api/stats` - Statistik keseluruhan
@@ -58,7 +63,7 @@ Membangun aplikasi web dashboard profesional bergaya e-Government / Smart City u
 ### Prioritized Backlog
 **P0 (Implemented):**
 - Core dashboard ✅
-- Form partisipasi ✅
+- Form partisipasi dengan kategori ✅
 - Admin CRUD operations ✅
 - Export/Import ✅
 - Filter OPD di partisipasi ✅
@@ -66,6 +71,7 @@ Membangun aplikasi web dashboard profesional bergaya e-Government / Smart City u
 - Jumlah Personil di OPD ✅
 - Progress Penanaman ✅
 - Grafik Vertikal ✅
+- Dropdown Kategori (OPD/Desa/Publik) ✅
 
 **P1 (Future):**
 - WhatsApp notification integration
