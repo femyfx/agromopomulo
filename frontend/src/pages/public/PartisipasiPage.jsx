@@ -229,8 +229,14 @@ export const PartisipasiPage = () => {
 
     setLoading(true);
     try {
+      // Combine latitude and longitude into titik_lokasi
+      const titik_lokasi = formData.latitude && formData.longitude 
+        ? `${formData.latitude}, ${formData.longitude}`
+        : '';
+
       await partisipasiApi.create({
         ...formData,
+        titik_lokasi,
         jumlah_pohon: parseInt(formData.jumlah_pohon)
       });
       setSubmitted(true);
