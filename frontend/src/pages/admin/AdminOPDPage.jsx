@@ -48,11 +48,12 @@ export const AdminOPDPage = () => {
         nama: opd.nama, 
         kode: opd.kode || '', 
         alamat: opd.alamat || '',
-        jumlah_personil: opd.jumlah_personil || 0
+        jumlah_personil: opd.jumlah_personil || 0,
+        kategori: opd.kategori || 'OPD'
       });
     } else {
       setSelectedOPD(null);
-      setFormData({ nama: '', kode: '', alamat: '', jumlah_personil: 0 });
+      setFormData({ nama: '', kode: '', alamat: '', jumlah_personil: 0, kategori: 'OPD' });
     }
     setDialogOpen(true);
   };
