@@ -100,6 +100,48 @@ export const PartisipasiPage = () => {
     }
   };
 
+  const getCurrentLocation = () => {
+    if (!navigator.geolocation) {
+      toast.error('Browser Anda tidak mendukung geolokasi');
+      return;
+    }
+
+    setGettingLocation(true);
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const { latitude, longitude } = position.coords;
+        setFormData(prev => ({
+          ...prev,
+          latitude: latitude.toFixed(6),
+          longitude: longitude.toFixed(6)
+        }));
+        toast.success('Lokasi berhasil didapatkan!');
+        setGettingLocation(false);
+      },
+      (error) => {
+        setGettingLocation(false);
+        switch (error.code) {
+          case error.PERMISSION_DENIED:
+            toast.error('Akses lokasi ditolak. Silakan izinkan akses lokasi di browser Anda.');
+            break;
+          case error.POSITION_UNAVAILABLE:
+            toast.error('Informasi lokasi tidak tersedia.');
+            break;
+          case error.TIMEOUT:
+            toast.error('Waktu permintaan lokasi habis.');
+            break;
+          default:
+            toast.error('Gagal mendapatkan lokasi.');
+        }
+      },
+      {
+        enableHighAccuracy: true,
+        timeout: 10000,
+        maximumAge: 0
+      }
+    );
+  };
+
   const handleFileUpload = async (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
