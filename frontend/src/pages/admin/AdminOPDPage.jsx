@@ -147,7 +147,16 @@ export const AdminOPDPage = () => {
                     <Building2 className="h-6 w-6 text-emerald-600" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <h4 className="font-semibold text-slate-800 truncate">{opd.nama}</h4>
+                    <div className="flex items-center gap-2 mb-1">
+                      <h4 className="font-semibold text-slate-800 truncate">{opd.nama}</h4>
+                      <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${
+                        opd.kategori === 'OPD' ? 'bg-emerald-100 text-emerald-700' :
+                        opd.kategori === 'DESA' ? 'bg-blue-100 text-blue-700' :
+                        'bg-amber-100 text-amber-700'
+                      }`}>
+                        {opd.kategori || 'OPD'}
+                      </span>
+                    </div>
                     {opd.kode && <p className="text-sm text-slate-500">Kode: {opd.kode}</p>}
                     {opd.alamat && <p className="text-sm text-slate-400 truncate">{opd.alamat}</p>}
                     <div className="flex items-center gap-1 mt-1 text-sm text-blue-600">
