@@ -29,6 +29,7 @@ export const PartisipasiPage = () => {
   const [uploading, setUploading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [currentStep, setCurrentStep] = useState(1);
+  const [selectedKategori, setSelectedKategori] = useState('');
   const fileInputRef = useRef(null);
   
   const [formData, setFormData] = useState({
@@ -47,6 +48,17 @@ export const PartisipasiPage = () => {
   });
 
   const [errors, setErrors] = useState({});
+
+  const kategoriOptions = [
+    { value: 'OPD', label: 'OPD' },
+    { value: 'DESA', label: 'Desa' },
+    { value: 'PUBLIK', label: 'Publik' }
+  ];
+
+  // Filter OPD by selected kategori
+  const filteredOpdList = opdList.filter(opd => 
+    !selectedKategori || opd.kategori === selectedKategori
+  );
 
   useEffect(() => {
     loadOPD();
