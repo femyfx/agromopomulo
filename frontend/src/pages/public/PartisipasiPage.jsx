@@ -382,23 +382,62 @@ export const PartisipasiPage = () => {
                     </div>
 
                     <div className="space-y-2">
-                      <Label htmlFor="opd_id">OPD <span className="text-red-500">*</span></Label>
+                      <Label>Kategori Instansi <span className="text-red-500">*</span></Label>
                       <Select 
-                        value={formData.opd_id} 
-                        onValueChange={(value) => handleSelectChange('opd_id', value)}
+                        value={selectedKategori} 
+                        onValueChange={handleKategoriChange}
                       >
-                        <SelectTrigger className={`form-input ${errors.opd_id ? 'border-red-500' : ''}`} data-testid="select-opd">
-                          <SelectValue placeholder="Pilih OPD" />
+                        <SelectTrigger className={`form-input ${!selectedKategori && errors.opd_id ? 'border-red-500' : ''}`} data-testid="select-kategori">
+                          <SelectValue placeholder="Pilih Kategori (OPD/Desa/Publik)" />
                         </SelectTrigger>
                         <SelectContent>
-                          {opdList.map((opd) => (
-                            <SelectItem key={opd.id} value={opd.id}>
-                              {opd.nama}
+                          {kategoriOptions.map((opt) => (
+                            <SelectItem key={opt.value} value={opt.value}>
+                              {opt.label}
                             </SelectItem>
                           ))}
                         </SelectContent>
                       </Select>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="opd_id">
+                        {selectedKategori === 'DESA' ? 'Pilih Desa' : selectedKategori === 'PUBLIK' ? 'Pilih Instansi' : 'Pilih OPD'} <span className="text-red-500">*</span>
+                      </Label>
+                      <Select 
+                        value={formData.opd_id} 
+                        onValueChange={(value) => handleSelectChange('opd_id', value)}
+                        disabled={!selectedKategori}
+                      >
+                        <SelectTrigger className={`form-input ${errors.opd_id ? 'border-red-500' : ''}`} data-testid="select-opd">
+                          <SelectValue placeholder={
+                            !selectedKategori 
+                              ? "Pilih kategori terlebih dahulu" 
+                              : selectedKategori === 'DESA' 
+                                ? "Pilih Desa" 
+                                : selectedKategori === 'PUBLIK' 
+                                  ? "Pilih Instansi Publik" 
+                                  : "Pilih OPD"
+                          } />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {filteredOpdList.length > 0 ? (
+                            filteredOpdList.map((opd) => (
+                              <SelectItem key={opd.id} value={opd.id}>
+                                {opd.nama}
+                              </SelectItem>
+                            ))
+                          ) : (
+                            <SelectItem value="" disabled>
+                              {selectedKategori ? `Tidak ada data ${selectedKategori}` : 'Pilih kategori dahulu'}
+                            </SelectItem>
+                          )}
+                        </SelectContent>
+                      </Select>
                       {errors.opd_id && <p className="text-sm text-red-500">{errors.opd_id}</p>}
+                      {selectedKategori && filteredOpdList.length === 0 && (
+                        <p className="text-sm text-amber-600">Belum ada data {selectedKategori} yang terdaftar</p>
+                      )}
                     </div>
 
                     <div className="space-y-2">
