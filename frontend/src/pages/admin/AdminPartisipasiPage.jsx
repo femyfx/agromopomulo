@@ -238,7 +238,7 @@ export const AdminPartisipasiPage = () => {
                     <th>Pohon</th>
                     <th>Jenis</th>
                     <th>Status</th>
-                    <th>Aksi</th>
+                    <th>Cek Lokasi</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -256,38 +256,17 @@ export const AdminPartisipasiPage = () => {
                         </span>
                       </td>
                       <td>
-                        <div className="flex items-center gap-2">
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => { setSelectedPartisipasi(p); setDetailDialogOpen(true); }}
-                            data-testid={`view-${p.id}`}
-                          >
-                            <Eye className="h-4 w-4" />
-                          </Button>
-                          <Select 
-                            value={p.status} 
-                            onValueChange={(value) => handleStatusChange(p.id, value)}
-                          >
-                            <SelectTrigger className="w-[100px] h-8 text-xs">
-                              <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="pending">Pending</SelectItem>
-                              <SelectItem value="verified">Verified</SelectItem>
-                              <SelectItem value="rejected">Rejected</SelectItem>
-                            </SelectContent>
-                          </Select>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => { setSelectedPartisipasi(p); setDeleteDialogOpen(true); }}
-                            className="text-red-600 hover:text-red-700"
-                            data-testid={`delete-${p.id}`}
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
-                        </div>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => openLocationInMaps(p.titik_lokasi, p.lokasi_tanam)}
+                          className="text-blue-600 border-blue-300 hover:bg-blue-50"
+                          data-testid={`location-${p.id}`}
+                        >
+                          <MapPin className="h-4 w-4 mr-1" />
+                          <span className="hidden sm:inline">Lihat Maps</span>
+                          <ExternalLink className="h-3 w-3 ml-1" />
+                        </Button>
                       </td>
                     </tr>
                   ))}
@@ -303,104 +282,6 @@ export const AdminPartisipasiPage = () => {
           </CardContent>
         </Card>
       )}
-
-      {/* Detail Dialog */}
-      <Dialog open={detailDialogOpen} onOpenChange={setDetailDialogOpen}>
-        <DialogContent className="max-w-lg">
-          <DialogHeader>
-            <DialogTitle>Detail Partisipasi</DialogTitle>
-          </DialogHeader>
-          {selectedPartisipasi && (
-            <div className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <p className="text-sm text-slate-500">Nama Lengkap</p>
-                  <p className="font-medium">{selectedPartisipasi.nama_lengkap}</p>
-                </div>
-                <div>
-                  <p className="text-sm text-slate-500">NIP</p>
-                  <p className="font-medium">{selectedPartisipasi.nip}</p>
-                </div>
-                <div>
-                  <p className="text-sm text-slate-500">Email</p>
-                  <p className="font-medium">{selectedPartisipasi.email}</p>
-                </div>
-                <div>
-                  <p className="text-sm text-slate-500">No. WhatsApp</p>
-                  <p className="font-medium">{selectedPartisipasi.nomor_whatsapp}</p>
-                </div>
-                <div className="col-span-2">
-                  <p className="text-sm text-slate-500">OPD</p>
-                  <p className="font-medium">{selectedPartisipasi.opd_nama}</p>
-                </div>
-                <div className="col-span-2">
-                  <p className="text-sm text-slate-500">Alamat</p>
-                  <p className="font-medium">{selectedPartisipasi.alamat}</p>
-                </div>
-                <div>
-                  <p className="text-sm text-slate-500">Jumlah Pohon</p>
-                  <p className="font-bold text-emerald-600 text-xl">{selectedPartisipasi.jumlah_pohon}</p>
-                </div>
-                <div>
-                  <p className="text-sm text-slate-500">Jenis Pohon</p>
-                  <p className="font-medium">{selectedPartisipasi.jenis_pohon}</p>
-                </div>
-                <div className="col-span-2">
-                  <p className="text-sm text-slate-500">Sumber Bibit</p>
-                  <p className="font-medium">{selectedPartisipasi.sumber_bibit || '-'}</p>
-                </div>
-                <div className="col-span-2">
-                  <p className="text-sm text-slate-500">Lokasi Tanam</p>
-                  <p className="font-medium">{selectedPartisipasi.lokasi_tanam}</p>
-                </div>
-                <div className="col-span-2">
-                  <p className="text-sm text-slate-500">Titik Koordinat</p>
-                  <p className="font-medium">{selectedPartisipasi.titik_lokasi || '-'}</p>
-                </div>
-                {selectedPartisipasi.bukti_url && (
-                  <div className="col-span-2">
-                    <p className="text-sm text-slate-500 mb-2">Bukti Penanaman</p>
-                    <img 
-                      src={selectedPartisipasi.bukti_url} 
-                      alt="Bukti" 
-                      className="w-full max-h-48 object-cover rounded-lg"
-                    />
-                  </div>
-                )}
-                <div>
-                  <p className="text-sm text-slate-500">Status</p>
-                  <span className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(selectedPartisipasi.status)}`}>
-                    {getStatusIcon(selectedPartisipasi.status)}
-                    {selectedPartisipasi.status}
-                  </span>
-                </div>
-                <div>
-                  <p className="text-sm text-slate-500">Tanggal Daftar</p>
-                  <p className="font-medium">{new Date(selectedPartisipasi.created_at).toLocaleDateString('id-ID')}</p>
-                </div>
-              </div>
-            </div>
-          )}
-        </DialogContent>
-      </Dialog>
-
-      {/* Delete Confirmation */}
-      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Hapus Partisipasi?</AlertDialogTitle>
-            <AlertDialogDescription>
-              Apakah Anda yakin ingin menghapus data partisipasi "{selectedPartisipasi?.nama_lengkap}"?
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Batal</AlertDialogCancel>
-            <AlertDialogAction onClick={handleDelete} className="bg-red-600 hover:bg-red-700">
-              Hapus
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
     </div>
   );
 };
