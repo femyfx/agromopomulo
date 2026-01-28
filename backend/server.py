@@ -829,6 +829,7 @@ async def get_progress():
         progress_list.append({
             "opd_id": opd["id"],
             "opd_nama": opd["nama"],
+            "kategori": opd.get("kategori", "OPD"),
             "jumlah_personil": jumlah_personil,
             "target_pohon": target,
             "pohon_tertanam": planted,
