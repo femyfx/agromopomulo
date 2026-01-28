@@ -364,6 +364,67 @@ async def delete_opd(opd_id: str, current_user: dict = Depends(get_current_user)
         raise HTTPException(status_code=404, detail="OPD tidak ditemukan")
     return {"message": "OPD berhasil dihapus"}
 
+@api_router.post("/opd/import")
+async def import_opd_excel(
+    file: UploadFile = File(...),
+    kategori: str = Form(...),
+    current_user: dict = Depends(get_current_user)
+):
+    """Import OPD data from Excel file"""
+    import pandas as pd
+    import io
+    
+    if not file.filename.endswith(('.xlsx', '.xls')):
+        raise HTTPException(status_code=400, detail="File harus berformat Excel (.xlsx atau .xls)")
+    
+    try:
+        contents = await file.read()
+        df = pd.read_excel(io.BytesIO(contents))
+        
+        # Normalize column names (lowercase and strip whitespace)
+        df.columns = df.columns.str.lower().str.strip()
+        
+        # Check for required column 'nama'
+        if 'nama' not in df.columns:
+            raise HTTPException(status_code=400, detail="Kolom 'Nama' wajib ada dalam file Excel")
+        
+        imported_count = 0
+        skipped_count = 0
+        
+        for _, row in df.iterrows():
+            nama = str(row.get('nama', '')).strip()
+            if not nama or nama == 'nan':
+                skipped_count += 1
+                continue
+                
+            # Check if OPD with same name and kategori already exists
+            existing = await db.opd.find_one({"nama": nama, "kategori": kategori})
+            if existing:
+                skipped_count += 1
+                continue
+            
+            opd_doc = {
+                "id": str(uuid.uuid4()),
+                "nama": nama,
+                "kode": str(row.get('kode', '')).strip() if pd.notna(row.get('kode')) else '',
+                "alamat": str(row.get('alamat', '')).strip() if pd.notna(row.get('alamat')) else '',
+                "jumlah_personil": int(row.get('jumlah_personil', 0)) if pd.notna(row.get('jumlah_personil')) else 0,
+                "kategori": kategori,
+                "created_at": datetime.now(timezone.utc).isoformat()
+            }
+            
+            await db.opd.insert_one(opd_doc)
+            imported_count += 1
+        
+        return {
+            "message": f"Import berhasil! {imported_count} data ditambahkan, {skipped_count} data dilewati (duplikat/kosong)",
+            "imported": imported_count,
+            "skipped": skipped_count
+        }
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Gagal import: {str(e)}")
+
 # ============== PARTISIPASI ENDPOINTS ==============
 
 @api_router.get("/partisipasi", response_model=List[PartisipasiResponse])
