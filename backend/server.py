@@ -540,7 +540,17 @@ async def update_settings(data: SettingsUpdate, current_user: dict = Depends(get
 
 @api_router.post("/upload/image")
 async def upload_image(file: UploadFile = File(...)):
+    # Validate file size (max 2MB)
+    MAX_FILE_SIZE = 2 * 1024 * 1024  # 2MB
     contents = await file.read()
+    
+    if len(contents) > MAX_FILE_SIZE:
+        raise HTTPException(status_code=400, detail="Ukuran file maksimal 2MB")
+    
+    # Validate file type
+    if not file.content_type or not file.content_type.startswith('image/'):
+        raise HTTPException(status_code=400, detail="File harus berupa gambar")
+    
     base64_data = base64.b64encode(contents).decode('utf-8')
     content_type = file.content_type or 'image/png'
     data_url = f"data:{content_type};base64,{base64_data}"
@@ -548,7 +558,13 @@ async def upload_image(file: UploadFile = File(...)):
 
 @api_router.post("/settings/upload-logo")
 async def upload_logo(file: UploadFile = File(...), current_user: dict = Depends(get_current_user)):
+    # Validate file size (max 2MB)
+    MAX_FILE_SIZE = 2 * 1024 * 1024  # 2MB
     contents = await file.read()
+    
+    if len(contents) > MAX_FILE_SIZE:
+        raise HTTPException(status_code=400, detail="Ukuran file maksimal 2MB")
+    
     base64_data = base64.b64encode(contents).decode('utf-8')
     content_type = file.content_type or 'image/png'
     data_url = f"data:{content_type};base64,{base64_data}"
