@@ -1,9 +1,9 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback, memo } from 'react';
 import { X, Newspaper, ChevronRight } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { beritaApi, settingsApi } from '../lib/api';
 
-export const NewsPopup = () => {
+export const NewsPopup = memo(() => {
   const [news, setNews] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isVisible, setIsVisible] = useState(false);
@@ -11,11 +11,7 @@ export const NewsPopup = () => {
   const [interval, setIntervalTime] = useState(5);
   const [selectedNews, setSelectedNews] = useState(null);
 
-  useEffect(() => {
-    loadData();
-  }, []);
-
-  const loadData = async () => {
+  const loadData = useCallback(async () => {
     try {
       const [beritaRes, settingsRes] = await Promise.all([
         beritaApi.getActive(),
@@ -33,7 +29,11 @@ export const NewsPopup = () => {
     } catch (error) {
       console.error('Failed to load news:', error);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    loadData();
+  }, [loadData]);
 
   useEffect(() => {
     if (news.length === 0 || isDismissed) return;
@@ -49,19 +49,23 @@ export const NewsPopup = () => {
     return () => clearInterval(timer);
   }, [news, interval, isDismissed]);
 
-  const handleDismiss = () => {
+  const handleDismiss = useCallback(() => {
     setIsVisible(false);
-  };
+  }, []);
 
-  const handleDismissAll = () => {
+  const handleDismissAll = useCallback(() => {
     setIsDismissed(true);
     setIsVisible(false);
-  };
+  }, []);
 
-  const handleReadMore = (newsItem) => {
+  const handleReadMore = useCallback((newsItem) => {
     setSelectedNews(newsItem);
     setIsVisible(false);
-  };
+  }, []);
+
+  const closeModal = useCallback(() => {
+    setSelectedNews(null);
+  }, []);
 
   const currentNews = news[currentIndex];
 
@@ -99,6 +103,10 @@ export const NewsPopup = () => {
                 <img 
                   src={currentNews.gambar_url} 
                   alt={currentNews.judul}
+                  width={288}
+                  height={128}
+                  loading="lazy"
+                  decoding="async"
                   className="w-full h-32 object-cover rounded-lg mb-3"
                 />
               )}
@@ -143,7 +151,7 @@ export const NewsPopup = () => {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50"
-            onClick={() => setSelectedNews(null)}
+            onClick={closeModal}
           >
             <motion.div
               initial={{ scale: 0.9, opacity: 0 }}
@@ -156,6 +164,10 @@ export const NewsPopup = () => {
                 <img 
                   src={selectedNews.gambar_url} 
                   alt={selectedNews.judul}
+                  width={672}
+                  height={256}
+                  loading="lazy"
+                  decoding="async"
                   className="w-full h-64 object-cover"
                 />
               )}
@@ -165,7 +177,7 @@ export const NewsPopup = () => {
                     {selectedNews.judul}
                   </h2>
                   <button
-                    onClick={() => setSelectedNews(null)}
+                    onClick={closeModal}
                     className="p-2 hover:bg-slate-100 rounded-full transition-colors"
                   >
                     <X className="h-5 w-5" />
@@ -190,4 +202,6 @@ export const NewsPopup = () => {
       </AnimatePresence>
     </>
   );
-};
+});
+
+NewsPopup.displayName = 'NewsPopup';
