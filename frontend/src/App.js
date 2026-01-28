@@ -25,6 +25,8 @@ import { AdminSettingsPage } from "./pages/admin/AdminSettingsPage";
 import { AdminGaleriPage } from "./pages/admin/AdminGaleriPage";
 import { AdminEdukasiPage } from "./pages/admin/AdminEdukasiPage";
 import { AdminLaporanPage } from "./pages/admin/AdminLaporanPage";
+import { AdminAgendaPage } from "./pages/admin/AdminAgendaPage";
+import { AdminBeritaPage } from "./pages/admin/AdminBeritaPage";
 
 // Protected Route Component
 const ProtectedRoute = ({ children }) => {
