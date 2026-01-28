@@ -439,7 +439,7 @@ export const PartisipasiPage = () => {
                         onValueChange={handleKategoriChange}
                       >
                         <SelectTrigger className={`form-input ${!selectedKategori && errors.opd_id ? 'border-red-500' : ''}`} data-testid="select-kategori">
-                          <SelectValue placeholder="Pilih Kategori (OPD/Desa/Publik)" />
+                          <SelectValue placeholder="Pilih Kategori (OPD/Desa/Kecamatan/Publik)" />
                         </SelectTrigger>
                         <SelectContent>
                           {kategoriOptions.map((opt) => (
