@@ -48,6 +48,25 @@ export const edukasiApi = {
   delete: (id) => axios.delete(`${API}/edukasi/${id}`),
 };
 
+// Agenda API
+export const agendaApi = {
+  getAll: () => axios.get(`${API}/agenda`),
+  getUpcoming: () => axios.get(`${API}/agenda/upcoming`),
+  create: (data) => axios.post(`${API}/agenda`, data),
+  update: (id, data) => axios.put(`${API}/agenda/${id}`, data),
+  delete: (id) => axios.delete(`${API}/agenda/${id}`),
+};
+
+// Berita API
+export const beritaApi = {
+  getAll: () => axios.get(`${API}/berita`),
+  getActive: () => axios.get(`${API}/berita/active`),
+  getById: (id) => axios.get(`${API}/berita/${id}`),
+  create: (data) => axios.post(`${API}/berita`, data),
+  update: (id, data) => axios.put(`${API}/berita/${id}`, data),
+  delete: (id) => axios.delete(`${API}/berita/${id}`),
+};
+
 // Stats API
 export const statsApi = {
   get: () => axios.get(`${API}/stats`),
