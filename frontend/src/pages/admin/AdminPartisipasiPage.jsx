@@ -194,32 +194,34 @@ export const AdminPartisipasiPage = () => {
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
         <Card className="stat-card">
           <CardContent className="p-4 text-center">
-            <p className="text-2xl font-bold text-slate-800">{partisipasiList.length}</p>
-            <p className="text-sm text-slate-500">Total</p>
-          </CardContent>
-        </Card>
-        <Card className="stat-card">
-          <CardContent className="p-4 text-center">
-            <p className="text-2xl font-bold text-yellow-600">
-              {partisipasiList.filter(p => p.status === 'pending').length}
+            <p className="text-2xl font-bold text-slate-800">{filteredList.length}</p>
+            <p className="text-sm text-slate-500">
+              {kategoriFilter === 'all' ? 'Total Partisipan' : `Partisipan ${kategoriOptions.find(o => o.value === kategoriFilter)?.label}`}
             </p>
-            <p className="text-sm text-slate-500">Pending</p>
-          </CardContent>
-        </Card>
-        <Card className="stat-card">
-          <CardContent className="p-4 text-center">
-            <p className="text-2xl font-bold text-green-600">
-              {partisipasiList.filter(p => p.status === 'verified').length}
-            </p>
-            <p className="text-sm text-slate-500">Verified</p>
           </CardContent>
         </Card>
         <Card className="stat-card">
           <CardContent className="p-4 text-center">
             <p className="text-2xl font-bold text-emerald-600">
-              {partisipasiList.reduce((sum, p) => sum + p.jumlah_pohon, 0).toLocaleString('id-ID')}
+              {filteredList.reduce((sum, p) => sum + p.jumlah_pohon, 0).toLocaleString('id-ID')}
             </p>
             <p className="text-sm text-slate-500">Total Pohon</p>
+          </CardContent>
+        </Card>
+        <Card className="stat-card">
+          <CardContent className="p-4 text-center">
+            <p className="text-2xl font-bold text-blue-600">{filteredOpdList.length}</p>
+            <p className="text-sm text-slate-500">
+              {kategoriFilter === 'all' ? 'Total OPD/Instansi' : `Jumlah ${kategoriOptions.find(o => o.value === kategoriFilter)?.label}`}
+            </p>
+          </CardContent>
+        </Card>
+        <Card className="stat-card">
+          <CardContent className="p-4 text-center">
+            <p className="text-2xl font-bold text-amber-600">
+              {filteredList.length > 0 ? Math.round(filteredList.reduce((sum, p) => sum + p.jumlah_pohon, 0) / filteredList.length) : 0}
+            </p>
+            <p className="text-sm text-slate-500">Rata-rata Pohon/Orang</p>
           </CardContent>
         </Card>
       </div>
