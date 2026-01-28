@@ -321,6 +321,126 @@ export const HomePage = () => {
         </section>
       )}
 
+      {/* Agenda Section */}
+      <section className="py-20 bg-slate-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <p className="overline mb-4">KEGIATAN</p>
+            <h2 className="section-title">Agenda Penanaman</h2>
+            <p className="text-slate-600 mt-4">Jadwal kegiatan penanaman yang akan datang</p>
+          </div>
+          
+          {agenda.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {agenda.slice(0, 6).map((item, index) => (
+                <motion.div
+                  key={item.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: index * 0.1 }}
+                >
+                  <Card className="stat-card h-full hover:shadow-lg transition-shadow">
+                    <CardContent className="p-6">
+                      <div className="flex items-start gap-4">
+                        <div className="flex-shrink-0">
+                          <div className="h-14 w-14 rounded-xl bg-emerald-100 flex flex-col items-center justify-center">
+                            <span className="text-xs font-medium text-emerald-600 uppercase">
+                              {new Date(item.tanggal).toLocaleDateString('id-ID', { month: 'short' })}
+                            </span>
+                            <span className="text-xl font-bold text-emerald-700">
+                              {new Date(item.tanggal).getDate()}
+                            </span>
+                          </div>
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <span className={`inline-block px-2 py-0.5 rounded-full text-xs font-medium mb-2 ${
+                            item.status === 'ongoing' ? 'bg-green-100 text-green-700' :
+                            item.status === 'completed' ? 'bg-gray-100 text-gray-700' :
+                            'bg-blue-100 text-blue-700'
+                          }`}>
+                            {item.status === 'ongoing' ? 'Berlangsung' : item.status === 'completed' ? 'Selesai' : 'Akan Datang'}
+                          </span>
+                          <h3 className="font-bold text-slate-800 mb-1 line-clamp-2">{item.nama_kegiatan}</h3>
+                          <div className="flex items-center gap-1 text-sm text-slate-500">
+                            <Clock className="h-3.5 w-3.5" />
+                            <span>{item.hari}</span>
+                          </div>
+                          <div className="flex items-center gap-1 text-sm text-slate-500 mt-1">
+                            <MapPin className="h-3.5 w-3.5" />
+                            <span className="truncate">Kec. {item.lokasi_kecamatan}, Desa {item.lokasi_desa}</span>
+                          </div>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </motion.div>
+              ))}
+            </div>
+          ) : (
+            <Card className="stat-card">
+              <CardContent className="p-12 text-center">
+                <Calendar className="h-12 w-12 text-slate-300 mx-auto mb-4" />
+                <p className="text-slate-500">Belum ada agenda kegiatan</p>
+              </CardContent>
+            </Card>
+          )}
+        </div>
+      </section>
+
+      {/* Berita Section */}
+      <section className="py-20 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <p className="overline mb-4">INFORMASI</p>
+            <h2 className="section-title">Berita Terbaru</h2>
+            <p className="text-slate-600 mt-4">Update terkini seputar program Agro Mopomulo</p>
+          </div>
+          
+          {berita.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {berita.slice(0, 6).map((item, index) => (
+                <motion.div
+                  key={item.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: index * 0.1 }}
+                >
+                  <Card className="stat-card h-full hover:shadow-lg transition-shadow overflow-hidden group cursor-pointer">
+                    {item.gambar_url && (
+                      <div className="h-48 overflow-hidden">
+                        <img 
+                          src={item.gambar_url} 
+                          alt={item.judul}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                        />
+                      </div>
+                    )}
+                    <CardContent className="p-6">
+                      <p className="text-xs text-slate-400 mb-2">
+                        {new Date(item.created_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}
+                      </p>
+                      <h3 className="font-bold text-slate-800 mb-2 line-clamp-2 group-hover:text-emerald-600 transition-colors">
+                        {item.judul}
+                      </h3>
+                      <p className="text-sm text-slate-500 line-clamp-3">{item.deskripsi_singkat}</p>
+                    </CardContent>
+                  </Card>
+                </motion.div>
+              ))}
+            </div>
+          ) : (
+            <Card className="stat-card">
+              <CardContent className="p-12 text-center">
+                <Newspaper className="h-12 w-12 text-slate-300 mx-auto mb-4" />
+                <p className="text-slate-500">Belum ada berita</p>
+              </CardContent>
+            </Card>
+          )}
+        </div>
+      </section>
+
       {/* CTA Section */}
       <section className="py-20 bg-gradient-to-br from-emerald-600 to-emerald-700">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
