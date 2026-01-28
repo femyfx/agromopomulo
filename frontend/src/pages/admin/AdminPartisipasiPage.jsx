@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { Search, FileUp, CheckCircle, XCircle, Clock, Filter, Building2, MapPin, ExternalLink } from 'lucide-react';
+import { Search, FileUp, Filter, Building2, MapPin, ExternalLink, TreePine } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/card';
 import { Button } from '../../components/ui/button';
 import { Input } from '../../components/ui/input';
