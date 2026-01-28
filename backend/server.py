@@ -441,10 +441,14 @@ async def get_settings():
             "tentang_title": "Program Agro Mopomulo",
             "tentang_content": "Mopomulo berasal dari bahasa Gorontalo yang berarti \"menanam\". Program Agro Mopomulo adalah inisiatif Pemerintah Kabupaten Gorontalo Utara untuk meningkatkan kesadaran dan partisipasi masyarakat dalam pelestarian lingkungan.\n\nDengan konsep \"Satu Orang Sepuluh Pohon\", program ini menargetkan setiap ASN dan warga untuk berkontribusi menanam minimal 10 pohon, baik pohon produktif maupun pohon pelindung.",
             "tentang_visi": "Mewujudkan Kabupaten Gorontalo Utara sebagai daerah yang hijau, asri, dan berkelanjutan dengan partisipasi aktif seluruh lapisan masyarakat dalam pelestarian lingkungan.",
-            "tentang_misi": "- Meningkatkan kesadaran lingkungan masyarakat\n- Memperluas area hijau di seluruh wilayah\n- Mendukung ketahanan pangan daerah\n- Membangun budaya peduli lingkungan"
+            "tentang_misi": "- Meningkatkan kesadaran lingkungan masyarakat\n- Memperluas area hijau di seluruh wilayah\n- Mendukung ketahanan pangan daerah\n- Membangun budaya peduli lingkungan",
+            "berita_popup_interval": 5
         }
         await db.settings.insert_one(default_settings)
         return default_settings
+    # Ensure berita_popup_interval exists
+    if "berita_popup_interval" not in settings:
+        settings["berita_popup_interval"] = 5
     return settings
 
 @api_router.put("/settings", response_model=SettingsResponse)
@@ -467,7 +471,8 @@ async def update_settings(data: SettingsUpdate, current_user: dict = Depends(get
             "tentang_title": data.tentang_title or "Program Agro Mopomulo",
             "tentang_content": data.tentang_content,
             "tentang_visi": data.tentang_visi,
-            "tentang_misi": data.tentang_misi
+            "tentang_misi": data.tentang_misi,
+            "berita_popup_interval": data.berita_popup_interval or 5
         }
         await db.settings.insert_one(new_settings)
         return new_settings
