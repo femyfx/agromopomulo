@@ -192,11 +192,11 @@ export const AdminDashboardPage = () => {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="h-[420px]">
+              <div className="h-[450px]">
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart 
                     data={stats.opd_stats.slice(0, 5)} 
-                    margin={{ top: 20, right: 30, left: 20, bottom: 140 }}
+                    margin={{ top: 20, right: 30, left: 20, bottom: 160 }}
                   >
                     <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
                     <XAxis 
@@ -205,8 +205,9 @@ export const AdminDashboardPage = () => {
                       fontSize={10}
                       angle={-45}
                       textAnchor="end"
-                      height={140}
+                      height={160}
                       interval={0}
+                      tick={{ dy: 10 }}
                       tickFormatter={(value) => value.length > 18 ? value.slice(0, 18) + '...' : value}
                     />
                     <YAxis 
