@@ -453,7 +453,7 @@ export const PartisipasiPage = () => {
 
                     <div className="space-y-2">
                       <Label htmlFor="opd_id">
-                        {selectedKategori === 'DESA' ? 'Pilih Desa' : selectedKategori === 'PUBLIK' ? 'Pilih Instansi' : 'Pilih OPD'} <span className="text-red-500">*</span>
+                        {selectedKategori === 'DESA' ? 'Pilih Desa' : selectedKategori === 'KECAMATAN' ? 'Pilih Kecamatan' : selectedKategori === 'PUBLIK' ? 'Pilih Instansi' : 'Pilih OPD'} <span className="text-red-500">*</span>
                       </Label>
                       <Select 
                         value={formData.opd_id} 
@@ -466,9 +466,11 @@ export const PartisipasiPage = () => {
                               ? "Pilih kategori terlebih dahulu" 
                               : selectedKategori === 'DESA' 
                                 ? "Pilih Desa" 
-                                : selectedKategori === 'PUBLIK' 
-                                  ? "Pilih Instansi Publik" 
-                                  : "Pilih OPD"
+                                : selectedKategori === 'KECAMATAN'
+                                  ? "Pilih Kecamatan"
+                                  : selectedKategori === 'PUBLIK' 
+                                    ? "Pilih Instansi Publik" 
+                                    : "Pilih OPD"
                           } />
                         </SelectTrigger>
                         <SelectContent>
