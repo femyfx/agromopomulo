@@ -443,10 +443,14 @@ export const AdminLaporanPage = () => {
                           <Progress 
                             value={item.progress_persen} 
                             className="flex-1 h-3"
+                            indicatorClassName={
+                              item.progress_persen >= 71 ? 'bg-emerald-500' :
+                              item.progress_persen >= 51 ? 'bg-amber-500' : 'bg-red-500'
+                            }
                           />
                           <span className={`text-sm font-semibold min-w-[50px] text-right ${
-                            item.progress_persen >= 100 ? 'text-emerald-600' :
-                            item.progress_persen >= 50 ? 'text-amber-600' : 'text-red-500'
+                            item.progress_persen >= 71 ? 'text-emerald-600' :
+                            item.progress_persen >= 51 ? 'text-amber-600' : 'text-red-500'
                           }`}>
                             {item.progress_persen}%
                           </span>
