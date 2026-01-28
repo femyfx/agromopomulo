@@ -16,13 +16,19 @@ export const AdminOPDPage = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [dialogOpen, setDialogOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [importDialogOpen, setImportDialogOpen] = useState(false);
   const [selectedOPD, setSelectedOPD] = useState(null);
   const [formData, setFormData] = useState({ nama: '', kode: '', alamat: '', jumlah_personil: 0, kategori: 'OPD' });
   const [saving, setSaving] = useState(false);
+  const [importKategori, setImportKategori] = useState('');
+  const [importFile, setImportFile] = useState(null);
+  const [importing, setImporting] = useState(false);
+  const fileInputRef = useRef(null);
 
   const kategoriOptions = [
     { value: 'OPD', label: 'OPD', color: 'bg-emerald-100 text-emerald-700' },
     { value: 'DESA', label: 'Desa', color: 'bg-blue-100 text-blue-700' },
+    { value: 'KECAMATAN', label: 'Kecamatan', color: 'bg-purple-100 text-purple-700' },
     { value: 'PUBLIK', label: 'Publik', color: 'bg-amber-100 text-amber-700' }
   ];
 
