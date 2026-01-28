@@ -12,10 +12,18 @@ export const AdminPartisipasiPage = () => {
   const [opdList, setOpdList] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
-  const [statusFilter, setStatusFilter] = useState('all');
+  const [kategoriFilter, setKategoriFilter] = useState('all');
   const [opdFilter, setOpdFilter] = useState('all');
   const [importing, setImporting] = useState(false);
   const fileInputRef = useRef(null);
+
+  const kategoriOptions = [
+    { value: 'all', label: 'Semua Kategori' },
+    { value: 'OPD', label: 'OPD' },
+    { value: 'DESA', label: 'Desa' },
+    { value: 'KECAMATAN', label: 'Kecamatan' },
+    { value: 'PUBLIK', label: 'Publik' }
+  ];
 
   useEffect(() => {
     loadData();
