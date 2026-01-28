@@ -240,42 +240,50 @@ export const AdminPartisipasiPage = () => {
                   <tr>
                     <th>Nama</th>
                     <th>NIP</th>
-                    <th>OPD</th>
+                    <th>OPD/Instansi</th>
+                    <th>Kategori</th>
                     <th>Pohon</th>
                     <th>Jenis</th>
-                    <th>Status</th>
                     <th>Cek Lokasi</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {filteredList.map((p) => (
-                    <tr key={p.id}>
-                      <td className="font-medium">{p.nama_lengkap}</td>
-                      <td>{p.nip}</td>
-                      <td className="max-w-[150px] truncate">{p.opd_nama}</td>
-                      <td className="font-semibold text-emerald-600">{p.jumlah_pohon}</td>
-                      <td>{p.jenis_pohon}</td>
-                      <td>
-                        <span className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(p.status)}`}>
-                          {getStatusIcon(p.status)}
-                          {p.status}
-                        </span>
-                      </td>
-                      <td>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => openLocationInMaps(p.titik_lokasi, p.lokasi_tanam)}
-                          className="text-blue-600 border-blue-300 hover:bg-blue-50"
-                          data-testid={`location-${p.id}`}
-                        >
-                          <MapPin className="h-4 w-4 mr-1" />
-                          <span className="hidden sm:inline">Lihat Maps</span>
-                          <ExternalLink className="h-3 w-3 ml-1" />
-                        </Button>
-                      </td>
-                    </tr>
-                  ))}
+                  {filteredList.map((p) => {
+                    const opd = opdList.find(o => o.id === p.opd_id);
+                    const kategori = opd?.kategori || 'OPD';
+                    return (
+                      <tr key={p.id}>
+                        <td className="font-medium">{p.nama_lengkap}</td>
+                        <td>{p.nip}</td>
+                        <td className="max-w-[150px] truncate">{p.opd_nama}</td>
+                        <td>
+                          <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${
+                            kategori === 'OPD' ? 'bg-emerald-100 text-emerald-700' :
+                            kategori === 'DESA' ? 'bg-blue-100 text-blue-700' :
+                            kategori === 'KECAMATAN' ? 'bg-purple-100 text-purple-700' :
+                            'bg-amber-100 text-amber-700'
+                          }`}>
+                            {kategori}
+                          </span>
+                        </td>
+                        <td className="font-semibold text-emerald-600">{p.jumlah_pohon}</td>
+                        <td>{p.jenis_pohon}</td>
+                        <td>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => openLocationInMaps(p.titik_lokasi, p.lokasi_tanam)}
+                            className="text-blue-600 border-blue-300 hover:bg-blue-50"
+                            data-testid={`location-${p.id}`}
+                          >
+                            <MapPin className="h-4 w-4 mr-1" />
+                            <span className="hidden sm:inline">Lihat Maps</span>
+                            <ExternalLink className="h-3 w-3 ml-1" />
+                          </Button>
+                        </td>
+                      </tr>
+                    );
+                  })}
                 </tbody>
               </table>
             </div>
@@ -284,7 +292,13 @@ export const AdminPartisipasiPage = () => {
       ) : (
         <Card className="stat-card">
           <CardContent className="p-12 text-center">
-            <p className="text-slate-500">Tidak ada data partisipasi</p>
+            <TreePine className="h-12 w-12 text-slate-300 mx-auto mb-4" />
+            <p className="text-slate-500">
+              {kategoriFilter !== 'all' 
+                ? `Tidak ada data partisipasi untuk kategori ${kategoriOptions.find(o => o.value === kategoriFilter)?.label}`
+                : 'Tidak ada data partisipasi'
+              }
+            </p>
           </CardContent>
         </Card>
       )}
