@@ -9,6 +9,14 @@ export const opdApi = {
   create: (data) => axios.post(`${API}/opd`, data),
   update: (id, data) => axios.put(`${API}/opd/${id}`, data),
   delete: (id) => axios.delete(`${API}/opd/${id}`),
+  importExcel: (file, kategori) => {
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('kategori', kategori);
+    return axios.post(`${API}/opd/import`, formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
+  },
 };
 
 // Partisipasi API
