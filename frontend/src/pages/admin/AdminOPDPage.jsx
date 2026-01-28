@@ -354,6 +354,81 @@ export const AdminOPDPage = () => {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/* Import Dialog */}
+      <Dialog open={importDialogOpen} onOpenChange={setImportDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Import Data dari Excel</DialogTitle>
+            <DialogDescription>
+              Pilih kategori dan upload file Excel untuk mengimport data OPD/Desa/Kecamatan/Publik secara massal.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label>Pilih Kategori *</Label>
+              <Select value={importKategori} onValueChange={setImportKategori}>
+                <SelectTrigger data-testid="select-import-kategori">
+                  <SelectValue placeholder="Pilih Kategori" />
+                </SelectTrigger>
+                <SelectContent>
+                  {kategoriOptions.map((opt) => (
+                    <SelectItem key={opt.value} value={opt.value}>
+                      <div className="flex items-center gap-2">
+                        <span className={`w-2 h-2 rounded-full ${opt.color.split(' ')[0]}`}></span>
+                        {opt.label}
+                      </div>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <p className="text-xs text-slate-500">Semua data yang diimport akan masuk ke kategori ini</p>
+            </div>
+            
+            <div className="space-y-2">
+              <Label>File Excel *</Label>
+              <Input
+                type="file"
+                accept=".xlsx,.xls,.csv"
+                onChange={(e) => setImportFile(e.target.files[0])}
+                ref={fileInputRef}
+                data-testid="input-import-file"
+              />
+              <p className="text-xs text-slate-500">Format: .xlsx, .xls, atau .csv</p>
+            </div>
+
+            <div className="bg-slate-50 rounded-lg p-4">
+              <h4 className="text-sm font-medium text-slate-700 mb-2">Format Kolom Excel:</h4>
+              <ul className="text-xs text-slate-500 space-y-1">
+                <li>• <strong>nama</strong> (wajib) - Nama OPD/Desa/Kecamatan/Instansi</li>
+                <li>• <strong>kode</strong> (opsional) - Kode identifikasi</li>
+                <li>• <strong>alamat</strong> (opsional) - Alamat lengkap</li>
+                <li>• <strong>jumlah_personil</strong> (opsional) - Jumlah personil/ASN</li>
+              </ul>
+              <Button 
+                variant="link" 
+                size="sm" 
+                className="p-0 h-auto mt-2 text-emerald-600"
+                onClick={handleDownloadTemplate}
+              >
+                <Download className="h-3 w-3 mr-1" />
+                Download Template
+              </Button>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setImportDialogOpen(false)}>Batal</Button>
+            <Button 
+              onClick={handleImport} 
+              disabled={importing || !importKategori || !importFile} 
+              className="btn-primary" 
+              data-testid="submit-import-btn"
+            >
+              {importing ? 'Mengimport...' : 'Import Data'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
