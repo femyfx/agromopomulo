@@ -81,10 +81,20 @@ export const AdminPartisipasiPage = () => {
     const matchSearch = p.nama_lengkap.toLowerCase().includes(searchTerm.toLowerCase()) ||
                        p.nip.includes(searchTerm) ||
                        p.opd_nama?.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchStatus = statusFilter === 'all' || p.status === statusFilter;
+    
+    // Get OPD kategori for this partisipasi
+    const opd = opdList.find(o => o.id === p.opd_id);
+    const opdKategori = opd?.kategori || 'OPD';
+    
+    const matchKategori = kategoriFilter === 'all' || opdKategori === kategoriFilter;
     const matchOpd = opdFilter === 'all' || p.opd_id === opdFilter;
-    return matchSearch && matchStatus && matchOpd;
+    return matchSearch && matchKategori && matchOpd;
   });
+
+  // Filter OPD list based on selected kategori
+  const filteredOpdList = kategoriFilter === 'all' 
+    ? opdList 
+    : opdList.filter(opd => opd.kategori === kategoriFilter);
 
   const getStatusIcon = (status) => {
     switch (status) {
