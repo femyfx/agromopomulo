@@ -161,10 +161,16 @@ export const AdminOPDPage = () => {
           <h1 className="text-2xl font-bold text-slate-800">Kelola OPD</h1>
           <p className="text-slate-500">Kelola daftar OPD yang berpartisipasi</p>
         </div>
-        <Button onClick={() => handleOpenDialog()} className="btn-primary" data-testid="add-opd-btn">
-          <Plus className="h-4 w-4 mr-2" />
-          Tambah OPD
-        </Button>
+        <div className="flex gap-2">
+          <Button onClick={handleOpenImportDialog} variant="outline" data-testid="import-opd-btn">
+            <FileUp className="h-4 w-4 mr-2" />
+            Import Excel
+          </Button>
+          <Button onClick={() => handleOpenDialog()} className="btn-primary" data-testid="add-opd-btn">
+            <Plus className="h-4 w-4 mr-2" />
+            Tambah OPD
+          </Button>
+        </div>
       </div>
 
       {/* Search */}
