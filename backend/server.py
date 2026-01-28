@@ -193,6 +193,63 @@ class EdukasiResponse(BaseModel):
     gambar_url: Optional[str] = None
     created_at: str
 
+# ============== AGENDA MODELS ==============
+
+class AgendaCreate(BaseModel):
+    nama_kegiatan: str
+    hari: str
+    tanggal: str
+    lokasi_kecamatan: str
+    lokasi_desa: str
+    deskripsi: Optional[str] = None
+
+class AgendaUpdate(BaseModel):
+    nama_kegiatan: Optional[str] = None
+    hari: Optional[str] = None
+    tanggal: Optional[str] = None
+    lokasi_kecamatan: Optional[str] = None
+    lokasi_desa: Optional[str] = None
+    deskripsi: Optional[str] = None
+    status: Optional[str] = None
+
+class AgendaResponse(BaseModel):
+    id: str
+    nama_kegiatan: str
+    hari: str
+    tanggal: str
+    lokasi_kecamatan: str
+    lokasi_desa: str
+    deskripsi: Optional[str] = None
+    status: str
+    created_at: str
+
+# ============== BERITA MODELS ==============
+
+class BeritaCreate(BaseModel):
+    judul: str
+    deskripsi_singkat: str
+    isi_berita: str
+    gambar_url: Optional[str] = None
+    gambar_type: Optional[str] = "link"  # "link" atau "file"
+
+class BeritaUpdate(BaseModel):
+    judul: Optional[str] = None
+    deskripsi_singkat: Optional[str] = None
+    isi_berita: Optional[str] = None
+    gambar_url: Optional[str] = None
+    gambar_type: Optional[str] = None
+    is_active: Optional[bool] = None
+
+class BeritaResponse(BaseModel):
+    id: str
+    judul: str
+    deskripsi_singkat: str
+    isi_berita: str
+    gambar_url: Optional[str] = None
+    gambar_type: str
+    is_active: bool
+    created_at: str
+
 # ============== AUTH HELPERS ==============
 
 def hash_password(password: str) -> str:
