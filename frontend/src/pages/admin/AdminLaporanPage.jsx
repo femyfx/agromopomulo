@@ -89,6 +89,31 @@ export const AdminLaporanPage = () => {
     return new Intl.NumberFormat('id-ID').format(num || 0);
   };
 
+  // Filter progress data by kategori
+  const filteredProgress = useMemo(() => {
+    if (!progress?.progress_list) return { progress_list: [], summary: null };
+    
+    const filteredList = kategoriFilter === 'all' 
+      ? progress.progress_list 
+      : progress.progress_list.filter(item => item.kategori === kategoriFilter);
+    
+    // Recalculate summary based on filtered data
+    const totalPersonil = filteredList.reduce((sum, item) => sum + (item.jumlah_personil || 0), 0);
+    const totalTarget = filteredList.reduce((sum, item) => sum + (item.target_pohon || 0), 0);
+    const totalTertanam = filteredList.reduce((sum, item) => sum + (item.pohon_tertanam || 0), 0);
+    const overallProgress = totalTarget > 0 ? Math.round((totalTertanam / totalTarget) * 1000) / 10 : 0;
+    
+    return {
+      progress_list: filteredList,
+      summary: {
+        total_personil: totalPersonil,
+        total_target: totalTarget,
+        total_tertanam: totalTertanam,
+        overall_progress: overallProgress
+      }
+    };
+  }, [progress, kategoriFilter]);
+
   const chartColors = ['#059669', '#10B981', '#34D399', '#F59E0B', '#64748B', '#8B5CF6'];
 
   const pieData = stats?.jenis_pohon_stats?.slice(0, 6).map((item, index) => ({
