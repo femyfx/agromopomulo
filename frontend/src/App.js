@@ -58,6 +58,8 @@ function AppRoutes() {
         <Route path="/tentang" element={<TentangPage />} />
         <Route path="/kontribusi-opd" element={<KontribusiOPDPage />} />
         <Route path="/peta-penanaman" element={<PetaPenanamanPage />} />
+        <Route path="/agenda" element={<AgendaPage />} />
+        <Route path="/berita" element={<BeritaPage />} />
         <Route path="/galeri" element={<GaleriPage />} />
         <Route path="/edukasi" element={<EdukasiPage />} />
         <Route path="/partisipasi" element={<PartisipasiPage />} />
