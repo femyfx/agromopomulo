@@ -487,7 +487,6 @@ export const AdminLaporanPage = () => {
                     <th>Jenis Pohon</th>
                     <th>Jumlah</th>
                     <th>Lokasi</th>
-                    <th>Status</th>
                     <th>Tanggal</th>
                   </tr>
                 </thead>
@@ -499,16 +498,6 @@ export const AdminLaporanPage = () => {
                       <td>{p.jenis_pohon}</td>
                       <td className="font-semibold text-emerald-600">{p.jumlah_pohon}</td>
                       <td>{p.lokasi_tanam}</td>
-                      <td>
-                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                          p.status === 'verified' ? 'bg-green-100 text-green-700' :
-                          p.status === 'pending' ? 'bg-yellow-100 text-yellow-700' :
-                          p.status === 'rejected' ? 'bg-red-100 text-red-700' :
-                          'bg-slate-100 text-slate-700'
-                        }`}>
-                          {p.status}
-                        </span>
-                      </td>
                       <td className="text-slate-500 text-sm">
                         {new Date(p.created_at).toLocaleDateString('id-ID')}
                       </td>
