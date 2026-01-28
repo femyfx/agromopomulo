@@ -175,29 +175,32 @@ export const AdminPartisipasiPage = () => {
                 data-testid="search-partisipasi"
               />
             </div>
+            <Select value={kategoriFilter} onValueChange={(value) => {
+              setKategoriFilter(value);
+              setOpdFilter('all'); // Reset OPD filter when kategori changes
+            }}>
+              <SelectTrigger className="w-full sm:w-[180px]" data-testid="filter-kategori">
+                <Filter className="h-4 w-4 mr-2" />
+                <SelectValue placeholder="Filter Kategori" />
+              </SelectTrigger>
+              <SelectContent>
+                {kategoriOptions.map((opt) => (
+                  <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
             <Select value={opdFilter} onValueChange={setOpdFilter}>
               <SelectTrigger className="w-full sm:w-[220px]" data-testid="filter-opd">
                 <Building2 className="h-4 w-4 mr-2" />
                 <SelectValue placeholder="Filter OPD" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">Semua OPD</SelectItem>
-                {opdList.map((opd) => (
+                <SelectItem value="all">
+                  {kategoriFilter === 'all' ? 'Semua OPD/Instansi' : `Semua ${kategoriOptions.find(o => o.value === kategoriFilter)?.label}`}
+                </SelectItem>
+                {filteredOpdList.map((opd) => (
                   <SelectItem key={opd.id} value={opd.id}>{opd.nama}</SelectItem>
                 ))}
-              </SelectContent>
-            </Select>
-            <Select value={statusFilter} onValueChange={setStatusFilter}>
-              <SelectTrigger className="w-full sm:w-[180px]" data-testid="filter-status">
-                <Filter className="h-4 w-4 mr-2" />
-                <SelectValue placeholder="Filter Status" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Semua Status</SelectItem>
-                <SelectItem value="pending">Pending</SelectItem>
-                <SelectItem value="verified">Verified</SelectItem>
-                <SelectItem value="rejected">Rejected</SelectItem>
-                <SelectItem value="imported">Imported</SelectItem>
               </SelectContent>
             </Select>
           </div>
