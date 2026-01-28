@@ -1,14 +1,17 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { TreePine, Users, Building2, MapPin, ArrowRight, Leaf, Target, Heart } from 'lucide-react';
+import { TreePine, Users, Building2, MapPin, ArrowRight, Leaf, Target, Heart, Calendar, Newspaper, Clock } from 'lucide-react';
 import { Button } from '../../components/ui/button';
 import { Card, CardContent } from '../../components/ui/card';
-import { statsApi, settingsApi } from '../../lib/api';
+import { statsApi, settingsApi, agendaApi, beritaApi } from '../../lib/api';
 import { motion } from 'framer-motion';
+import { NewsPopup } from '../../components/NewsPopup';
 
 export const HomePage = () => {
   const [stats, setStats] = useState(null);
   const [settings, setSettings] = useState(null);
+  const [agenda, setAgenda] = useState([]);
+  const [berita, setBerita] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -17,12 +20,16 @@ export const HomePage = () => {
 
   const loadData = async () => {
     try {
-      const [statsRes, settingsRes] = await Promise.all([
+      const [statsRes, settingsRes, agendaRes, beritaRes] = await Promise.all([
         statsApi.get(),
-        settingsApi.get()
+        settingsApi.get(),
+        agendaApi.getUpcoming(),
+        beritaApi.getActive()
       ]);
       setStats(statsRes.data);
       setSettings(settingsRes.data);
+      setAgenda(agendaRes.data);
+      setBerita(beritaRes.data);
     } catch (error) {
       console.error('Failed to load data:', error);
     } finally {
