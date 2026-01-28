@@ -43,6 +43,8 @@ export const HomePage = () => {
 
   return (
     <div className="min-h-screen">
+      {/* News Popup */}
+      <NewsPopup />
       {/* Hero Section */}
       <section className="relative min-h-[85vh] flex items-center overflow-hidden">
         {/* Background Image */}
