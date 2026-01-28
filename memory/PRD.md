@@ -39,6 +39,7 @@ Membangun aplikasi web dashboard profesional bergaya e-Government / Smart City u
 22. ✅ **NEW** Section Agenda Penanaman di HomePage
 23. ✅ **NEW** Section Berita Terbaru di HomePage
 24. ✅ **NEW** Import Excel OPD dengan pilihan kategori (OPD/Desa/Kecamatan/Publik)
+25. ✅ **NEW** Filter kategori pada Progress Penanaman (Lihat Semua/OPD/Desa/Kecamatan/Publik)
 
 ### What's Been Implemented (January 2026)
 - Full-stack e-Government dashboard
