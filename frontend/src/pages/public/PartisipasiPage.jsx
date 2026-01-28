@@ -54,6 +54,7 @@ export const PartisipasiPage = () => {
   const kategoriOptions = [
     { value: 'OPD', label: 'OPD' },
     { value: 'DESA', label: 'Desa' },
+    { value: 'KECAMATAN', label: 'Kecamatan' },
     { value: 'PUBLIK', label: 'Publik' }
   ];
 
