@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback, memo } from 'react';
 import { Link } from 'react-router-dom';
 import { TreePine, Users, Building2, MapPin, ArrowRight, Leaf, Target, Heart, Calendar, Newspaper, Clock } from 'lucide-react';
 import { Button } from '../../components/ui/button';
@@ -7,6 +7,146 @@ import { statsApi, settingsApi, agendaApi, beritaApi } from '../../lib/api';
 import { motion } from 'framer-motion';
 import { NewsPopup } from '../../components/NewsPopup';
 
+// Memoized stat card component
+const StatCard = memo(({ icon: Icon, value, label, bgColor, iconColor, testId, delay }) => (
+  <motion.div
+    initial={{ opacity: 0, y: 20 }}
+    whileInView={{ opacity: 1, y: 0 }}
+    viewport={{ once: true }}
+    transition={{ delay }}
+  >
+    <Card className="stat-card" data-testid={testId}>
+      <CardContent className="p-6">
+        <div className="flex items-center gap-4">
+          <div className={`h-14 w-14 rounded-xl ${bgColor} flex items-center justify-center`}>
+            <Icon className={`h-7 w-7 ${iconColor}`} />
+          </div>
+          <div>
+            <p className="text-3xl font-bold text-slate-800 tracking-tight">{value}</p>
+            <p className="text-sm text-slate-500">{label}</p>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  </motion.div>
+));
+StatCard.displayName = 'StatCard';
+
+// Memoized agenda card
+const AgendaCard = memo(({ item, index }) => (
+  <motion.div
+    initial={{ opacity: 0, y: 20 }}
+    whileInView={{ opacity: 1, y: 0 }}
+    viewport={{ once: true }}
+    transition={{ delay: index * 0.1 }}
+  >
+    <Card className="stat-card h-full hover:shadow-lg transition-shadow">
+      <CardContent className="p-6">
+        <div className="flex items-start gap-4">
+          <div className="flex-shrink-0">
+            <div className="h-14 w-14 rounded-xl bg-emerald-100 flex flex-col items-center justify-center">
+              <span className="text-xs font-medium text-emerald-600 uppercase">
+                {new Date(item.tanggal).toLocaleDateString('id-ID', { month: 'short' })}
+              </span>
+              <span className="text-xl font-bold text-emerald-700">
+                {new Date(item.tanggal).getDate()}
+              </span>
+            </div>
+          </div>
+          <div className="flex-1 min-w-0">
+            <span className={`inline-block px-2 py-0.5 rounded-full text-xs font-medium mb-2 ${
+              item.status === 'ongoing' ? 'bg-green-100 text-green-700' :
+              item.status === 'completed' ? 'bg-gray-100 text-gray-700' :
+              'bg-blue-100 text-blue-700'
+            }`}>
+              {item.status === 'ongoing' ? 'Berlangsung' : item.status === 'completed' ? 'Selesai' : 'Akan Datang'}
+            </span>
+            <h3 className="font-bold text-slate-800 mb-1 line-clamp-2">{item.nama_kegiatan}</h3>
+            <div className="flex items-center gap-1 text-sm text-slate-500">
+              <Clock className="h-3.5 w-3.5" />
+              <span>{item.hari}</span>
+            </div>
+            <div className="flex items-center gap-1 text-sm text-slate-500 mt-1">
+              <MapPin className="h-3.5 w-3.5" />
+              <span className="truncate">Kec. {item.lokasi_kecamatan}, Desa {item.lokasi_desa}</span>
+            </div>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  </motion.div>
+));
+AgendaCard.displayName = 'AgendaCard';
+
+// Memoized berita card with optimized image
+const BeritaCard = memo(({ item, index }) => (
+  <motion.div
+    initial={{ opacity: 0, y: 20 }}
+    whileInView={{ opacity: 1, y: 0 }}
+    viewport={{ once: true }}
+    transition={{ delay: index * 0.1 }}
+  >
+    <Card className="stat-card h-full hover:shadow-lg transition-shadow overflow-hidden group cursor-pointer">
+      {item.gambar_url && (
+        <div className="h-48 overflow-hidden">
+          <img 
+            src={item.gambar_url} 
+            alt={item.judul}
+            width={400}
+            height={192}
+            loading="lazy"
+            decoding="async"
+            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+          />
+        </div>
+      )}
+      <CardContent className="p-6">
+        <p className="text-xs text-slate-400 mb-2">
+          {new Date(item.created_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}
+        </p>
+        <h3 className="font-bold text-slate-800 mb-2 line-clamp-2 group-hover:text-emerald-600 transition-colors">
+          {item.judul}
+        </h3>
+        <p className="text-sm text-slate-500 line-clamp-3">{item.deskripsi_singkat}</p>
+      </CardContent>
+    </Card>
+  </motion.div>
+));
+BeritaCard.displayName = 'BeritaCard';
+
+// Memoized OPD card
+const OPDCard = memo(({ opd, index, formatNumber }) => (
+  <motion.div
+    initial={{ opacity: 0, y: 20 }}
+    whileInView={{ opacity: 1, y: 0 }}
+    viewport={{ once: true }}
+    transition={{ delay: index * 0.1 }}
+  >
+    <Card className={`stat-card ${index === 0 ? 'ring-2 ring-amber-500' : ''}`}>
+      <CardContent className="p-6">
+        <div className="flex items-center gap-4 mb-4">
+          <div className={`h-12 w-12 rounded-full flex items-center justify-center text-white font-bold text-lg ${
+            index === 0 ? 'bg-amber-500' : index === 1 ? 'bg-slate-400' : 'bg-amber-700'
+          }`}>
+            {index + 1}
+          </div>
+          <div className="flex-1 min-w-0">
+            <h4 className="font-semibold text-slate-800 truncate">{opd.opd_nama}</h4>
+            <p className="text-sm text-slate-500">{opd.jumlah_partisipan} partisipan</p>
+          </div>
+        </div>
+        <div className="flex items-center justify-between">
+          <span className="text-sm text-slate-500">Total Pohon</span>
+          <span className="text-2xl font-bold text-emerald-600">
+            {formatNumber(opd.jumlah_pohon)}
+          </span>
+        </div>
+      </CardContent>
+    </Card>
+  </motion.div>
+));
+OPDCard.displayName = 'OPDCard';
+
 export const HomePage = () => {
   const [stats, setStats] = useState(null);
   const [settings, setSettings] = useState(null);
@@ -14,11 +154,7 @@ export const HomePage = () => {
   const [berita, setBerita] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    loadData();
-  }, []);
-
-  const loadData = async () => {
+  const loadData = useCallback(async () => {
     try {
       const [statsRes, settingsRes, agendaRes, beritaRes] = await Promise.all([
         statsApi.get(),
@@ -35,24 +171,36 @@ export const HomePage = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
-  const formatNumber = (num) => {
+  useEffect(() => {
+    loadData();
+  }, [loadData]);
+
+  const formatNumber = useCallback((num) => {
     return new Intl.NumberFormat('id-ID').format(num || 0);
-  };
+  }, []);
+
+  // Hero background image URL with optimization params
+  const heroImageUrl = settings?.hero_image_url || 'https://images.unsplash.com/photo-1765333534690-ad3a985e7c42?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDQ2NDJ8MHwxfHNlYXJjaHwxfHxsdXNoJTIwZ3JlZW4lMjBmb3Jlc3QlMjBsYW5kc2NhcGUlMjBpbmRvbmVzaWF8ZW58MHx8fHwxNzY4NDQ1ODE1fDA&ixlib=rb-4.1.0&q=85&w=1920';
 
   return (
     <div className="min-h-screen">
       {/* News Popup */}
       <NewsPopup />
-      {/* Hero Section */}
+      
+      {/* Hero Section - LCP Element */}
       <section className="relative min-h-[85vh] flex items-center overflow-hidden">
-        {/* Background Image */}
-        <div 
-          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-          style={{
-            backgroundImage: `url('${settings?.hero_image_url || 'https://images.unsplash.com/photo-1765333534690-ad3a985e7c42?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDQ2NDJ8MHwxfHNlYXJjaHwxfHxsdXNoJTIwZ3JlZW4lMjBmb3Jlc3QlMjBsYW5kc2NhcGUlMjBpbmRvbmVzaWF8ZW58MHx8fHwxNzY4NDQ1ODE1fDA&ixlib=rb-4.1.0&q=85'}')`
-          }}
+        {/* Background Image - Optimized for LCP */}
+        <img
+          src={heroImageUrl}
+          alt="Hutan hijau Gorontalo Utara"
+          width={1920}
+          height={1080}
+          fetchpriority="high"
+          decoding="sync"
+          className="absolute inset-0 w-full h-full object-cover"
+          style={{ objectPosition: 'center' }}
         />
         <div className="absolute inset-0 bg-gradient-to-r from-slate-900/90 via-slate-900/70 to-transparent" />
         
@@ -98,97 +246,42 @@ export const HomePage = () => {
       <section className="relative -mt-20 z-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.1 }}
-            >
-              <Card className="stat-card" data-testid="stat-total-pohon">
-                <CardContent className="p-6">
-                  <div className="flex items-center gap-4">
-                    <div className="h-14 w-14 rounded-xl bg-emerald-100 flex items-center justify-center">
-                      <TreePine className="h-7 w-7 text-emerald-600" />
-                    </div>
-                    <div>
-                      <p className="text-3xl font-bold text-slate-800 tracking-tight">
-                        {formatNumber(stats?.total_pohon)}
-                      </p>
-                      <p className="text-sm text-slate-500">Total Pohon</p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.2 }}
-            >
-              <Card className="stat-card" data-testid="stat-partisipan">
-                <CardContent className="p-6">
-                  <div className="flex items-center gap-4">
-                    <div className="h-14 w-14 rounded-xl bg-amber-100 flex items-center justify-center">
-                      <Users className="h-7 w-7 text-amber-600" />
-                    </div>
-                    <div>
-                      <p className="text-3xl font-bold text-slate-800 tracking-tight">
-                        {formatNumber(stats?.total_partisipan)}
-                      </p>
-                      <p className="text-sm text-slate-500">Partisipan</p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.3 }}
-            >
-              <Card className="stat-card" data-testid="stat-opd">
-                <CardContent className="p-6">
-                  <div className="flex items-center gap-4">
-                    <div className="h-14 w-14 rounded-xl bg-blue-100 flex items-center justify-center">
-                      <Building2 className="h-7 w-7 text-blue-600" />
-                    </div>
-                    <div>
-                      <p className="text-3xl font-bold text-slate-800 tracking-tight">
-                        {formatNumber(stats?.total_opd)}
-                      </p>
-                      <p className="text-sm text-slate-500">OPD Terlibat</p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.4 }}
-            >
-              <Card className="stat-card" data-testid="stat-lokasi">
-                <CardContent className="p-6">
-                  <div className="flex items-center gap-4">
-                    <div className="h-14 w-14 rounded-xl bg-rose-100 flex items-center justify-center">
-                      <MapPin className="h-7 w-7 text-rose-600" />
-                    </div>
-                    <div>
-                      <p className="text-3xl font-bold text-slate-800 tracking-tight">
-                        {formatNumber(stats?.lokasi_stats?.length || 0)}
-                      </p>
-                      <p className="text-sm text-slate-500">Lokasi Tanam</p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </motion.div>
+            <StatCard
+              icon={TreePine}
+              value={formatNumber(stats?.total_pohon)}
+              label="Total Pohon"
+              bgColor="bg-emerald-100"
+              iconColor="text-emerald-600"
+              testId="stat-total-pohon"
+              delay={0.1}
+            />
+            <StatCard
+              icon={Users}
+              value={formatNumber(stats?.total_partisipan)}
+              label="Partisipan"
+              bgColor="bg-amber-100"
+              iconColor="text-amber-600"
+              testId="stat-partisipan"
+              delay={0.2}
+            />
+            <StatCard
+              icon={Building2}
+              value={formatNumber(stats?.total_opd)}
+              label="OPD Terlibat"
+              bgColor="bg-blue-100"
+              iconColor="text-blue-600"
+              testId="stat-opd"
+              delay={0.3}
+            />
+            <StatCard
+              icon={MapPin}
+              value={formatNumber(stats?.lokasi_stats?.length || 0)}
+              label="Lokasi Tanam"
+              bgColor="bg-rose-100"
+              iconColor="text-rose-600"
+              testId="stat-lokasi"
+              delay={0.4}
+            />
           </div>
         </div>
       </section>
@@ -255,8 +348,12 @@ export const HomePage = () => {
               className="relative"
             >
               <img
-                src="https://images.unsplash.com/photo-1758599668234-68f52db62425?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NTYxODh8MHwxfHNlYXJjaHwxfHxwbGFudGluZyUyMHRyZWVzJTIwY29tbXVuaXR5fGVufDB8fHx8MTc2ODQ0NTgxMnww&ixlib=rb-4.1.0&q=85"
+                src="https://images.unsplash.com/photo-1758599668234-68f52db62425?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NTYxODh8MHwxfHNlYXJjaHwxfHxwbGFudGluZyUyMHRyZWVzJTIwY29tbXVuaXR5fGVufDB8fHx8MTc2ODQ0NTgxMnww&ixlib=rb-4.1.0&q=85&w=800"
                 alt="Kegiatan Penanaman"
+                width={800}
+                height={400}
+                loading="lazy"
+                decoding="async"
                 className="rounded-2xl shadow-xl w-full h-[400px] object-cover"
               />
               <div className="absolute -bottom-6 -left-6 bg-white rounded-xl shadow-lg p-4">
@@ -278,35 +375,7 @@ export const HomePage = () => {
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {stats.opd_stats.slice(0, 3).map((opd, index) => (
-                <motion.div
-                  key={opd.opd_id}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: index * 0.1 }}
-                >
-                  <Card className={`stat-card ${index === 0 ? 'ring-2 ring-amber-500' : ''}`}>
-                    <CardContent className="p-6">
-                      <div className="flex items-center gap-4 mb-4">
-                        <div className={`h-12 w-12 rounded-full flex items-center justify-center text-white font-bold text-lg ${
-                          index === 0 ? 'bg-amber-500' : index === 1 ? 'bg-slate-400' : 'bg-amber-700'
-                        }`}>
-                          {index + 1}
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <h4 className="font-semibold text-slate-800 truncate">{opd.opd_nama}</h4>
-                          <p className="text-sm text-slate-500">{opd.jumlah_partisipan} partisipan</p>
-                        </div>
-                      </div>
-                      <div className="flex items-center justify-between">
-                        <span className="text-sm text-slate-500">Total Pohon</span>
-                        <span className="text-2xl font-bold text-emerald-600">
-                          {formatNumber(opd.jumlah_pohon)}
-                        </span>
-                      </div>
-                    </CardContent>
-                  </Card>
-                </motion.div>
+                <OPDCard key={opd.opd_id} opd={opd} index={index} formatNumber={formatNumber} />
               ))}
             </div>
             <div className="text-center mt-8">
@@ -333,48 +402,7 @@ export const HomePage = () => {
           {agenda.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {agenda.slice(0, 6).map((item, index) => (
-                <motion.div
-                  key={item.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: index * 0.1 }}
-                >
-                  <Card className="stat-card h-full hover:shadow-lg transition-shadow">
-                    <CardContent className="p-6">
-                      <div className="flex items-start gap-4">
-                        <div className="flex-shrink-0">
-                          <div className="h-14 w-14 rounded-xl bg-emerald-100 flex flex-col items-center justify-center">
-                            <span className="text-xs font-medium text-emerald-600 uppercase">
-                              {new Date(item.tanggal).toLocaleDateString('id-ID', { month: 'short' })}
-                            </span>
-                            <span className="text-xl font-bold text-emerald-700">
-                              {new Date(item.tanggal).getDate()}
-                            </span>
-                          </div>
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <span className={`inline-block px-2 py-0.5 rounded-full text-xs font-medium mb-2 ${
-                            item.status === 'ongoing' ? 'bg-green-100 text-green-700' :
-                            item.status === 'completed' ? 'bg-gray-100 text-gray-700' :
-                            'bg-blue-100 text-blue-700'
-                          }`}>
-                            {item.status === 'ongoing' ? 'Berlangsung' : item.status === 'completed' ? 'Selesai' : 'Akan Datang'}
-                          </span>
-                          <h3 className="font-bold text-slate-800 mb-1 line-clamp-2">{item.nama_kegiatan}</h3>
-                          <div className="flex items-center gap-1 text-sm text-slate-500">
-                            <Clock className="h-3.5 w-3.5" />
-                            <span>{item.hari}</span>
-                          </div>
-                          <div className="flex items-center gap-1 text-sm text-slate-500 mt-1">
-                            <MapPin className="h-3.5 w-3.5" />
-                            <span className="truncate">Kec. {item.lokasi_kecamatan}, Desa {item.lokasi_desa}</span>
-                          </div>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                </motion.div>
+                <AgendaCard key={item.id} item={item} index={index} />
               ))}
             </div>
           ) : (
@@ -400,34 +428,7 @@ export const HomePage = () => {
           {berita.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {berita.slice(0, 6).map((item, index) => (
-                <motion.div
-                  key={item.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: index * 0.1 }}
-                >
-                  <Card className="stat-card h-full hover:shadow-lg transition-shadow overflow-hidden group cursor-pointer">
-                    {item.gambar_url && (
-                      <div className="h-48 overflow-hidden">
-                        <img 
-                          src={item.gambar_url} 
-                          alt={item.judul}
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                        />
-                      </div>
-                    )}
-                    <CardContent className="p-6">
-                      <p className="text-xs text-slate-400 mb-2">
-                        {new Date(item.created_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}
-                      </p>
-                      <h3 className="font-bold text-slate-800 mb-2 line-clamp-2 group-hover:text-emerald-600 transition-colors">
-                        {item.judul}
-                      </h3>
-                      <p className="text-sm text-slate-500 line-clamp-3">{item.deskripsi_singkat}</p>
-                    </CardContent>
-                  </Card>
-                </motion.div>
+                <BeritaCard key={item.id} item={item} index={index} />
               ))}
             </div>
           ) : (
