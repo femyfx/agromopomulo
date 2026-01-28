@@ -344,43 +344,65 @@ export const AdminLaporanPage = () => {
       {/* Progress Table - Target vs Actual */}
       <Card className="mb-8">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <TrendingUp className="h-5 w-5 text-emerald-600" />
-            Progress Penanaman per OPD
-          </CardTitle>
-          <p className="text-sm text-slate-500">
-            Rumus: Target = 10 pohon × Jumlah Personil
-          </p>
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div>
+              <CardTitle className="flex items-center gap-2">
+                <TrendingUp className="h-5 w-5 text-emerald-600" />
+                Progress Penanaman per OPD
+              </CardTitle>
+              <p className="text-sm text-slate-500 mt-1">
+                Rumus: Target = 10 pohon × Jumlah Personil
+              </p>
+            </div>
+            <div className="flex items-center gap-2">
+              <Filter className="h-4 w-4 text-slate-500" />
+              <Select value={kategoriFilter} onValueChange={setKategoriFilter}>
+                <SelectTrigger className="w-[160px]" data-testid="filter-kategori-progress">
+                  <SelectValue placeholder="Filter Kategori" />
+                </SelectTrigger>
+                <SelectContent>
+                  {kategoriOptions.map((opt) => (
+                    <SelectItem key={opt.value} value={opt.value}>
+                      {opt.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
         </CardHeader>
         <CardContent>
           {/* Summary Stats */}
-          {progress?.summary && (
+          {filteredProgress?.summary && (
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6 p-4 bg-slate-50 rounded-lg">
               <div className="text-center">
-                <p className="text-2xl font-bold text-slate-800">{formatNumber(progress.summary.total_personil)}</p>
+                <p className="text-2xl font-bold text-slate-800">{formatNumber(filteredProgress.summary.total_personil)}</p>
                 <p className="text-xs text-slate-500">Total Personil</p>
               </div>
               <div className="text-center">
-                <p className="text-2xl font-bold text-blue-600">{formatNumber(progress.summary.total_target)}</p>
+                <p className="text-2xl font-bold text-blue-600">{formatNumber(filteredProgress.summary.total_target)}</p>
                 <p className="text-xs text-slate-500">Target Pohon</p>
               </div>
               <div className="text-center">
-                <p className="text-2xl font-bold text-emerald-600">{formatNumber(progress.summary.total_tertanam)}</p>
+                <p className="text-2xl font-bold text-emerald-600">{formatNumber(filteredProgress.summary.total_tertanam)}</p>
                 <p className="text-xs text-slate-500">Sudah Tertanam</p>
               </div>
               <div className="text-center">
-                <p className="text-2xl font-bold text-amber-600">{progress.summary.overall_progress}%</p>
-                <p className="text-xs text-slate-500">Progress Keseluruhan</p>
+                <p className="text-2xl font-bold text-amber-600">{filteredProgress.summary.overall_progress}%</p>
+                <p className="text-xs text-slate-500">
+                  {kategoriFilter === 'all' ? 'Progress Keseluruhan' : `Progress ${kategoriOptions.find(o => o.value === kategoriFilter)?.label}`}
+                </p>
               </div>
             </div>
           )}
 
-          {progress?.progress_list?.length > 0 ? (
+          {filteredProgress?.progress_list?.length > 0 ? (
             <div className="overflow-x-auto">
               <table className="data-table">
                 <thead>
                   <tr>
                     <th>Nama OPD</th>
+                    <th className="text-center">Kategori</th>
                     <th className="text-center">Jumlah Personil</th>
                     <th className="text-center">Target Pohon</th>
                     <th className="text-center">Tertanam</th>
@@ -388,9 +410,19 @@ export const AdminLaporanPage = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {progress.progress_list.map((item) => (
+                  {filteredProgress.progress_list.map((item) => (
                     <tr key={item.opd_id}>
                       <td className="font-medium">{item.opd_nama}</td>
+                      <td className="text-center">
+                        <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${
+                          item.kategori === 'OPD' ? 'bg-emerald-100 text-emerald-700' :
+                          item.kategori === 'DESA' ? 'bg-blue-100 text-blue-700' :
+                          item.kategori === 'KECAMATAN' ? 'bg-purple-100 text-purple-700' :
+                          'bg-amber-100 text-amber-700'
+                        }`}>
+                          {item.kategori || 'OPD'}
+                        </span>
+                      </td>
                       <td className="text-center">
                         <span className="inline-flex items-center gap-1 text-blue-600">
                           <Users className="h-4 w-4" />
@@ -427,7 +459,10 @@ export const AdminLaporanPage = () => {
             </div>
           ) : (
             <p className="text-slate-500 text-center py-8">
-              Belum ada data. Tambahkan jumlah personil di menu Kelola OPD.
+              {kategoriFilter !== 'all' 
+                ? `Belum ada data untuk kategori ${kategoriOptions.find(o => o.value === kategoriFilter)?.label}. Tambahkan jumlah personil di menu Kelola OPD.`
+                : 'Belum ada data. Tambahkan jumlah personil di menu Kelola OPD.'
+              }
             </p>
           )}
         </CardContent>
