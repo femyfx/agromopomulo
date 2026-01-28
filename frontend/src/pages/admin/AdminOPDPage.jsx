@@ -105,6 +105,50 @@ export const AdminOPDPage = () => {
     }
   };
 
+  const handleOpenImportDialog = () => {
+    setImportKategori('');
+    setImportFile(null);
+    setImportDialogOpen(true);
+  };
+
+  const handleImport = async () => {
+    if (!importKategori) {
+      toast.error('Pilih kategori terlebih dahulu');
+      return;
+    }
+    if (!importFile) {
+      toast.error('Pilih file Excel terlebih dahulu');
+      return;
+    }
+
+    setImporting(true);
+    try {
+      const res = await opdApi.importExcel(importFile, importKategori);
+      toast.success(res.data.message);
+      setImportDialogOpen(false);
+      setImportFile(null);
+      setImportKategori('');
+      loadOPD();
+    } catch (error) {
+      console.error('Import failed:', error);
+      toast.error(error.response?.data?.detail || 'Gagal import data');
+    } finally {
+      setImporting(false);
+    }
+  };
+
+  const handleDownloadTemplate = () => {
+    // Create CSV template
+    const csvContent = "nama,kode,alamat,jumlah_personil\nContoh OPD 1,001,Jl. Contoh No. 1,50\nContoh OPD 2,002,Jl. Contoh No. 2,30";
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = 'template_import_opd.csv';
+    link.click();
+    URL.revokeObjectURL(url);
+  };
+
   const filteredOPD = opdList.filter(opd => 
     opd.nama.toLowerCase().includes(searchTerm.toLowerCase()) ||
     (opd.kode && opd.kode.toLowerCase().includes(searchTerm.toLowerCase()))
