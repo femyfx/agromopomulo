@@ -96,23 +96,6 @@ export const AdminPartisipasiPage = () => {
     ? opdList 
     : opdList.filter(opd => opd.kategori === kategoriFilter);
 
-  const getStatusIcon = (status) => {
-    switch (status) {
-      case 'verified': return <CheckCircle className="h-4 w-4 text-green-600" />;
-      case 'rejected': return <XCircle className="h-4 w-4 text-red-600" />;
-      default: return <Clock className="h-4 w-4 text-yellow-600" />;
-    }
-  };
-
-  const getStatusColor = (status) => {
-    switch (status) {
-      case 'verified': return 'bg-green-100 text-green-700';
-      case 'rejected': return 'bg-red-100 text-red-700';
-      case 'imported': return 'bg-blue-100 text-blue-700';
-      default: return 'bg-yellow-100 text-yellow-700';
-    }
-  };
-
   // Function to open Google Maps with coordinates
   const openLocationInMaps = (titikLokasi, lokasiTanam) => {
     if (titikLokasi) {
