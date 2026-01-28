@@ -38,6 +38,7 @@ Membangun aplikasi web dashboard profesional bergaya e-Government / Smart City u
 21. ✅ **NEW** News Popup di halaman publik dengan interval konfigurasi
 22. ✅ **NEW** Section Agenda Penanaman di HomePage
 23. ✅ **NEW** Section Berita Terbaru di HomePage
+24. ✅ **NEW** Import Excel OPD dengan pilihan kategori (OPD/Desa/Kecamatan/Publik)
 
 ### What's Been Implemented (January 2026)
 - Full-stack e-Government dashboard
