@@ -1,8 +1,9 @@
-import { useState, useEffect } from 'react';
-import { FileText, TreePine, Users, Building2, Calendar, FileDown, TrendingUp, Target } from 'lucide-react';
+import { useState, useEffect, useMemo } from 'react';
+import { FileText, TreePine, Users, Building2, Calendar, FileDown, TrendingUp, Target, Filter } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/card';
 import { Button } from '../../components/ui/button';
 import { Progress } from '../../components/ui/progress';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../components/ui/select';
 import { statsApi, partisipasiApi, exportApi } from '../../lib/api';
 import { toast } from 'sonner';
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip, BarChart, Bar, XAxis, YAxis, CartesianGrid } from 'recharts';
