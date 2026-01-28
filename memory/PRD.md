@@ -32,62 +32,79 @@ Membangun aplikasi web dashboard profesional bergaya e-Government / Smart City u
 15. ✅ Input Koordinat Manual (Latitude & Longitude terpisah)
 16. ✅ Tombol "Pilih Lokasi Saat Ini" untuk GPS otomatis
 17. ✅ Preview koordinat dengan link "Lihat di Maps"
-18. ✅ **NEW** Kolom "Cek Lokasi" di Kelola Partisipasi (link ke Google Maps)
+18. ✅ Kolom "Cek Lokasi" di Kelola Partisipasi (link ke Google Maps)
+19. ✅ **NEW** Menu Kelola Agenda di Admin Panel (CRUD lengkap)
+20. ✅ **NEW** Menu Kelola Berita di Admin Panel (CRUD lengkap)
+21. ✅ **NEW** News Popup di halaman publik dengan interval konfigurasi
+22. ✅ **NEW** Section Agenda Penanaman di HomePage
+23. ✅ **NEW** Section Berita Terbaru di HomePage
 
 ### What's Been Implemented (January 2026)
 - Full-stack e-Government dashboard
 - 8 public pages: Beranda, Tentang, Kontribusi OPD, Peta Penanaman, Laporan, Galeri, Edukasi, Partisipasi
-- Admin panel with 6 sections: Dashboard, Kelola OPD, Kelola Partisipasi, Kelola Galeri, Kelola Edukasi, Pengaturan
+- Admin panel with 9 sections: Dashboard, Kelola OPD, Kelola Partisipasi, Laporan, Kelola Galeri, Kelola Edukasi, **Kelola Agenda**, **Kelola Berita**, Pengaturan
 - JWT authentication system
-- All CRUD operations for OPD, Partisipasi, Galeri, Edukasi
-- Settings management (logo upload, hero section, tentang page content)
+- All CRUD operations for OPD, Partisipasi, Galeri, Edukasi, **Agenda, Berita**
+- Settings management (logo upload, hero section, tentang page content, **berita popup interval**)
 - Export PDF/Excel dan Import Excel functionality
 - Real-time statistics dashboard
 - Responsive design with professional e-Government styling
-- **NEW** Kolom "Cek Lokasi" di tabel Kelola Partisipasi - klik untuk buka Google Maps
+- Kolom "Cek Lokasi" di tabel Kelola Partisipasi
+- **NEW (28 Jan 2026):** Fitur Agenda & Berita lengkap dengan popup
 
-### Admin Kelola Partisipasi
-**Kolom Tabel:**
-- Nama
-- NIP
-- OPD
-- Pohon
-- Jenis
-- Status
-- **Cek Lokasi** - Tombol "Lihat Maps" yang membuka Google Maps dengan koordinat partisipan
+### Admin Kelola Agenda
+**Fitur:**
+- Tambah/Edit/Hapus agenda kegiatan penanaman
+- Input: Nama Kegiatan, Hari, Tanggal, Kecamatan, Desa, Deskripsi
+- Status: Akan Datang, Berlangsung, Selesai
+- Card view dengan status badge
 
-**Fitur yang Dihapus:**
-- Tombol View Detail
-- Dropdown ubah Status
-- Tombol Delete
+### Admin Kelola Berita
+**Fitur:**
+- Tambah/Edit/Hapus berita
+- Input: Judul, Deskripsi Singkat, Isi Berita, Gambar (URL atau Upload)
+- Toggle Aktif/Nonaktif berita
+- Pengaturan Interval Popup Berita (dalam detik)
+- Card view dengan gambar preview
+
+### News Popup (HomePage)
+- Muncul otomatis setelah 2 detik halaman dimuat
+- Menampilkan berita aktif secara bergantian sesuai interval
+- Tombol "Baca Selengkapnya" untuk membuka modal detail
+- Tombol "Tutup semua notifikasi" untuk dismiss
 
 ### Key API Endpoints
 - `/api/opd` - CRUD OPD dengan jumlah_personil dan kategori
-- `/api/partisipasi` - CRUD Partisipasi (titik_lokasi = latitude + longitude)
-- `/api/settings` - Settings termasuk tentang page content
+- `/api/partisipasi` - CRUD Partisipasi
+- `/api/settings` - Settings termasuk berita_popup_interval
 - `/api/stats` - Statistik keseluruhan
 - `/api/progress` - Progress per OPD dengan kalkulasi target
 - `/api/export/excel`, `/api/export/pdf` - Export laporan
+- **`/api/agenda`** - CRUD Agenda kegiatan
+- **`/api/agenda/upcoming`** - Agenda yang akan datang/berlangsung
+- **`/api/berita`** - CRUD Berita
+- **`/api/berita/active`** - Berita yang aktif saja
 
 ### Prioritized Backlog
 **P0 (Implemented):**
 - All core features ✅
+- Agenda & Berita features ✅
 
-**P1 (Future):**
-- WhatsApp notification integration
-- Advanced reporting with date filters
-- Bulk status update for partisipasi
+**P1 (Upcoming):**
+- Import Data Partisipasi dari Excel
+- Filter Laporan berdasarkan rentang tanggal
 - Interactive map with Leaflet
 
 **P2 (Nice to have):**
+- WhatsApp notification integration
 - Photo upload for partisipasi evidence
 - Dashboard analytics with trends
 
 ### Test Credentials
-- Admin Email: admin2@test.com
-- Admin Password: admin123
+- Admin Email: admin@gorontaloutara.go.id
+- Admin Password: Admin123!
 
 ### Next Tasks
-1. Add date range filtering for reports
-2. WhatsApp notification integration
+1. Import data partisipasi dari Excel
+2. Add date range filtering for reports
 3. Interactive map with Leaflet showing all planting locations
