@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link, Outlet, useLocation } from 'react-router-dom';
-import { Menu, X, TreePine, Home, Info, Building2, MapPin, Image, BookOpen, UserPlus, LogIn } from 'lucide-react';
+import { Menu, X, TreePine, Home, Info, Building2, MapPin, Image, BookOpen, UserPlus, LogIn, Calendar, Newspaper } from 'lucide-react';
 import { Button } from '../ui/button';
 import { settingsApi } from '../../lib/api';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -10,6 +10,8 @@ const navItems = [
   { path: '/tentang', label: 'Tentang', icon: Info },
   { path: '/kontribusi-opd', label: 'Kontribusi OPD', icon: Building2 },
   { path: '/peta-penanaman', label: 'Peta Penanaman', icon: MapPin },
+  { path: '/agenda', label: 'Agenda', icon: Calendar },
+  { path: '/berita', label: 'Berita', icon: Newspaper },
   { path: '/galeri', label: 'Galeri', icon: Image },
   { path: '/edukasi', label: 'Edukasi', icon: BookOpen },
   { path: '/partisipasi', label: 'Partisipasi', icon: UserPlus },
@@ -56,7 +58,7 @@ export const PublicLayout = () => {
 
             {/* Desktop Navigation */}
             <nav className="hidden lg:flex items-center gap-1">
-              {navItems.slice(0, 6).map((item) => (
+              {navItems.slice(0, 8).map((item) => (
                 <Link
                   key={item.path}
                   to={item.path}
