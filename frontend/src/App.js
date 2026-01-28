@@ -15,6 +15,8 @@ import { PetaPenanamanPage } from "./pages/public/PetaPenanamanPage";
 import { GaleriPage } from "./pages/public/GaleriPage";
 import { EdukasiPage } from "./pages/public/EdukasiPage";
 import { PartisipasiPage } from "./pages/public/PartisipasiPage";
+import { AgendaPage } from "./pages/public/AgendaPage";
+import { BeritaPage } from "./pages/public/BeritaPage";
 
 // Admin Pages
 import { AdminLoginPage } from "./pages/admin/AdminLoginPage";
