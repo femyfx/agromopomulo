@@ -564,6 +564,105 @@ async def delete_edukasi(edukasi_id: str, current_user: dict = Depends(get_curre
         raise HTTPException(status_code=404, detail="Edukasi tidak ditemukan")
     return {"message": "Edukasi berhasil dihapus"}
 
+# ============== AGENDA ENDPOINTS ==============
+
+@api_router.get("/agenda", response_model=List[AgendaResponse])
+async def get_all_agenda():
+    items = await db.agenda.find({}, {"_id": 0}).sort("tanggal", 1).to_list(1000)
+    return items
+
+@api_router.get("/agenda/upcoming", response_model=List[AgendaResponse])
+async def get_upcoming_agenda():
+    """Get upcoming agenda (status = upcoming or ongoing)"""
+    items = await db.agenda.find(
+        {"status": {"$in": ["upcoming", "ongoing"]}}, 
+        {"_id": 0}
+    ).sort("tanggal", 1).to_list(10)
+    return items
+
+@api_router.post("/agenda", response_model=AgendaResponse)
+async def create_agenda(data: AgendaCreate, current_user: dict = Depends(get_current_user)):
+    agenda_id = str(uuid.uuid4())
+    doc = {
+        "id": agenda_id,
+        **data.model_dump(),
+        "status": "upcoming",  # upcoming, ongoing, completed
+        "created_at": datetime.now(timezone.utc).isoformat()
+    }
+    await db.agenda.insert_one(doc)
+    return doc
+
+@api_router.put("/agenda/{agenda_id}", response_model=AgendaResponse)
+async def update_agenda(agenda_id: str, data: AgendaUpdate, current_user: dict = Depends(get_current_user)):
+    update_data = {k: v for k, v in data.model_dump().items() if v is not None}
+    if not update_data:
+        raise HTTPException(status_code=400, detail="Tidak ada data untuk diupdate")
+    result = await db.agenda.update_one({"id": agenda_id}, {"$set": update_data})
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Agenda tidak ditemukan")
+    updated = await db.agenda.find_one({"id": agenda_id}, {"_id": 0})
+    return updated
+
+@api_router.delete("/agenda/{agenda_id}")
+async def delete_agenda(agenda_id: str, current_user: dict = Depends(get_current_user)):
+    result = await db.agenda.delete_one({"id": agenda_id})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Agenda tidak ditemukan")
+    return {"message": "Agenda berhasil dihapus"}
+
+# ============== BERITA ENDPOINTS ==============
+
+@api_router.get("/berita", response_model=List[BeritaResponse])
+async def get_all_berita():
+    items = await db.berita.find({}, {"_id": 0}).sort("created_at", -1).to_list(1000)
+    return items
+
+@api_router.get("/berita/active", response_model=List[BeritaResponse])
+async def get_active_berita():
+    """Get active news for popup"""
+    items = await db.berita.find(
+        {"is_active": True}, 
+        {"_id": 0}
+    ).sort("created_at", -1).to_list(10)
+    return items
+
+@api_router.get("/berita/{berita_id}", response_model=BeritaResponse)
+async def get_berita_by_id(berita_id: str):
+    berita = await db.berita.find_one({"id": berita_id}, {"_id": 0})
+    if not berita:
+        raise HTTPException(status_code=404, detail="Berita tidak ditemukan")
+    return berita
+
+@api_router.post("/berita", response_model=BeritaResponse)
+async def create_berita(data: BeritaCreate, current_user: dict = Depends(get_current_user)):
+    berita_id = str(uuid.uuid4())
+    doc = {
+        "id": berita_id,
+        **data.model_dump(),
+        "is_active": True,
+        "created_at": datetime.now(timezone.utc).isoformat()
+    }
+    await db.berita.insert_one(doc)
+    return doc
+
+@api_router.put("/berita/{berita_id}", response_model=BeritaResponse)
+async def update_berita(berita_id: str, data: BeritaUpdate, current_user: dict = Depends(get_current_user)):
+    update_data = {k: v for k, v in data.model_dump().items() if v is not None}
+    if not update_data:
+        raise HTTPException(status_code=400, detail="Tidak ada data untuk diupdate")
+    result = await db.berita.update_one({"id": berita_id}, {"$set": update_data})
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Berita tidak ditemukan")
+    updated = await db.berita.find_one({"id": berita_id}, {"_id": 0})
+    return updated
+
+@api_router.delete("/berita/{berita_id}")
+async def delete_berita(berita_id: str, current_user: dict = Depends(get_current_user)):
+    result = await db.berita.delete_one({"id": berita_id})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Berita tidak ditemukan")
+    return {"message": "Berita berhasil dihapus"}
+
 # ============== STATS ENDPOINTS ==============
 
 @api_router.get("/stats")
