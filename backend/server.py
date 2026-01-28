@@ -152,6 +152,7 @@ class SettingsUpdate(BaseModel):
     tentang_content: Optional[str] = None
     tentang_visi: Optional[str] = None
     tentang_misi: Optional[str] = None
+    berita_popup_interval: Optional[int] = None  # dalam detik
 
 class SettingsResponse(BaseModel):
     id: str
@@ -163,6 +164,7 @@ class SettingsResponse(BaseModel):
     tentang_content: Optional[str] = None
     tentang_visi: Optional[str] = None
     tentang_misi: Optional[str] = None
+    berita_popup_interval: Optional[int] = 5  # default 5 detik
 
 class GalleryCreate(BaseModel):
     title: str
