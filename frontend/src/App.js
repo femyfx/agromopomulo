@@ -79,6 +79,8 @@ function AppRoutes() {
         <Route path="laporan" element={<AdminLaporanPage />} />
         <Route path="galeri" element={<AdminGaleriPage />} />
         <Route path="edukasi" element={<AdminEdukasiPage />} />
+        <Route path="agenda" element={<AdminAgendaPage />} />
+        <Route path="berita" element={<AdminBeritaPage />} />
         <Route path="settings" element={<AdminSettingsPage />} />
       </Route>
 
