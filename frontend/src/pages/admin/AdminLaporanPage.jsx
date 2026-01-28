@@ -14,6 +14,15 @@ export const AdminLaporanPage = () => {
   const [partisipasi, setPartisipasi] = useState([]);
   const [loading, setLoading] = useState(true);
   const [exporting, setExporting] = useState(false);
+  const [kategoriFilter, setKategoriFilter] = useState('all');
+
+  const kategoriOptions = [
+    { value: 'all', label: 'Lihat Semua' },
+    { value: 'OPD', label: 'OPD' },
+    { value: 'DESA', label: 'Desa' },
+    { value: 'KECAMATAN', label: 'Kecamatan' },
+    { value: 'PUBLIK', label: 'Publik' }
+  ];
 
   useEffect(() => {
     loadData();
