@@ -41,7 +41,7 @@ Membangun aplikasi web dashboard profesional bergaya e-Government / Smart City u
 
 ### What's Been Implemented (January 2026)
 - Full-stack e-Government dashboard
-- 8 public pages: Beranda, Tentang, Kontribusi OPD, Peta Penanaman, Laporan, Galeri, Edukasi, Partisipasi
+- **10 public pages**: Beranda, Tentang, Kontribusi OPD, Peta Penanaman, **Agenda**, **Berita**, Galeri, Edukasi, Partisipasi
 - Admin panel with 9 sections: Dashboard, Kelola OPD, Kelola Partisipasi, Laporan, Kelola Galeri, Kelola Edukasi, **Kelola Agenda**, **Kelola Berita**, Pengaturan
 - JWT authentication system
 - All CRUD operations for OPD, Partisipasi, Galeri, Edukasi, **Agenda, Berita**
@@ -51,6 +51,7 @@ Membangun aplikasi web dashboard profesional bergaya e-Government / Smart City u
 - Responsive design with professional e-Government styling
 - Kolom "Cek Lokasi" di tabel Kelola Partisipasi
 - **NEW (28 Jan 2026):** Fitur Agenda & Berita lengkap dengan popup
+- **NEW (28 Jan 2026):** Menu Agenda & Berita di navigasi publik
 
 ### Admin Kelola Agenda
 **Fitur:**
