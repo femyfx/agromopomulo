@@ -263,22 +263,22 @@ export const AdminLaporanPage = () => {
               <CardTitle>Kontribusi per OPD</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="h-[300px]">
+              <div className="h-[350px]">
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart 
                     data={stats.opd_stats.slice(0, 5)} 
-                    margin={{ top: 20, right: 30, left: 20, bottom: 60 }}
+                    margin={{ top: 20, right: 30, left: 20, bottom: 100 }}
                   >
                     <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
                     <XAxis 
                       dataKey="opd_nama" 
                       stroke="#64748b" 
-                      fontSize={11}
-                      angle={-35}
+                      fontSize={10}
+                      angle={-45}
                       textAnchor="end"
-                      height={60}
+                      height={100}
                       interval={0}
-                      tickFormatter={(value) => value.length > 12 ? value.slice(0, 12) + '...' : value}
+                      tickFormatter={(value) => value.length > 15 ? value.slice(0, 15) + '...' : value}
                     />
                     <YAxis 
                       stroke="#64748b" 
