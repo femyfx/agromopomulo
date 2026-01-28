@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { X, Newspaper, ChevronRight } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { beritaApi, settingsApi } from '../../lib/api';
+import { beritaApi, settingsApi } from '../lib/api';
 
 export const NewsPopup = () => {
   const [news, setNews] = useState([]);
