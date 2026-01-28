@@ -153,9 +153,10 @@ export const PartisipasiPage = () => {
       return;
     }
 
-    // Validate file size (max 5MB)
-    if (file.size > 5 * 1024 * 1024) {
-      toast.error('Ukuran file maksimal 5MB');
+    // Validate file size (max 2MB)
+    const MAX_FILE_SIZE = 2 * 1024 * 1024; // 2MB
+    if (file.size > MAX_FILE_SIZE) {
+      toast.error('Ukuran file maksimal 2MB');
       return;
     }
 
