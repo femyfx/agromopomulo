@@ -1,30 +1,11 @@
-import { useState, useEffect, useCallback, memo, lazy, Suspense } from 'react';
+import { useState, useEffect, useCallback, memo } from 'react';
 import { TreePine, Users, Building2, FileDown, Bell, TrendingUp, Calendar } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/card';
 import { Button } from '../../components/ui/button';
 import { statsApi, partisipasiApi, exportApi } from '../../lib/api';
 import { motion } from 'framer-motion';
 import { toast } from 'sonner';
-
-// Lazy load heavy chart components
-const LazyBarChart = lazy(() => import('recharts').then(m => ({ default: m.BarChart })));
-const LazyBar = lazy(() => import('recharts').then(m => ({ default: m.Bar })));
-const LazyXAxis = lazy(() => import('recharts').then(m => ({ default: m.XAxis })));
-const LazyYAxis = lazy(() => import('recharts').then(m => ({ default: m.YAxis })));
-const LazyCartesianGrid = lazy(() => import('recharts').then(m => ({ default: m.CartesianGrid })));
-const LazyTooltip = lazy(() => import('recharts').then(m => ({ default: m.Tooltip })));
-const LazyResponsiveContainer = lazy(() => import('recharts').then(m => ({ default: m.ResponsiveContainer })));
-
-// Chart loading fallback
-const ChartLoader = memo(() => (
-  <div className="h-[450px] flex items-center justify-center bg-slate-50 rounded-lg">
-    <div className="text-center">
-      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-600 mx-auto"></div>
-      <p className="mt-2 text-sm text-slate-500">Memuat grafik...</p>
-    </div>
-  </div>
-));
-ChartLoader.displayName = 'ChartLoader';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
 // Memoized stat card
 const StatCard = memo(({ icon: Icon, value, label, bgColor, iconColor, delay }) => (
