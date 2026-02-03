@@ -496,48 +496,12 @@ export const AdminLaporanPage = () => {
                 </thead>
                 <tbody>
                   {filteredProgress.progress_list.map((item) => (
-                    <tr key={item.opd_id}>
-                      <td className="font-medium">{item.opd_nama}</td>
-                      <td className="text-center">
-                        <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${
-                          item.kategori === 'OPD' ? 'bg-emerald-100 text-emerald-700' :
-                          item.kategori === 'DESA' ? 'bg-blue-100 text-blue-700' :
-                          item.kategori === 'KECAMATAN' ? 'bg-purple-100 text-purple-700' :
-                          'bg-amber-100 text-amber-700'
-                        }`}>
-                          {item.kategori || 'OPD'}
-                        </span>
-                      </td>
-                      <td className="text-center">
-                        <span className="inline-flex items-center gap-1 text-blue-600">
-                          <Users className="h-4 w-4" />
-                          {formatNumber(item.jumlah_personil)}
-                        </span>
-                      </td>
-                      <td className="text-center">
-                        <span className="inline-flex items-center gap-1 text-slate-600">
-                          <Target className="h-4 w-4" />
-                          {formatNumber(item.target_pohon)}
-                        </span>
-                      </td>
-                      <td className="text-center font-semibold text-emerald-600">
-                        {formatNumber(item.pohon_tertanam)}
-                      </td>
-                      <td>
-                        <div className="flex items-center gap-2">
-                          <Progress 
-                            value={item.progress_persen} 
-                            className="flex-1 h-3"
-                            indicatorClassName={
-                              item.progress_persen >= 71 ? 'bg-emerald-500' :
-                              item.progress_persen >= 51 ? 'bg-amber-500' : 'bg-red-500'
-                            }
-                          />
-                          <span className={`text-sm font-semibold min-w-[50px] text-right ${
-                            item.progress_persen >= 71 ? 'text-emerald-600' :
-                            item.progress_persen >= 51 ? 'text-amber-600' : 'text-red-500'
-                          }`}>
-                            {item.progress_persen}%
+                    <ProgressRow key={item.opd_id} item={item} formatNumber={formatNumber} />
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          ) : (
                           </span>
                         </div>
                       </td>
