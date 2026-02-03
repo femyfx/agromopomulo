@@ -502,15 +502,6 @@ export const AdminLaporanPage = () => {
               </table>
             </div>
           ) : (
-                          </span>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          ) : (
             <p className="text-slate-500 text-center py-8">
               {kategoriFilter !== 'all' 
                 ? `Belum ada data untuk kategori ${kategoriOptions.find(o => o.value === kategoriFilter)?.label}. Tambahkan jumlah personil di menu Kelola OPD.`
