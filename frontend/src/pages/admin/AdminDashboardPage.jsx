@@ -203,7 +203,7 @@ export const AdminDashboardPage = () => {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-        {/* OPD Stats Chart - Lazy loaded */}
+        {/* OPD Stats Chart */}
         {stats?.opd_stats?.length > 0 && (
           <Card>
             <CardHeader>
@@ -213,39 +213,37 @@ export const AdminDashboardPage = () => {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <Suspense fallback={<ChartLoader />}>
-                <div className="h-[450px]">
-                  <LazyResponsiveContainer width="100%" height="100%">
-                    <LazyBarChart 
-                      data={stats.opd_stats.slice(0, 5)} 
-                      margin={{ top: 20, right: 30, left: 20, bottom: 160 }}
-                    >
-                      <LazyCartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
-                      <LazyXAxis 
-                        dataKey="opd_nama" 
-                        stroke="#64748b" 
-                        fontSize={10}
-                        angle={-45}
-                        textAnchor="end"
-                        height={160}
-                        interval={0}
-                        tick={{ dy: 10 }}
-                        tickFormatter={(value) => value.length > 18 ? value.slice(0, 18) + '...' : value}
-                      />
-                      <LazyYAxis 
-                        stroke="#64748b" 
-                        fontSize={12}
-                        tickFormatter={(value) => formatNumber(value)}
-                      />
-                      <LazyTooltip 
-                        formatter={(value) => [formatNumber(value), 'Pohon']}
-                        contentStyle={{ backgroundColor: 'white', border: '1px solid #e2e8f0', borderRadius: '8px' }}
-                      />
-                      <LazyBar dataKey="jumlah_pohon" fill="#059669" radius={[4, 4, 0, 0]} />
-                    </LazyBarChart>
-                  </LazyResponsiveContainer>
-                </div>
-              </Suspense>
+              <div className="h-[450px]">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart 
+                    data={stats.opd_stats.slice(0, 5)} 
+                    margin={{ top: 20, right: 30, left: 20, bottom: 160 }}
+                  >
+                    <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
+                    <XAxis 
+                      dataKey="opd_nama" 
+                      stroke="#64748b" 
+                      fontSize={10}
+                      angle={-45}
+                      textAnchor="end"
+                      height={160}
+                      interval={0}
+                      tick={{ dy: 10 }}
+                      tickFormatter={(value) => value.length > 18 ? value.slice(0, 18) + '...' : value}
+                    />
+                    <YAxis 
+                      stroke="#64748b" 
+                      fontSize={12}
+                      tickFormatter={(value) => formatNumber(value)}
+                    />
+                    <Tooltip 
+                      formatter={(value) => [formatNumber(value), 'Pohon']}
+                      contentStyle={{ backgroundColor: 'white', border: '1px solid #e2e8f0', borderRadius: '8px' }}
+                    />
+                    <Bar dataKey="jumlah_pohon" fill="#059669" radius={[4, 4, 0, 0]} />
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
             </CardContent>
           </Card>
         )}
