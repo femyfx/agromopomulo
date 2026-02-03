@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useCallback, memo, lazy, Suspense } from 'react';
 import { FileText, TreePine, Users, Building2, Calendar, FileDown, TrendingUp, Target, Filter } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/card';
 import { Button } from '../../components/ui/button';
@@ -6,7 +6,81 @@ import { Progress } from '../../components/ui/progress';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../components/ui/select';
 import { statsApi, partisipasiApi, exportApi } from '../../lib/api';
 import { toast } from 'sonner';
-import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip, BarChart, Bar, XAxis, YAxis, CartesianGrid } from 'recharts';
+
+// Lazy load heavy chart components
+const PieChart = lazy(() => import('recharts').then(m => ({ default: m.PieChart })));
+const Pie = lazy(() => import('recharts').then(m => ({ default: m.Pie })));
+const Cell = lazy(() => import('recharts').then(m => ({ default: m.Cell })));
+const ResponsiveContainer = lazy(() => import('recharts').then(m => ({ default: m.ResponsiveContainer })));
+const Legend = lazy(() => import('recharts').then(m => ({ default: m.Legend })));
+const Tooltip = lazy(() => import('recharts').then(m => ({ default: m.Tooltip })));
+const BarChart = lazy(() => import('recharts').then(m => ({ default: m.BarChart })));
+const Bar = lazy(() => import('recharts').then(m => ({ default: m.Bar })));
+const XAxis = lazy(() => import('recharts').then(m => ({ default: m.XAxis })));
+const YAxis = lazy(() => import('recharts').then(m => ({ default: m.YAxis })));
+const CartesianGrid = lazy(() => import('recharts').then(m => ({ default: m.CartesianGrid })));
+
+// Chart loading fallback
+const ChartLoader = memo(() => (
+  <div className="h-[300px] flex items-center justify-center bg-slate-50 rounded-lg">
+    <div className="text-center">
+      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-600 mx-auto"></div>
+      <p className="mt-2 text-sm text-slate-500">Memuat grafik...</p>
+    </div>
+  </div>
+));
+ChartLoader.displayName = 'ChartLoader';
+
+// Memoized progress row
+const ProgressRow = memo(({ item, formatNumber }) => (
+  <tr>
+    <td className="font-medium">{item.opd_nama}</td>
+    <td className="text-center">
+      <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${
+        item.kategori === 'OPD' ? 'bg-emerald-100 text-emerald-700' :
+        item.kategori === 'DESA' ? 'bg-blue-100 text-blue-700' :
+        item.kategori === 'KECAMATAN' ? 'bg-purple-100 text-purple-700' :
+        'bg-amber-100 text-amber-700'
+      }`}>
+        {item.kategori || 'OPD'}
+      </span>
+    </td>
+    <td className="text-center">
+      <span className="inline-flex items-center gap-1 text-blue-600">
+        <Users className="h-4 w-4" />
+        {formatNumber(item.jumlah_personil)}
+      </span>
+    </td>
+    <td className="text-center">
+      <span className="inline-flex items-center gap-1 text-slate-600">
+        <Target className="h-4 w-4" />
+        {formatNumber(item.target_pohon)}
+      </span>
+    </td>
+    <td className="text-center font-semibold text-emerald-600">
+      {formatNumber(item.pohon_tertanam)}
+    </td>
+    <td>
+      <div className="flex items-center gap-2">
+        <Progress 
+          value={item.progress_persen} 
+          className="flex-1 h-3"
+          indicatorClassName={
+            item.progress_persen >= 71 ? 'bg-emerald-500' :
+            item.progress_persen >= 51 ? 'bg-amber-500' : 'bg-red-500'
+          }
+        />
+        <span className={`text-sm font-semibold min-w-[50px] text-right ${
+          item.progress_persen >= 71 ? 'text-emerald-600' :
+          item.progress_persen >= 51 ? 'text-amber-600' : 'text-red-500'
+        }`}>
+          {item.progress_persen}%
+        </span>
+      </div>
+    </td>
+  </tr>
+));
+ProgressRow.displayName = 'ProgressRow';
 
 export const AdminLaporanPage = () => {
   const [stats, setStats] = useState(null);
@@ -24,11 +98,7 @@ export const AdminLaporanPage = () => {
     { value: 'PUBLIK', label: 'Publik' }
   ];
 
-  useEffect(() => {
-    loadData();
-  }, []);
-
-  const loadData = async () => {
+  const loadData = useCallback(async () => {
     try {
       const [statsRes, partisipasiRes, progressRes] = await Promise.all([
         statsApi.get(),
@@ -43,9 +113,13 @@ export const AdminLaporanPage = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
-  const handleExportExcel = async () => {
+  useEffect(() => {
+    loadData();
+  }, [loadData]);
+
+  const handleExportExcel = useCallback(async () => {
     setExporting(true);
     try {
       const res = await exportApi.excel();
