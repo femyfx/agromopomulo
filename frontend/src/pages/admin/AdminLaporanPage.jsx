@@ -333,6 +333,7 @@ export const AdminLaporanPage = () => {
                   </PieChart>
                 </ResponsiveContainer>
               </div>
+              </Suspense>
             </CardContent>
           </Card>
         )}
@@ -344,37 +345,39 @@ export const AdminLaporanPage = () => {
               <CardTitle>Kontribusi per OPD</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="h-[450px]">
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart 
-                    data={stats.opd_stats.slice(0, 5)} 
-                    margin={{ top: 20, right: 30, left: 20, bottom: 160 }}
-                  >
-                    <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
-                    <XAxis 
-                      dataKey="opd_nama" 
-                      stroke="#64748b" 
-                      fontSize={10}
-                      angle={-45}
-                      textAnchor="end"
-                      height={160}
-                      interval={0}
-                      tick={{ dy: 10 }}
-                      tickFormatter={(value) => value.length > 18 ? value.slice(0, 18) + '...' : value}
-                    />
-                    <YAxis 
-                      stroke="#64748b" 
-                      fontSize={12}
-                      tickFormatter={(value) => formatNumber(value)}
-                    />
-                    <Tooltip 
-                      formatter={(value) => [formatNumber(value), 'Pohon']}
-                      contentStyle={{ backgroundColor: 'white', border: '1px solid #e2e8f0', borderRadius: '8px' }}
-                    />
-                    <Bar dataKey="jumlah_pohon" fill="#059669" radius={[4, 4, 0, 0]} />
-                  </BarChart>
-                </ResponsiveContainer>
-              </div>
+              <Suspense fallback={<ChartLoader />}>
+                <div className="h-[450px]">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart 
+                      data={stats.opd_stats.slice(0, 5)} 
+                      margin={{ top: 20, right: 30, left: 20, bottom: 160 }}
+                    >
+                      <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
+                      <XAxis 
+                        dataKey="opd_nama" 
+                        stroke="#64748b" 
+                        fontSize={10}
+                        angle={-45}
+                        textAnchor="end"
+                        height={160}
+                        interval={0}
+                        tick={{ dy: 10 }}
+                        tickFormatter={(value) => value.length > 18 ? value.slice(0, 18) + '...' : value}
+                      />
+                      <YAxis 
+                        stroke="#64748b" 
+                        fontSize={12}
+                        tickFormatter={(value) => formatNumber(value)}
+                      />
+                      <Tooltip 
+                        formatter={(value) => [formatNumber(value), 'Pohon']}
+                        contentStyle={{ backgroundColor: 'white', border: '1px solid #e2e8f0', borderRadius: '8px' }}
+                      />
+                      <Bar dataKey="jumlah_pohon" fill="#059669" radius={[4, 4, 0, 0]} />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </div>
+              </Suspense>
             </CardContent>
           </Card>
         )}
