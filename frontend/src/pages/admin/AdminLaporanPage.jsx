@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useCallback, memo, lazy, Suspense } from 'react';
+import { useState, useEffect, useMemo, useCallback, memo } from 'react';
 import { FileText, TreePine, Users, Building2, Calendar, FileDown, TrendingUp, Target, Filter } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/card';
 import { Button } from '../../components/ui/button';
@@ -6,30 +6,7 @@ import { Progress } from '../../components/ui/progress';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../components/ui/select';
 import { statsApi, partisipasiApi, exportApi } from '../../lib/api';
 import { toast } from 'sonner';
-
-// Lazy load heavy chart components
-const PieChart = lazy(() => import('recharts').then(m => ({ default: m.PieChart })));
-const Pie = lazy(() => import('recharts').then(m => ({ default: m.Pie })));
-const Cell = lazy(() => import('recharts').then(m => ({ default: m.Cell })));
-const ResponsiveContainer = lazy(() => import('recharts').then(m => ({ default: m.ResponsiveContainer })));
-const Legend = lazy(() => import('recharts').then(m => ({ default: m.Legend })));
-const Tooltip = lazy(() => import('recharts').then(m => ({ default: m.Tooltip })));
-const BarChart = lazy(() => import('recharts').then(m => ({ default: m.BarChart })));
-const Bar = lazy(() => import('recharts').then(m => ({ default: m.Bar })));
-const XAxis = lazy(() => import('recharts').then(m => ({ default: m.XAxis })));
-const YAxis = lazy(() => import('recharts').then(m => ({ default: m.YAxis })));
-const CartesianGrid = lazy(() => import('recharts').then(m => ({ default: m.CartesianGrid })));
-
-// Chart loading fallback
-const ChartLoader = memo(() => (
-  <div className="h-[300px] flex items-center justify-center bg-slate-50 rounded-lg">
-    <div className="text-center">
-      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-600 mx-auto"></div>
-      <p className="mt-2 text-sm text-slate-500">Memuat grafik...</p>
-    </div>
-  </div>
-));
-ChartLoader.displayName = 'ChartLoader';
+import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip, BarChart, Bar, XAxis, YAxis, CartesianGrid } from 'recharts';
 
 // Memoized progress row
 const ProgressRow = memo(({ item, formatNumber }) => (
