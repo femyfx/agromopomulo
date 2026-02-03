@@ -151,6 +151,7 @@ export const AdminLaporanPage = () => {
       document.body.appendChild(link);
       link.click();
       link.remove();
+      window.URL.revokeObjectURL(url);
       toast.success('Export PDF berhasil');
     } catch (error) {
       console.error('Export failed:', error);
@@ -158,11 +159,15 @@ export const AdminLaporanPage = () => {
     } finally {
       setExporting(false);
     }
-  };
+  }, []);
 
-  const formatNumber = (num) => {
+  const formatNumber = useCallback((num) => {
     return new Intl.NumberFormat('id-ID').format(num || 0);
-  };
+  }, []);
+
+  const handleKategoriChange = useCallback((value) => {
+    setKategoriFilter(value);
+  }, []);
 
   // Filter progress data by kategori
   const filteredProgress = useMemo(() => {
