@@ -441,7 +441,7 @@ export const AdminLaporanPage = () => {
             </div>
             <div className="flex items-center gap-2">
               <Filter className="h-4 w-4 text-slate-500" />
-              <Select value={kategoriFilter} onValueChange={setKategoriFilter}>
+              <Select value={kategoriFilter} onValueChange={handleKategoriChange}>
                 <SelectTrigger className="w-[160px]" data-testid="filter-kategori-progress">
                   <SelectValue placeholder="Filter Kategori" />
                 </SelectTrigger>
