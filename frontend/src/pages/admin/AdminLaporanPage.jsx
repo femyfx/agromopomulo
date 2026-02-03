@@ -130,6 +130,7 @@ export const AdminLaporanPage = () => {
       document.body.appendChild(link);
       link.click();
       link.remove();
+      window.URL.revokeObjectURL(url);
       toast.success('Export Excel berhasil');
     } catch (error) {
       console.error('Export failed:', error);
@@ -137,9 +138,9 @@ export const AdminLaporanPage = () => {
     } finally {
       setExporting(false);
     }
-  };
+  }, []);
 
-  const handleExportPDF = async () => {
+  const handleExportPDF = useCallback(async () => {
     setExporting(true);
     try {
       const res = await exportApi.pdf();
