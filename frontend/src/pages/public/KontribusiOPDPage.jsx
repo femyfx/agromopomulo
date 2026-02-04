@@ -190,7 +190,9 @@ export const KontribusiOPDPage = () => {
               ) : (
                 <Card className="stat-card">
                   <CardContent className="p-12 text-center">
-                    <Building2 className="h-16 w-16 text-slate-300 mx-auto mb-4" />
+                    <div className="flex justify-center mb-4">
+                      <BuildingIcon size="lg" />
+                    </div>
                     <p className="text-slate-500">Belum ada data kontribusi OPD</p>
                   </CardContent>
                 </Card>
