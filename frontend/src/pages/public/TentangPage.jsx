@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
-import { TreePine, Target, Users, Leaf, Globe, Award } from 'lucide-react';
+import { Leaf } from 'lucide-react';
 import { Card, CardContent } from '../../components/ui/card';
 import { motion } from 'framer-motion';
 import { settingsApi } from '../../lib/api';
+import { TargetIcon, AwardIcon, GlobeIcon, UsersIcon, TreeIcon } from '../../components/EnvironmentIcons';
 
 export const TentangPage = () => {
   const [settings, setSettings] = useState(null);
