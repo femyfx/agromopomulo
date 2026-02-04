@@ -127,13 +127,13 @@ class PartisipasiUpdate(BaseModel):
 
 class PartisipasiResponse(BaseModel):
     id: str
-    email: str
+    email: Optional[str] = None
     nama_lengkap: str
-    nip: str
+    nip: Optional[str] = None
     opd_id: str
     opd_nama: Optional[str] = None
-    alamat: str
-    nomor_whatsapp: str
+    alamat: Optional[str] = None
+    nomor_whatsapp: Optional[str] = None
     jumlah_pohon: int
     jenis_pohon: str
     sumber_bibit: Optional[str] = None
