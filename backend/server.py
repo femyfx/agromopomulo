@@ -97,12 +97,12 @@ class OPDResponse(BaseModel):
     created_at: str
 
 class PartisipasiCreate(BaseModel):
-    email: EmailStr
+    email: Optional[EmailStr] = None
     nama_lengkap: str
-    nip: str
+    nip: Optional[str] = None
     opd_id: str
-    alamat: str
-    nomor_whatsapp: str
+    alamat: Optional[str] = None
+    nomor_whatsapp: Optional[str] = None
     jumlah_pohon: int
     jenis_pohon: str
     sumber_bibit: str
