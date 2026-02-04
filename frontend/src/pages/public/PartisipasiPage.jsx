@@ -722,10 +722,10 @@ export const PartisipasiPage = () => {
                             id="latitude"
                             name="latitude"
                             type="text"
-                            placeholder="Contoh: 0.5432"
+                            placeholder="Contoh: 0.78"
                             value={formData.latitude}
                             onChange={handleChange}
-                            className="form-input"
+                            className={`form-input ${locationValidation.valid === false ? 'border-red-300' : locationValidation.valid === true ? 'border-emerald-300' : ''}`}
                             data-testid="input-latitude"
                           />
                         </div>
@@ -735,20 +735,49 @@ export const PartisipasiPage = () => {
                             id="longitude"
                             name="longitude"
                             type="text"
-                            placeholder="Contoh: 123.4567"
+                            placeholder="Contoh: 122.80"
                             value={formData.longitude}
                             onChange={handleChange}
-                            className="form-input"
+                            className={`form-input ${locationValidation.valid === false ? 'border-red-300' : locationValidation.valid === true ? 'border-emerald-300' : ''}`}
                             data-testid="input-longitude"
                           />
                         </div>
                       </div>
+                      
                       <p className="text-xs text-slate-500">
-                        Masukkan koordinat secara manual atau klik "Pilih Lokasi Saat Ini" untuk mengambil lokasi GPS Anda
+                        Koordinat harus berada dalam wilayah Kabupaten Gorontalo Utara (Lat: 0.4° - 1.17°, Lng: 122.3° - 123.3°)
                       </p>
                       
-                      {/* Preview coordinates if both filled */}
-                      {formData.latitude && formData.longitude && (
+                      {/* Location validation status */}
+                      {locationValidation.message && (
+                        <div className={`flex items-start gap-2 p-3 rounded-lg border ${
+                          locationValidation.valid === true 
+                            ? 'bg-emerald-50 border-emerald-200' 
+                            : locationValidation.valid === false
+                              ? 'bg-red-50 border-red-200'
+                              : 'bg-slate-50 border-slate-200'
+                        }`}>
+                          {locationValidation.valid === true ? (
+                            <CheckCircle className="h-4 w-4 text-emerald-600 flex-shrink-0 mt-0.5" />
+                          ) : locationValidation.valid === false ? (
+                            <AlertCircle className="h-4 w-4 text-red-600 flex-shrink-0 mt-0.5" />
+                          ) : (
+                            <MapPin className="h-4 w-4 text-slate-400 flex-shrink-0 mt-0.5" />
+                          )}
+                          <span className={`text-sm ${
+                            locationValidation.valid === true 
+                              ? 'text-emerald-700' 
+                              : locationValidation.valid === false
+                                ? 'text-red-700'
+                                : 'text-slate-600'
+                          }`}>
+                            {locationValidation.message}
+                          </span>
+                        </div>
+                      )}
+                      
+                      {/* Preview coordinates if both filled and valid */}
+                      {formData.latitude && formData.longitude && locationValidation.valid === true && (
                         <div className="flex items-center gap-2 p-2 bg-emerald-50 rounded-lg border border-emerald-200">
                           <MapPin className="h-4 w-4 text-emerald-600 flex-shrink-0" />
                           <span className="text-sm text-emerald-700">
