@@ -123,33 +123,61 @@ const MaskOverlay = () => {
   const boundaryCoords = GORONTALO_UTARA_BOUNDARY.geometry.coordinates[0]
     .map(coord => [coord[1], coord[0]]); // Convert from [lng, lat] to [lat, lng]
   
-  // For polygon with hole in Leaflet/react-leaflet:
-  // We need outer ring (larger) first, then inner ring (hole) second
-  // The winding directions must be opposite
+  // Calculate bounding box of Gorontalo Utara
+  const lats = boundaryCoords.map(c => c[0]);
+  const lngs = boundaryCoords.map(c => c[1]);
+  const minLat = Math.min(...lats) - 0.1;
+  const maxLat = Math.max(...lats) + 0.1;
+  const minLng = Math.min(...lngs) - 0.1;
+  const maxLng = Math.max(...lngs) + 0.1;
   
-  // Large outer boundary (clockwise)
-  const outerBoundary = [
+  // Create 4 rectangles around the boundary to create mask effect
+  const maskStyle = {
+    fillColor: '#0f172a',
+    fillOpacity: 0.5,
+    stroke: false,
+    interactive: false
+  };
+  
+  // Top mask (above boundary)
+  const topMask = [
     [3.0, 119.0],
     [3.0, 126.0],
-    [-2.0, 126.0],
-    [-2.0, 119.0],
-    [3.0, 119.0] // close the polygon
+    [maxLat, 126.0],
+    [maxLat, 119.0]
   ];
   
-  // Inner boundary (hole) - needs to be counter-clockwise if outer is clockwise
-  // Our boundary coords from GeoJSON are typically counter-clockwise
-  const innerHole = boundaryCoords;
+  // Bottom mask (below boundary)
+  const bottomMask = [
+    [minLat, 119.0],
+    [minLat, 126.0],
+    [-2.0, 126.0],
+    [-2.0, 119.0]
+  ];
+  
+  // Left mask (left of boundary)
+  const leftMask = [
+    [maxLat, 119.0],
+    [maxLat, minLng],
+    [minLat, minLng],
+    [minLat, 119.0]
+  ];
+  
+  // Right mask (right of boundary)
+  const rightMask = [
+    [maxLat, maxLng],
+    [maxLat, 126.0],
+    [minLat, 126.0],
+    [minLat, maxLng]
+  ];
 
   return (
-    <Polygon
-      positions={[outerBoundary, innerHole]}
-      pathOptions={{
-        fillColor: '#0f172a',
-        fillOpacity: 0.5,
-        stroke: false,
-        interactive: false
-      }}
-    />
+    <>
+      <Polygon positions={topMask} pathOptions={maskStyle} />
+      <Polygon positions={bottomMask} pathOptions={maskStyle} />
+      <Polygon positions={leftMask} pathOptions={maskStyle} />
+      <Polygon positions={rightMask} pathOptions={maskStyle} />
+    </>
   );
 };
 
