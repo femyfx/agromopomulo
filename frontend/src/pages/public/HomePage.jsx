@@ -16,26 +16,26 @@ const TotalPohonIcon = () => (
         <stop offset="100%" stopColor="#c8e6c9"/>
       </linearGradient>
       <filter id="greenGlow" x="-20%" y="-20%" width="140%" height="140%">
-        <feGaussianBlur stdDeviation="3" result="blur"/>
+        <feGaussianBlur stdDeviation="2" result="blur"/>
         <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
       </filter>
     </defs>
     {/* Outer glow ring */}
-    <circle cx="50" cy="50" r="47" fill="none" stroke="#a5d6a7" strokeWidth="4" opacity="0.5" filter="url(#greenGlow)"/>
+    <circle cx="50" cy="50" r="47" fill="none" stroke="#a5d6a7" strokeWidth="3" opacity="0.6" filter="url(#greenGlow)"/>
     {/* Main circle background */}
     <circle cx="50" cy="50" r="42" fill="url(#greenBg)" stroke="#81c784" strokeWidth="2"/>
-    {/* Tree cross-section rings */}
-    <circle cx="50" cy="50" r="30" fill="none" stroke="#a5d6a7" strokeWidth="3" opacity="0.6"/>
-    <circle cx="50" cy="50" r="22" fill="none" stroke="#81c784" strokeWidth="2" opacity="0.5"/>
-    <circle cx="50" cy="50" r="14" fill="none" stroke="#66bb6a" strokeWidth="2" opacity="0.4"/>
-    {/* Center with sprout */}
-    <circle cx="50" cy="52" r="8" fill="#c8e6c9"/>
-    {/* Sprout/Leaf emerging from center */}
-    <path d="M50 48 Q44 38 50 28 Q56 38 50 48" fill="#4caf50" stroke="#2e7d32" strokeWidth="1"/>
-    <path d="M50 48 L50 32" stroke="#2e7d32" strokeWidth="1.5" fill="none"/>
-    {/* Small leaves */}
-    <path d="M50 38 Q42 34 38 28" fill="none" stroke="#4caf50" strokeWidth="2" strokeLinecap="round"/>
-    <path d="M50 38 Q58 34 62 28" fill="none" stroke="#4caf50" strokeWidth="2" strokeLinecap="round"/>
+    {/* Tree trunk cross-section rings */}
+    <circle cx="50" cy="52" r="28" fill="none" stroke="#c8e6c9" strokeWidth="4"/>
+    <circle cx="50" cy="52" r="20" fill="none" stroke="#a5d6a7" strokeWidth="3"/>
+    <circle cx="50" cy="52" r="12" fill="none" stroke="#81c784" strokeWidth="2"/>
+    {/* Center */}
+    <circle cx="50" cy="52" r="6" fill="#c8e6c9"/>
+    {/* Sprout/Leaf emerging */}
+    <path d="M50 46 Q42 32 50 22 Q58 32 50 46" fill="#4caf50" stroke="#2e7d32" strokeWidth="1.5"/>
+    <path d="M50 46 L50 26" stroke="#2e7d32" strokeWidth="1.5" fill="none"/>
+    {/* Small side veins */}
+    <path d="M50 34 Q44 30 40 24" fill="none" stroke="#2e7d32" strokeWidth="1.5" strokeLinecap="round"/>
+    <path d="M50 34 Q56 30 60 24" fill="none" stroke="#2e7d32" strokeWidth="1.5" strokeLinecap="round"/>
   </svg>
 );
 
@@ -47,28 +47,28 @@ const PartisipanIcon = () => (
         <stop offset="100%" stopColor="#ffecb3"/>
       </linearGradient>
       <filter id="goldGlow" x="-20%" y="-20%" width="140%" height="140%">
-        <feGaussianBlur stdDeviation="3" result="blur"/>
+        <feGaussianBlur stdDeviation="2" result="blur"/>
         <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
       </filter>
     </defs>
     {/* Outer glow ring */}
-    <circle cx="50" cy="50" r="47" fill="none" stroke="#ffe082" strokeWidth="4" opacity="0.5" filter="url(#goldGlow)"/>
+    <circle cx="50" cy="50" r="47" fill="none" stroke="#ffe082" strokeWidth="3" opacity="0.6" filter="url(#goldGlow)"/>
     {/* Main circle background */}
     <circle cx="50" cy="50" r="42" fill="url(#goldBg)" stroke="#ffd54f" strokeWidth="2"/>
-    {/* Cupped hands */}
-    <path d="M28 58 Q24 48 30 40 Q36 38 42 44 L46 50" fill="none" stroke="#8d6e63" strokeWidth="2.5" strokeLinecap="round"/>
-    <path d="M72 58 Q76 48 70 40 Q64 38 58 44 L54 50" fill="none" stroke="#8d6e63" strokeWidth="2.5" strokeLinecap="round"/>
-    <path d="M28 58 Q38 72 50 74 Q62 72 72 58" fill="none" stroke="#8d6e63" strokeWidth="2.5" strokeLinecap="round"/>
-    {/* Soil/base in hands */}
-    <ellipse cx="50" cy="58" rx="14" ry="6" fill="#a1887f"/>
-    {/* Seedling stem */}
-    <path d="M50 52 L50 34" stroke="#558b2f" strokeWidth="2.5" strokeLinecap="round"/>
-    {/* Two leaves */}
-    <ellipse cx="42" cy="32" rx="8" ry="12" fill="#8bc34a" stroke="#689f38" strokeWidth="1" transform="rotate(-25 42 32)"/>
-    <ellipse cx="58" cy="32" rx="8" ry="12" fill="#8bc34a" stroke="#689f38" strokeWidth="1" transform="rotate(25 58 32)"/>
+    {/* Cupped hand - stylized */}
+    <path d="M26 56 Q22 46 28 38 Q34 34 42 42 L48 50" fill="none" stroke="#6d4c41" strokeWidth="2.5" strokeLinecap="round"/>
+    <path d="M74 56 Q78 46 72 38 Q66 34 58 42 L52 50" fill="none" stroke="#6d4c41" strokeWidth="2.5" strokeLinecap="round"/>
+    <path d="M26 56 Q36 72 50 74 Q64 72 74 56" fill="none" stroke="#6d4c41" strokeWidth="2.5" strokeLinecap="round"/>
+    {/* Soil in hands */}
+    <ellipse cx="50" cy="58" rx="16" ry="8" fill="#a1887f"/>
+    {/* Plant stem */}
+    <path d="M50 52 L50 30" stroke="#558b2f" strokeWidth="3" strokeLinecap="round"/>
+    {/* Two leaves - larger */}
+    <ellipse cx="40" cy="30" rx="10" ry="14" fill="#8bc34a" stroke="#689f38" strokeWidth="1.5" transform="rotate(-30 40 30)"/>
+    <ellipse cx="60" cy="30" rx="10" ry="14" fill="#8bc34a" stroke="#689f38" strokeWidth="1.5" transform="rotate(30 60 30)"/>
     {/* Leaf veins */}
-    <path d="M42 38 L42 26" stroke="#689f38" strokeWidth="1" transform="rotate(-25 42 32)"/>
-    <path d="M58 38 L58 26" stroke="#689f38" strokeWidth="1" transform="rotate(25 58 32)"/>
+    <path d="M40 38 L40 22" stroke="#689f38" strokeWidth="1" transform="rotate(-30 40 30)"/>
+    <path d="M60 38 L60 22" stroke="#689f38" strokeWidth="1" transform="rotate(30 60 30)"/>
   </svg>
 );
 
@@ -80,34 +80,33 @@ const OPDTerlibatIcon = () => (
         <stop offset="100%" stopColor="#bbdefb"/>
       </linearGradient>
       <filter id="blueGlow" x="-20%" y="-20%" width="140%" height="140%">
-        <feGaussianBlur stdDeviation="3" result="blur"/>
+        <feGaussianBlur stdDeviation="2" result="blur"/>
         <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
       </filter>
     </defs>
     {/* Outer glow ring */}
-    <circle cx="50" cy="50" r="47" fill="none" stroke="#90caf9" strokeWidth="4" opacity="0.5" filter="url(#blueGlow)"/>
+    <circle cx="50" cy="50" r="47" fill="none" stroke="#90caf9" strokeWidth="3" opacity="0.6" filter="url(#blueGlow)"/>
     {/* Main circle background */}
     <circle cx="50" cy="50" r="42" fill="url(#blueBg)" stroke="#64b5f6" strokeWidth="2"/>
-    {/* Building base */}
-    <rect x="32" y="42" width="36" height="30" fill="#42a5f5" rx="2"/>
-    {/* Building tower/roof */}
-    <rect x="42" y="30" width="16" height="12" fill="#1e88e5"/>
+    {/* Building body */}
+    <rect x="30" y="44" width="40" height="32" fill="#42a5f5" rx="2"/>
+    {/* Tower */}
+    <rect x="40" y="30" width="20" height="14" fill="#1e88e5"/>
     {/* Flag pole */}
-    <line x1="50" y1="30" x2="50" y2="20" stroke="#1565c0" strokeWidth="2"/>
+    <line x1="50" y1="30" x2="50" y2="18" stroke="#1565c0" strokeWidth="2"/>
     {/* Flag */}
-    <path d="M50 20 L60 24 L50 28 Z" fill="#ef5350"/>
-    {/* Windows row 1 */}
-    <rect x="36" y="46" width="6" height="6" fill="#e3f2fd" rx="1"/>
-    <rect x="47" y="46" width="6" height="6" fill="#e3f2fd" rx="1"/>
-    <rect x="58" y="46" width="6" height="6" fill="#e3f2fd" rx="1"/>
-    {/* Windows row 2 */}
-    <rect x="36" y="56" width="6" height="6" fill="#e3f2fd" rx="1"/>
-    <rect x="58" y="56" width="6" height="6" fill="#e3f2fd" rx="1"/>
+    <path d="M50 18 L62 22 L50 26 Z" fill="#ef5350"/>
+    {/* Windows - row 1 */}
+    <rect x="34" y="48" width="8" height="7" fill="#e3f2fd" rx="1"/>
+    <rect x="46" y="48" width="8" height="7" fill="#e3f2fd" rx="1"/>
+    <rect x="58" y="48" width="8" height="7" fill="#e3f2fd" rx="1"/>
+    {/* Windows - row 2 */}
+    <rect x="34" y="60" width="8" height="7" fill="#e3f2fd" rx="1"/>
+    <rect x="58" y="60" width="8" height="7" fill="#e3f2fd" rx="1"/>
     {/* Door */}
-    <rect x="47" y="56" width="6" height="16" fill="#e3f2fd" rx="1"/>
-    {/* Decorative leaf on right */}
-    <ellipse cx="76" cy="58" rx="6" ry="12" fill="#66bb6a" stroke="#43a047" strokeWidth="1" transform="rotate(15 76 58)"/>
-    <path d="M76 66 L76 50" stroke="#43a047" strokeWidth="1" transform="rotate(15 76 58)"/>
+    <rect x="46" y="60" width="8" height="16" fill="#e3f2fd" rx="1"/>
+    {/* Decorative leaf on side */}
+    <ellipse cx="78" cy="60" rx="5" ry="10" fill="#66bb6a" stroke="#43a047" strokeWidth="1" transform="rotate(15 78 60)"/>
   </svg>
 );
 
@@ -119,29 +118,29 @@ const LokasiTanamIcon = () => (
         <stop offset="100%" stopColor="#ffccbc"/>
       </linearGradient>
       <filter id="coralGlow" x="-20%" y="-20%" width="140%" height="140%">
-        <feGaussianBlur stdDeviation="3" result="blur"/>
+        <feGaussianBlur stdDeviation="2" result="blur"/>
         <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
       </filter>
     </defs>
     {/* Outer glow ring */}
-    <circle cx="50" cy="50" r="47" fill="none" stroke="#ffab91" strokeWidth="4" opacity="0.5" filter="url(#coralGlow)"/>
+    <circle cx="50" cy="50" r="47" fill="none" stroke="#ffab91" strokeWidth="3" opacity="0.6" filter="url(#coralGlow)"/>
     {/* Main circle background */}
     <circle cx="50" cy="50" r="42" fill="url(#coralBg)" stroke="#ff8a65" strokeWidth="2"/>
-    {/* Ground segments - blocky terrain */}
-    <path d="M25 65 L35 60 L45 62 L55 58 L65 62 L75 65 L75 75 L25 75 Z" fill="#8bc34a"/>
-    <path d="M30 68 L40 64 L50 66 L60 62 L70 68 L70 75 L30 75 Z" fill="#7cb342"/>
-    {/* Large leaf left */}
-    <ellipse cx="35" cy="45" rx="7" ry="14" fill="#66bb6a" stroke="#43a047" strokeWidth="1.5" transform="rotate(-10 35 45)"/>
-    <path d="M35 55 L35 35" stroke="#43a047" strokeWidth="1.5" transform="rotate(-10 35 45)"/>
-    {/* Large leaf right */}
-    <ellipse cx="65" cy="45" rx="7" ry="14" fill="#66bb6a" stroke="#43a047" strokeWidth="1.5" transform="rotate(10 65 45)"/>
-    <path d="M65 55 L65 35" stroke="#43a047" strokeWidth="1.5" transform="rotate(10 65 45)"/>
-    {/* Center plant - main sprout */}
-    <ellipse cx="50" cy="42" rx="9" ry="16" fill="#4caf50" stroke="#388e3c" strokeWidth="1.5"/>
-    <path d="M50 54 L50 30" stroke="#388e3c" strokeWidth="2"/>
+    {/* Ground/terrain base - segmented hills */}
+    <path d="M15 68 Q25 60 35 64 Q50 56 65 64 Q75 60 85 68 L85 80 L15 80 Z" fill="#8bc34a"/>
+    <path d="M20 72 Q35 66 50 70 Q65 66 80 72 L80 80 L20 80 Z" fill="#7cb342"/>
+    {/* Left large leaf */}
+    <ellipse cx="32" cy="44" rx="8" ry="16" fill="#66bb6a" stroke="#43a047" strokeWidth="1.5" transform="rotate(-15 32 44)"/>
+    <path d="M32 56 L32 32" stroke="#43a047" strokeWidth="1.5" transform="rotate(-15 32 44)"/>
+    {/* Right large leaf */}
+    <ellipse cx="68" cy="44" rx="8" ry="16" fill="#66bb6a" stroke="#43a047" strokeWidth="1.5" transform="rotate(15 68 44)"/>
+    <path d="M68 56 L68 32" stroke="#43a047" strokeWidth="1.5" transform="rotate(15 68 44)"/>
+    {/* Center main plant */}
+    <ellipse cx="50" cy="40" rx="10" ry="18" fill="#4caf50" stroke="#388e3c" strokeWidth="1.5"/>
+    <path d="M50 54 L50 26" stroke="#388e3c" strokeWidth="2"/>
     {/* Small sprouts */}
-    <ellipse cx="42" cy="55" rx="4" ry="8" fill="#81c784" stroke="#66bb6a" strokeWidth="1"/>
-    <ellipse cx="58" cy="55" rx="4" ry="8" fill="#81c784" stroke="#66bb6a" strokeWidth="1"/>
+    <ellipse cx="40" cy="58" rx="4" ry="9" fill="#81c784" stroke="#66bb6a" strokeWidth="1"/>
+    <ellipse cx="60" cy="58" rx="4" ry="9" fill="#81c784" stroke="#66bb6a" strokeWidth="1"/>
   </svg>
 );
 
