@@ -397,38 +397,30 @@ export const HomePage = () => {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
               <StatCard
-                icon={TreePine}
+                iconType="pohon"
                 value={formatNumber(stats?.total_pohon)}
                 label="Total Pohon"
-                gradientFrom="from-emerald-400"
-                gradientTo="to-emerald-600"
                 testId="stat-total-pohon"
                 delay={0.4}
               />
               <StatCard
-                icon={Users}
+                iconType="partisipan"
                 value={formatNumber(stats?.total_partisipan)}
                 label="Partisipan"
-                gradientFrom="from-amber-400"
-                gradientTo="to-amber-600"
                 testId="stat-partisipan"
                 delay={0.5}
               />
               <StatCard
-                icon={Building2}
+                iconType="opd"
                 value={formatNumber(stats?.total_opd)}
                 label="OPD Terlibat"
-                gradientFrom="from-blue-400"
-                gradientTo="to-blue-600"
                 testId="stat-opd"
                 delay={0.6}
               />
               <StatCard
-                icon={MapPin}
+                iconType="lokasi"
                 value={formatNumber(stats?.lokasi_stats?.length || 0)}
                 label="Lokasi Tanam"
-                gradientFrom="from-rose-400"
-                gradientTo="to-rose-600"
                 testId="stat-lokasi"
                 delay={0.7}
               />
