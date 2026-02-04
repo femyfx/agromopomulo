@@ -355,8 +355,8 @@ export const HomePage = () => {
           style={{ objectPosition: 'center' }}
         />
         
-        {/* Gradient Overlay */}
-        <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/30 to-black/60" />
+        {/* Gradient Overlay - Deeper for better text contrast */}
+        <div className="absolute inset-0 bg-gradient-to-b from-emerald-900/60 via-emerald-900/40 to-emerald-900/70" />
         
         {/* Content */}
         <div className="relative z-10 flex-1 flex flex-col justify-center">
@@ -367,9 +367,9 @@ export const HomePage = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6 }}
-                className="text-emerald-400 text-sm sm:text-base font-semibold tracking-widest uppercase mb-4"
+                className="text-emerald-300 text-xs sm:text-sm font-bold tracking-[0.25em] uppercase mb-5"
               >
-                KABUPATEN GORONTALO UTARA
+                PEMERINTAH KABUPATEN GORONTALO UTARA
               </motion.p>
               
               {/* Main Title */}
@@ -377,7 +377,8 @@ export const HomePage = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.1 }}
-                className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-white tracking-tight mb-6 drop-shadow-lg"
+                className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-white tracking-tight mb-5 leading-[1.1]"
+                style={{ textShadow: '0 2px 20px rgba(0,0,0,0.3)' }}
               >
                 {settings?.hero_title || 'Satu Orang Sepuluh Pohon'}
               </motion.h1>
@@ -387,7 +388,8 @@ export const HomePage = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.2 }}
-                className="text-xl sm:text-2xl text-white/90 mb-10 font-light drop-shadow-md"
+                className="text-lg sm:text-xl text-white/90 mb-10 font-medium"
+                style={{ textShadow: '0 1px 10px rgba(0,0,0,0.2)' }}
               >
                 {settings?.hero_subtitle || 'untuk Masa Depan Daerah'}
               </motion.p>
@@ -401,7 +403,7 @@ export const HomePage = () => {
               >
                 <Link to="/partisipasi">
                   <Button 
-                    className="bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white text-lg px-8 py-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 font-semibold" 
+                    className="bg-emerald-500 hover:bg-emerald-400 text-white text-base px-8 py-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 font-bold tracking-wide" 
                     data-testid="hero-partisipasi-btn"
                   >
                     Ikut Berpartisipasi
