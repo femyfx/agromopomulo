@@ -1,6 +1,6 @@
-/* Main App Styles */
+/* Main App Styles - Professional Government Theme */
 .sidebar-link {
-  @apply flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200;
+  @apply flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 font-medium;
 }
 
 .sidebar-link:hover {
@@ -8,11 +8,11 @@
 }
 
 .sidebar-link.active {
-  @apply bg-emerald-100 text-emerald-700 font-medium;
+  @apply bg-emerald-100 text-emerald-700 font-semibold;
 }
 
 .stat-card {
-  @apply bg-white rounded-xl p-6 border border-slate-200 shadow-sm hover:shadow-md hover:border-emerald-200 transition-all duration-300;
+  @apply bg-white rounded-xl p-6 border border-slate-200/80 shadow-sm hover:shadow-md hover:border-emerald-200 transition-all duration-300;
 }
 
 .data-table {
@@ -20,31 +20,31 @@
 }
 
 .data-table th {
-  @apply bg-slate-50 text-slate-600 font-semibold text-left px-4 py-3 border-b border-slate-200;
+  @apply bg-slate-50 text-slate-700 font-semibold text-left px-4 py-3 border-b border-slate-200 uppercase text-xs tracking-wider;
 }
 
 .data-table td {
-  @apply px-4 py-3 border-b border-slate-100;
+  @apply px-4 py-3 border-b border-slate-100 text-slate-600;
 }
 
 .data-table tr:hover {
-  @apply bg-slate-50;
+  @apply bg-slate-50/80;
 }
 
 .form-input {
-  @apply bg-slate-50 border-slate-200 focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all rounded-lg;
+  @apply bg-slate-50/50 border-slate-200 focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all rounded-lg;
 }
 
 .btn-primary {
-  @apply bg-emerald-600 hover:bg-emerald-700 text-white font-medium px-6 py-2.5 rounded-full transition-all duration-200 active:scale-95 hover:-translate-y-0.5;
+  @apply bg-emerald-600 hover:bg-emerald-700 text-white font-semibold px-6 py-2.5 rounded-full transition-all duration-200 active:scale-95 hover:-translate-y-0.5 shadow-sm hover:shadow-md;
 }
 
 .btn-secondary {
-  @apply bg-amber-500 hover:bg-amber-600 text-white font-medium px-6 py-2.5 rounded-full transition-all duration-200 active:scale-95 hover:-translate-y-0.5;
+  @apply bg-amber-500 hover:bg-amber-600 text-white font-semibold px-6 py-2.5 rounded-full transition-all duration-200 active:scale-95 hover:-translate-y-0.5 shadow-sm hover:shadow-md;
 }
 
 .btn-outline {
-  @apply border-2 border-emerald-600 text-emerald-600 hover:bg-emerald-600 hover:text-white font-medium px-6 py-2.5 rounded-full transition-all duration-200;
+  @apply border-2 border-emerald-600 text-emerald-700 hover:bg-emerald-600 hover:text-white font-semibold px-6 py-2.5 rounded-full transition-all duration-200;
 }
 
 .card-glass {
@@ -52,9 +52,51 @@
 }
 
 .section-title {
-  @apply text-3xl font-bold text-slate-800 tracking-tight;
+  @apply text-3xl md:text-4xl font-bold text-slate-900 tracking-tight leading-tight;
+}
+
+.section-subtitle {
+  @apply text-lg text-slate-600 leading-relaxed max-w-2xl;
 }
 
 .overline {
-  @apply text-xs uppercase tracking-widest text-emerald-600 font-medium;
+  @apply text-xs uppercase tracking-[0.2em] text-emerald-600 font-semibold;
+}
+
+/* Professional Card Variants */
+.card-elevated {
+  @apply bg-white rounded-2xl border border-slate-100 shadow-lg shadow-slate-200/50;
+}
+
+/* Typography Utilities */
+.text-balance {
+  text-wrap: balance;
+}
+
+.heading-display {
+  @apply text-4xl md:text-5xl font-extrabold tracking-tight text-slate-900;
+}
+
+.heading-section {
+  @apply text-2xl md:text-3xl font-bold tracking-tight text-slate-900;
+}
+
+.heading-card {
+  @apply text-lg font-semibold text-slate-800;
+}
+
+.body-large {
+  @apply text-base md:text-lg text-slate-600 leading-relaxed;
+}
+
+.body-regular {
+  @apply text-sm md:text-base text-slate-600;
+}
+
+.body-small {
+  @apply text-xs md:text-sm text-slate-500;
+}
+
+.label-text {
+  @apply text-xs font-semibold uppercase tracking-wider text-slate-500;
 }
