@@ -117,30 +117,32 @@ const MapConfigurator = ({ boundaryCoords }) => {
   return null;
 };
 
-// Mask overlay - creates a dark overlay outside Gorontalo Utara boundary
+// Mask overlay - creates a dark overlay outside Gorontalo Utara boundary  
 const MaskOverlay = () => {
   // Get boundary in Leaflet format [lat, lng]
-  const innerBoundary = GORONTALO_UTARA_BOUNDARY.geometry.coordinates[0]
+  const boundaryCoords = GORONTALO_UTARA_BOUNDARY.geometry.coordinates[0]
     .map(coord => [coord[1], coord[0]]); // Convert from [lng, lat] to [lat, lng]
   
-  // Large outer boundary covering the visible area (much larger than Gorontalo)
-  // Using counter-clockwise for outer ring
+  // For polygon with hole in Leaflet/react-leaflet:
+  // We need outer ring (larger) first, then inner ring (hole) second
+  // The winding directions must be opposite
+  
+  // Large outer boundary (clockwise)
   const outerBoundary = [
-    [3.0, 119.0],   // Top-left
-    [-2.0, 119.0],  // Bottom-left
-    [-2.0, 126.0],  // Bottom-right
-    [3.0, 126.0],   // Top-right
+    [3.0, 119.0],
+    [3.0, 126.0],
+    [-2.0, 126.0],
+    [-2.0, 119.0],
+    [3.0, 119.0] // close the polygon
   ];
   
-  // For polygon with hole: the hole should be clockwise (reversed)
-  const positions = [
-    outerBoundary,
-    [...innerBoundary].reverse()  // Reverse for hole
-  ];
+  // Inner boundary (hole) - needs to be counter-clockwise if outer is clockwise
+  // Our boundary coords from GeoJSON are typically counter-clockwise
+  const innerHole = boundaryCoords;
 
   return (
     <Polygon
-      positions={positions}
+      positions={[outerBoundary, innerHole]}
       pathOptions={{
         fillColor: '#0f172a',
         fillOpacity: 0.5,
