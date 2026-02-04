@@ -124,18 +124,18 @@ const MaskOverlay = () => {
     .map(coord => [coord[1], coord[0]]); // Convert from [lng, lat] to [lat, lng]
   
   // Large outer boundary covering the visible area (much larger than Gorontalo)
+  // Using counter-clockwise for outer ring
   const outerBoundary = [
     [3.0, 119.0],   // Top-left
-    [3.0, 126.0],   // Top-right
-    [-2.0, 126.0],  // Bottom-right
     [-2.0, 119.0],  // Bottom-left
+    [-2.0, 126.0],  // Bottom-right
+    [3.0, 126.0],   // Top-right
   ];
   
-  // For polygon with hole: positions = [outer, hole]
-  // The hole needs to be in opposite winding order
+  // For polygon with hole: the hole should be clockwise (reversed)
   const positions = [
     outerBoundary,
-    innerBoundary  // Inner boundary as hole (don't reverse, let Leaflet handle it)
+    [...innerBoundary].reverse()  // Reverse for hole
   ];
 
   return (
