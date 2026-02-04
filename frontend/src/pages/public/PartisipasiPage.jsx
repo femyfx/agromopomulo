@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { TreePine, Send, CheckCircle, User, Building2, Leaf, MapPin, ChevronRight, ChevronLeft, Upload, X, Navigation, Loader2 } from 'lucide-react';
+import { TreePine, Send, User, Building2, Leaf, MapPin, ChevronRight, ChevronLeft, Upload, X, Navigation, Loader2 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '../../components/ui/card';
 import { Button } from '../../components/ui/button';
 import { Input } from '../../components/ui/input';
@@ -12,6 +12,7 @@ import { opdApi, partisipasiApi } from '../../lib/api';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
 import axios from 'axios';
+import { SuccessIcon, TreeIcon } from '../../components/EnvironmentIcons';
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
