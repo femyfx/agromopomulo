@@ -176,22 +176,19 @@ export const TentangPage = () => {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {[
               {
-                icon: Globe,
+                IconComponent: GlobeIcon,
                 title: 'Lingkungan',
-                description: 'Mengurangi polusi udara, menyerap karbon, dan menjaga keseimbangan ekosistem lokal.',
-                color: 'emerald'
+                description: 'Mengurangi polusi udara, menyerap karbon, dan menjaga keseimbangan ekosistem lokal.'
               },
               {
-                icon: Users,
+                IconComponent: UsersIcon,
                 title: 'Sosial',
-                description: 'Membangun kebersamaan dan gotong royong dalam masyarakat melalui kegiatan menanam.',
-                color: 'amber'
+                description: 'Membangun kebersamaan dan gotong royong dalam masyarakat melalui kegiatan menanam.'
               },
               {
-                icon: TreePine,
+                IconComponent: TreeIcon,
                 title: 'Ekonomi',
-                description: 'Pohon produktif dapat menjadi sumber pendapatan tambahan bagi masyarakat.',
-                color: 'blue'
+                description: 'Pohon produktif dapat menjadi sumber pendapatan tambahan bagi masyarakat.'
               }
             ].map((item, index) => (
               <motion.div
@@ -203,8 +200,8 @@ export const TentangPage = () => {
               >
                 <Card className="stat-card h-full">
                   <CardContent className="p-8 text-center">
-                    <div className={`h-16 w-16 rounded-xl bg-${item.color}-100 flex items-center justify-center mx-auto mb-6`}>
-                      <item.icon className={`h-8 w-8 text-${item.color}-600`} />
+                    <div className="flex justify-center mb-6">
+                      <item.IconComponent size="lg" />
                     </div>
                     <h3 className="text-xl font-bold text-slate-800 mb-3">{item.title}</h3>
                     <p className="text-slate-600">{item.description}</p>
