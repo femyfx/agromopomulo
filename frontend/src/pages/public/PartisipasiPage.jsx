@@ -276,6 +276,19 @@ export const PartisipasiPage = () => {
     
     if (!validateStep(4)) return;
 
+    // Validate coordinates if provided
+    if (formData.latitude && formData.longitude) {
+      const lat = parseFloat(formData.latitude);
+      const lng = parseFloat(formData.longitude);
+      const validation = validateLocationInGorontaloUtara(lat, lng);
+      
+      if (!validation.valid) {
+        toast.error('Koordinat lokasi berada di luar wilayah Kabupaten Gorontalo Utara. Silakan perbaiki koordinat atau kosongkan field koordinat.');
+        setLocationValidation(validation);
+        return;
+      }
+    }
+
     setLoading(true);
     try {
       // Combine latitude and longitude into titik_lokasi
