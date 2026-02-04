@@ -7,7 +7,7 @@ from fastapi.responses import StreamingResponse
 import os
 import logging
 from pathlib import Path
-from pydantic import BaseModel, Field, EmailStr
+from pydantic import BaseModel, Field, EmailStr, validator
 from typing import List, Optional
 import uuid
 from datetime import datetime, timezone, timedelta
