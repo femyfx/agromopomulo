@@ -117,90 +117,41 @@ const MapConfigurator = ({ boundaryCoords }) => {
   return null;
 };
 
-// Mask overlay using Canvas - dims area outside Gorontalo Utara
+// Mask overlay - creates a dark overlay outside Gorontalo Utara boundary
 const MaskOverlay = () => {
-  const map = useMap();
+  // Get boundary in Leaflet format [lat, lng]
+  const innerBoundary = GORONTALO_UTARA_BOUNDARY.geometry.coordinates[0]
+    .map(coord => [coord[1], coord[0]]);
   
-  useEffect(() => {
-    // Create canvas element
-    const canvas = document.createElement('canvas');
-    canvas.className = 'boundary-mask-canvas';
-    canvas.style.position = 'absolute';
-    canvas.style.top = '0';
-    canvas.style.left = '0';
-    canvas.style.pointerEvents = 'none';
-    canvas.style.zIndex = '399';
-    
-    // Convert boundary coordinates
-    const boundaryCoords = GORONTALO_UTARA_BOUNDARY.geometry.coordinates[0];
-    
-    const drawMask = () => {
-      const container = map.getContainer();
-      const size = map.getSize();
-      
-      canvas.width = size.x;
-      canvas.height = size.y;
-      canvas.style.width = size.x + 'px';
-      canvas.style.height = size.y + 'px';
-      
-      const ctx = canvas.getContext('2d');
-      if (!ctx) return;
-      
-      // Clear canvas
-      ctx.clearRect(0, 0, size.x, size.y);
-      
-      // Draw dark overlay on entire canvas
-      ctx.fillStyle = 'rgba(15, 23, 42, 0.5)';
-      ctx.fillRect(0, 0, size.x, size.y);
-      
-      // Create clipping path for Gorontalo Utara (to cut out the boundary area)
-      ctx.globalCompositeOperation = 'destination-out';
-      ctx.beginPath();
-      
-      boundaryCoords.forEach((coord, index) => {
-        const point = map.latLngToContainerPoint([coord[1], coord[0]]);
-        if (index === 0) {
-          ctx.moveTo(point.x, point.y);
-        } else {
-          ctx.lineTo(point.x, point.y);
-        }
-      });
-      
-      ctx.closePath();
-      ctx.fill();
-      
-      // Reset composite operation
-      ctx.globalCompositeOperation = 'source-over';
-    };
-    
-    // Get map pane and append canvas
-    const container = map.getContainer();
-    const overlayPane = container.querySelector('.leaflet-overlay-pane');
-    if (overlayPane) {
-      overlayPane.appendChild(canvas);
-    }
-    
-    // Initial draw and event listeners
-    drawMask();
-    map.on('move', drawMask);
-    map.on('zoom', drawMask);
-    map.on('resize', drawMask);
-    map.on('moveend', drawMask);
-    map.on('zoomend', drawMask);
-    
-    return () => {
-      map.off('move', drawMask);
-      map.off('zoom', drawMask);
-      map.off('resize', drawMask);
-      map.off('moveend', drawMask);
-      map.off('zoomend', drawMask);
-      if (canvas.parentNode) {
-        canvas.parentNode.removeChild(canvas);
-      }
-    };
-  }, [map]);
+  // Large outer boundary (rectangle covering visible area)
+  const outerBoundary = [
+    [2.0, 119.5],
+    [2.0, 125.5],
+    [-1.5, 125.5],
+    [-1.5, 119.5],
+  ];
   
-  return null;
+  // For Leaflet Polygon with a hole:
+  // First array is outer ring (counter-clockwise), inner arrays are holes (clockwise)
+  // Leaflet expects [outer, hole1, hole2, ...]
+  // The hole must be in reverse order (clockwise) compared to outer ring
+  const positions = [
+    outerBoundary, 
+    innerBoundary.slice().reverse() // Reverse for clockwise hole
+  ];
+
+  return (
+    <Polygon
+      positions={positions}
+      pathOptions={{
+        fillColor: '#0f172a',
+        fillOpacity: 0.5,
+        stroke: false,
+        interactive: false,
+        className: 'boundary-mask-polygon'
+      }}
+    />
+  );
 };
 
 // Gorontalo Utara boundary outline
