@@ -589,7 +589,7 @@ export const PetaPenanamanPage = () => {
                               icon={createCustomIcon(getMarkerColor(marker.jenis_pohon))}
                             >
                               <Popup>
-                                <div className="p-2 min-w-[200px]">
+                                <div className="p-2 min-w-[220px]">
                                   <h4 className="font-bold text-slate-800 mb-2 flex items-center gap-2">
                                     <TreePine className="h-4 w-4 text-emerald-600" />
                                     {marker.nama_lengkap}
@@ -611,6 +611,24 @@ export const PetaPenanamanPage = () => {
                                       <span className="text-slate-500">Jumlah:</span>
                                       <span className="font-bold text-emerald-700">{formatNumber(marker.jumlah_pohon)} pohon</span>
                                     </p>
+                                  </div>
+                                  {/* Koordinat GPS aktual dari input partisipan */}
+                                  <div className="mt-3 pt-2 border-t border-slate-200">
+                                    <p className="text-xs text-slate-400 mb-1 flex items-center gap-1">
+                                      <MapPin className="h-3 w-3" />
+                                      Koordinat GPS (dari input):
+                                    </p>
+                                    <p className="font-mono text-xs text-slate-600 bg-slate-50 px-2 py-1 rounded">
+                                      {marker.lat.toFixed(6)}, {marker.lng.toFixed(6)}
+                                    </p>
+                                    <a 
+                                      href={`https://www.google.com/maps?q=${marker.lat},${marker.lng}`}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      className="text-xs text-emerald-600 hover:underline mt-1 block"
+                                    >
+                                      Lihat di Google Maps →
+                                    </a>
                                   </div>
                                 </div>
                               </Popup>
