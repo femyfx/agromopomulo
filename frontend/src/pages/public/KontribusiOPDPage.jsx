@@ -99,9 +99,9 @@ export const KontribusiOPDPage = () => {
             {stats?.opd_stats?.length > 0 && (
               <Card className="mb-12">
                 <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <TrendingUp className="h-5 w-5 text-emerald-600" />
-                    Grafik Kontribusi per OPD
+                  <CardTitle className="flex items-center gap-3">
+                    <GrowthIcon size="sm" />
+                    <span>Grafik Kontribusi per OPD</span>
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
