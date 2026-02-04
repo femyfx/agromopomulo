@@ -52,6 +52,7 @@ export const PartisipasiPage = () => {
 
   const [errors, setErrors] = useState({});
   const [gettingLocation, setGettingLocation] = useState(false);
+  const [locationValidation, setLocationValidation] = useState({ valid: null, message: '' });
 
   const kategoriOptions = [
     { value: 'OPD', label: 'OPD' },
