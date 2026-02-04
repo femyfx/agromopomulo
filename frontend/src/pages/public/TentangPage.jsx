@@ -116,8 +116,8 @@ export const TentangPage = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <Card className="stat-card">
               <CardContent className="p-8">
-                <div className="h-14 w-14 rounded-xl bg-emerald-100 flex items-center justify-center mb-6">
-                  <Target className="h-7 w-7 text-emerald-600" />
+                <div className="mb-6">
+                  <TargetIcon size="md" />
                 </div>
                 <h3 className="text-xl font-bold text-slate-800 mb-4">Visi</h3>
                 <p className="text-slate-600 leading-relaxed">
@@ -127,8 +127,8 @@ export const TentangPage = () => {
             </Card>
             <Card className="stat-card">
               <CardContent className="p-8">
-                <div className="h-14 w-14 rounded-xl bg-amber-100 flex items-center justify-center mb-6">
-                  <Award className="h-7 w-7 text-amber-600" />
+                <div className="mb-6">
+                  <AwardIcon size="md" />
                 </div>
                 <h3 className="text-xl font-bold text-slate-800 mb-4">Misi</h3>
                 <ul className="text-slate-600 space-y-2">
