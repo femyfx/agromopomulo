@@ -494,31 +494,29 @@ export const PartisipasiPage = () => {
                     </div>
 
                     <div className="space-y-2">
-                      <Label htmlFor="alamat">Alamat <span className="text-red-500">*</span></Label>
+                      <Label htmlFor="alamat">Alamat <span className="text-slate-400 text-xs font-normal">(Opsional)</span></Label>
                       <Textarea
                         id="alamat"
                         name="alamat"
                         placeholder="Alamat lengkap Anda"
                         value={formData.alamat}
                         onChange={handleChange}
-                        className={`form-input min-h-[80px] ${errors.alamat ? 'border-red-500' : ''}`}
+                        className="form-input min-h-[80px]"
                         data-testid="input-alamat"
                       />
-                      {errors.alamat && <p className="text-sm text-red-500">{errors.alamat}</p>}
                     </div>
 
                     <div className="space-y-2">
-                      <Label htmlFor="nomor_whatsapp">Nomor WhatsApp <span className="text-red-500">*</span></Label>
+                      <Label htmlFor="nomor_whatsapp">Nomor WhatsApp <span className="text-slate-400 text-xs font-normal">(Opsional)</span></Label>
                       <Input
                         id="nomor_whatsapp"
                         name="nomor_whatsapp"
                         placeholder="08xxxxxxxxxx"
                         value={formData.nomor_whatsapp}
                         onChange={handleChange}
-                        className={`form-input ${errors.nomor_whatsapp ? 'border-red-500' : ''}`}
+                        className="form-input"
                         data-testid="input-wa"
                       />
-                      {errors.nomor_whatsapp && <p className="text-sm text-red-500">{errors.nomor_whatsapp}</p>}
                     </div>
                   </motion.div>
                 )}
