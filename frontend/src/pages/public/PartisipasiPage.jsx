@@ -264,8 +264,8 @@ export const PartisipasiPage = () => {
         >
           <Card className="stat-card max-w-md mx-auto">
             <CardContent className="p-8">
-              <div className="h-20 w-20 rounded-full bg-emerald-100 flex items-center justify-center mx-auto mb-6">
-                <CheckCircle className="h-10 w-10 text-emerald-600" />
+              <div className="flex justify-center mb-6">
+                <SuccessIcon size="xl" />
               </div>
               <h2 className="text-2xl font-bold text-slate-800 mb-4">Terima Kasih!</h2>
               <p className="text-slate-600 mb-6">
