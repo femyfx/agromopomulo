@@ -63,9 +63,7 @@ export const KontribusiOPDPage = () => {
               <Card className="stat-card">
                 <CardContent className="p-6">
                   <div className="flex items-center gap-4">
-                    <div className="h-14 w-14 rounded-xl bg-emerald-100 flex items-center justify-center">
-                      <Building2 className="h-7 w-7 text-emerald-600" />
-                    </div>
+                    <BuildingIcon size="md" />
                     <div>
                       <p className="text-3xl font-bold text-slate-800">{stats?.total_opd || 0}</p>
                       <p className="text-sm text-slate-500">Total OPD</p>
@@ -76,9 +74,7 @@ export const KontribusiOPDPage = () => {
               <Card className="stat-card">
                 <CardContent className="p-6">
                   <div className="flex items-center gap-4">
-                    <div className="h-14 w-14 rounded-xl bg-amber-100 flex items-center justify-center">
-                      <Users className="h-7 w-7 text-amber-600" />
-                    </div>
+                    <UsersIcon size="md" />
                     <div>
                       <p className="text-3xl font-bold text-slate-800">{formatNumber(stats?.total_partisipan)}</p>
                       <p className="text-sm text-slate-500">Total Partisipan</p>
@@ -89,9 +85,7 @@ export const KontribusiOPDPage = () => {
               <Card className="stat-card">
                 <CardContent className="p-6">
                   <div className="flex items-center gap-4">
-                    <div className="h-14 w-14 rounded-xl bg-blue-100 flex items-center justify-center">
-                      <TreePine className="h-7 w-7 text-blue-600" />
-                    </div>
+                    <TreeIcon size="md" />
                     <div>
                       <p className="text-3xl font-bold text-slate-800">{formatNumber(stats?.total_pohon)}</p>
                       <p className="text-sm text-slate-500">Total Pohon</p>
