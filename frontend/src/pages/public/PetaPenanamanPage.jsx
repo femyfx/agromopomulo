@@ -117,72 +117,71 @@ const MapConfigurator = ({ boundaryCoords }) => {
   return null;
 };
 
-// World mask polygon - covers everywhere except Gorontalo Utara
-// Uses 4 rectangles around the boundary to create a "frame" effect
-const WorldMask = () => {
-  // Convert GeoJSON coordinates to Leaflet format [lat, lng]
-  const gorontaloCoords = GORONTALO_UTARA_BOUNDARY.geometry.coordinates[0]
-    .map(coord => [coord[1], coord[0]]);
+// Mask overlay using SVG - dims area outside Gorontalo Utara
+const MaskOverlay = () => {
+  const map = useMap();
   
-  // Calculate bounding box of Gorontalo Utara
-  const lats = gorontaloCoords.map(c => c[0]);
-  const lngs = gorontaloCoords.map(c => c[1]);
-  const minLat = Math.min(...lats);
-  const maxLat = Math.max(...lats);
-  const minLng = Math.min(...lngs);
-  const maxLng = Math.max(...lngs);
+  useEffect(() => {
+    // Convert boundary coordinates for SVG
+    const boundaryCoords = GORONTALO_UTARA_BOUNDARY.geometry.coordinates[0];
+    
+    // Create SVG overlay
+    const svgElement = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    svgElement.setAttribute('class', 'boundary-mask-svg');
+    svgElement.style.position = 'absolute';
+    svgElement.style.top = '0';
+    svgElement.style.left = '0';
+    svgElement.style.width = '100%';
+    svgElement.style.height = '100%';
+    svgElement.style.pointerEvents = 'none';
+    svgElement.style.zIndex = '400';
+    
+    const updateMask = () => {
+      const bounds = map.getBounds();
+      const size = map.getSize();
+      
+      // Convert lat/lng to pixel coordinates
+      const boundaryPoints = boundaryCoords.map(coord => {
+        const point = map.latLngToContainerPoint([coord[1], coord[0]]);
+        return `${point.x},${point.y}`;
+      }).join(' ');
+      
+      // Create mask definition
+      svgElement.innerHTML = `
+        <defs>
+          <mask id="boundary-mask">
+            <rect x="0" y="0" width="100%" height="100%" fill="white"/>
+            <polygon points="${boundaryPoints}" fill="black"/>
+          </mask>
+        </defs>
+        <rect x="0" y="0" width="100%" height="100%" fill="rgba(15, 23, 42, 0.5)" mask="url(#boundary-mask)"/>
+      `;
+    };
+    
+    // Get map container and append SVG
+    const container = map.getContainer();
+    const paneContainer = container.querySelector('.leaflet-map-pane');
+    if (paneContainer) {
+      paneContainer.appendChild(svgElement);
+    }
+    
+    // Update on map events
+    updateMask();
+    map.on('move', updateMask);
+    map.on('zoom', updateMask);
+    map.on('resize', updateMask);
+    
+    return () => {
+      map.off('move', updateMask);
+      map.off('zoom', updateMask);
+      map.off('resize', updateMask);
+      if (svgElement.parentNode) {
+        svgElement.parentNode.removeChild(svgElement);
+      }
+    };
+  }, [map]);
   
-  // Padding for outer bounds
-  const padding = 3;
-  
-  const maskStyle = {
-    fillColor: '#0f172a',
-    fillOpacity: 0.5,
-    stroke: false,
-    interactive: false
-  };
-  
-  // Create 4 polygons around the boundary area
-  // Top rectangle
-  const topRect = [
-    [maxLat + padding, minLng - padding],
-    [maxLat + padding, maxLng + padding],
-    [maxLat, maxLng + padding],
-    [maxLat, minLng - padding]
-  ];
-  
-  // Bottom rectangle
-  const bottomRect = [
-    [minLat, minLng - padding],
-    [minLat, maxLng + padding],
-    [minLat - padding, maxLng + padding],
-    [minLat - padding, minLng - padding]
-  ];
-  
-  // Left rectangle
-  const leftRect = [
-    [maxLat, minLng - padding],
-    [maxLat, minLng],
-    [minLat, minLng],
-    [minLat, minLng - padding]
-  ];
-  
-  // Right rectangle
-  const rightRect = [
-    [maxLat, maxLng],
-    [maxLat, maxLng + padding],
-    [minLat, maxLng + padding],
-    [minLat, maxLng]
-  ];
-
-  return (
-    <>
-      <Polygon positions={topRect} pathOptions={maskStyle} />
-      <Polygon positions={bottomRect} pathOptions={maskStyle} />
-      <Polygon positions={leftRect} pathOptions={maskStyle} />
-      <Polygon positions={rightRect} pathOptions={maskStyle} />
-    </>
-  );
+  return null;
 };
 
 // Gorontalo Utara boundary outline
