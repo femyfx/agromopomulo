@@ -188,23 +188,27 @@ export const PartisipasiPage = () => {
     
     switch (step) {
       case 1:
-        if (!formData.email) newErrors.email = 'Email wajib diisi';
-        else if (!/\S+@\S+\.\S+/.test(formData.email)) newErrors.email = 'Email tidak valid';
+        // Hanya nama_lengkap yang WAJIB di Step 1
         if (!formData.nama_lengkap) newErrors.nama_lengkap = 'Nama lengkap wajib diisi';
-        if (!formData.nip) newErrors.nip = 'NIP wajib diisi';
+        // Email dan NIP adalah OPSIONAL - tidak perlu validasi wajib
+        if (formData.email && !/\S+@\S+\.\S+/.test(formData.email)) {
+          newErrors.email = 'Format email tidak valid';
+        }
         break;
       case 2:
-        if (!formData.opd_id) newErrors.opd_id = 'OPD wajib dipilih';
-        if (!formData.alamat) newErrors.alamat = 'Alamat wajib diisi';
-        if (!formData.nomor_whatsapp) newErrors.nomor_whatsapp = 'Nomor WhatsApp wajib diisi';
+        // Kategori dan OPD/Desa/Kecamatan/Publik WAJIB
+        if (!formData.opd_id) newErrors.opd_id = 'Instansi wajib dipilih';
+        // Alamat dan WhatsApp adalah OPSIONAL - tidak perlu validasi wajib
         break;
       case 3:
+        // Semua field di Step 3 WAJIB
         if (!formData.jumlah_pohon) newErrors.jumlah_pohon = 'Jumlah pohon wajib diisi';
         else if (parseInt(formData.jumlah_pohon) < 1) newErrors.jumlah_pohon = 'Jumlah minimal 1 pohon';
         if (!formData.jenis_pohon) newErrors.jenis_pohon = 'Jenis pohon wajib dipilih';
         if (!formData.sumber_bibit) newErrors.sumber_bibit = 'Sumber bibit wajib dipilih';
         break;
       case 4:
+        // Lokasi tanam WAJIB
         if (!formData.lokasi_tanam) newErrors.lokasi_tanam = 'Lokasi tanam wajib diisi';
         break;
       default:
