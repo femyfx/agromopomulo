@@ -24,8 +24,18 @@ export const partisipasiApi = {
   getAll: () => axios.get(`${API}/partisipasi`),
   getById: (id) => axios.get(`${API}/partisipasi/${id}`),
   create: (data) => axios.post(`${API}/partisipasi`, data),
-  update: (id, data) => axios.put(`${API}/partisipasi/${id}`, data),
-  delete: (id) => axios.delete(`${API}/partisipasi/${id}`),
+  update: (id, data) => {
+    const token = localStorage.getItem('token');
+    return axios.put(`${API}/partisipasi/${id}`, data, {
+      headers: token ? { 'Authorization': `Bearer ${token}` } : {}
+    });
+  },
+  delete: (id) => {
+    const token = localStorage.getItem('token');
+    return axios.delete(`${API}/partisipasi/${id}`, {
+      headers: token ? { 'Authorization': `Bearer ${token}` } : {}
+    });
+  },
 };
 
 // Settings API
