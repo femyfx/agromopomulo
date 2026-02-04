@@ -113,6 +113,7 @@ Membangun aplikasi web dashboard profesional bergaya e-Government / Smart City u
 - Hanya menampilkan marker yang berada di dalam batas wilayah
 - Legend peta untuk keterangan
 - Filter berdasarkan Kecamatan dan Jenis Pohon
+- Popup marker menampilkan koordinat GPS aktual dari input partisipan
 
 **Validasi Spasial (Form Partisipasi):**
 - Real-time validation koordinat saat input
@@ -122,11 +123,19 @@ Membangun aplikasi web dashboard profesional bergaya e-Government / Smart City u
 - Pencegahan submit jika koordinat tidak valid
 - Link "Lihat di Maps" untuk koordinat valid
 
+**Admin Panel - Kelola Partisipasi (NEW):**
+- Tombol aksi Edit dan Hapus untuk setiap data partisipasi
+- Modal Edit dengan semua field yang dapat diubah (nama, NIP, email, OPD, alamat, whatsapp, jumlah pohon, jenis pohon, sumber bibit, lokasi, koordinat)
+- Modal konfirmasi hapus dengan preview data yang akan dihapus
+- Validasi required fields pada form edit
+- Authorization header untuk keamanan API
+
 **Technical Implementation:**
 - GeoJSON boundary data untuk Kabupaten Gorontalo Utara
 - Ray casting algorithm untuk point-in-polygon validation
 - react-leaflet v5.0 dengan marker clustering
 - Responsive design dengan legend dan filter panel
+- JWT authorization untuk API admin
 
 ### Test Credentials
 - Admin Email: admin@gorontaloutara.go.id
