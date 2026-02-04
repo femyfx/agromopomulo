@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, memo } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight, Leaf, Target, Heart, Calendar, Newspaper, Clock, MapPin } from 'lucide-react';
+import { ArrowRight, Leaf, Target, Heart, Calendar, Newspaper, Clock, MapPin, TreePine } from 'lucide-react';
 import { Button } from '../../components/ui/button';
 import { Card, CardContent } from '../../components/ui/card';
 import { statsApi, settingsApi, agendaApi, beritaApi } from '../../lib/api';
