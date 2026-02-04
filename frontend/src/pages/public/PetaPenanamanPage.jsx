@@ -118,36 +118,70 @@ const MapConfigurator = ({ boundaryCoords }) => {
 };
 
 // World mask polygon - covers everywhere except Gorontalo Utara
+// Uses 4 rectangles around the boundary to create a "frame" effect
 const WorldMask = () => {
-  // Create Gorontalo Utara polygon coordinates in Leaflet format [lat, lng]
-  const gorontaloUtaraCoords = GORONTALO_UTARA_BOUNDARY.geometry.coordinates[0]
-    .map(coord => [coord[1], coord[0]]); // GeoJSON is [lng, lat], Leaflet needs [lat, lng]
+  // Convert GeoJSON coordinates to Leaflet format [lat, lng]
+  const gorontaloCoords = GORONTALO_UTARA_BOUNDARY.geometry.coordinates[0]
+    .map(coord => [coord[1], coord[0]]);
   
-  // Create a large polygon covering the visible area with a hole for Gorontalo Utara
-  const outerBounds = [
-    [2.0, 119.5],   // Top-left
-    [2.0, 125.5],   // Top-right  
-    [-1.5, 125.5],  // Bottom-right
-    [-1.5, 119.5],  // Bottom-left
-    [2.0, 119.5]    // Close
+  // Calculate bounding box of Gorontalo Utara
+  const lats = gorontaloCoords.map(c => c[0]);
+  const lngs = gorontaloCoords.map(c => c[1]);
+  const minLat = Math.min(...lats);
+  const maxLat = Math.max(...lats);
+  const minLng = Math.min(...lngs);
+  const maxLng = Math.max(...lngs);
+  
+  // Padding for outer bounds
+  const padding = 3;
+  
+  const maskStyle = {
+    fillColor: '#0f172a',
+    fillOpacity: 0.5,
+    stroke: false,
+    interactive: false
+  };
+  
+  // Create 4 polygons around the boundary area
+  // Top rectangle
+  const topRect = [
+    [maxLat + padding, minLng - padding],
+    [maxLat + padding, maxLng + padding],
+    [maxLat, maxLng + padding],
+    [maxLat, minLng - padding]
   ];
   
-  // For polygon with hole, inner ring needs to be counter-clockwise (reversed)
-  const worldCoords = [
-    outerBounds,
-    [...gorontaloUtaraCoords].reverse()
+  // Bottom rectangle
+  const bottomRect = [
+    [minLat, minLng - padding],
+    [minLat, maxLng + padding],
+    [minLat - padding, maxLng + padding],
+    [minLat - padding, minLng - padding]
+  ];
+  
+  // Left rectangle
+  const leftRect = [
+    [maxLat, minLng - padding],
+    [maxLat, minLng],
+    [minLat, minLng],
+    [minLat, minLng - padding]
+  ];
+  
+  // Right rectangle
+  const rightRect = [
+    [maxLat, maxLng],
+    [maxLat, maxLng + padding],
+    [minLat, maxLng + padding],
+    [minLat, maxLng]
   ];
 
   return (
-    <Polygon
-      positions={worldCoords}
-      pathOptions={{
-        fillColor: '#0f172a',
-        fillOpacity: 0.55,
-        stroke: false,
-        interactive: false
-      }}
-    />
+    <>
+      <Polygon positions={topRect} pathOptions={maskStyle} />
+      <Polygon positions={bottomRect} pathOptions={maskStyle} />
+      <Polygon positions={leftRect} pathOptions={maskStyle} />
+      <Polygon positions={rightRect} pathOptions={maskStyle} />
+    </>
   );
 };
 
