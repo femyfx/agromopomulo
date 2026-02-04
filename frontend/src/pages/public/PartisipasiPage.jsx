@@ -553,7 +553,7 @@ export const PartisipasiPage = () => {
                               </SelectItem>
                             ))
                           ) : (
-                            <SelectItem value="" disabled>
+                            <SelectItem value="none" disabled>
                               {selectedKategori ? `Tidak ada data ${selectedKategori}` : 'Pilih kategori dahulu'}
                             </SelectItem>
                           )}
