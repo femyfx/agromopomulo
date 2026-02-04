@@ -86,6 +86,33 @@ export const PartisipasiPage = () => {
     if (errors[name]) {
       setErrors(prev => ({ ...prev, [name]: '' }));
     }
+    
+    // Validate coordinates when latitude or longitude changes
+    if (name === 'latitude' || name === 'longitude') {
+      const newFormData = { ...formData, [name]: value };
+      validateCoordinates(newFormData.latitude, newFormData.longitude);
+    }
+  };
+
+  // Validate coordinates against Gorontalo Utara boundary
+  const validateCoordinates = (lat, lng) => {
+    // If both coordinates are empty, reset validation
+    if (!lat && !lng) {
+      setLocationValidation({ valid: null, message: '' });
+      return;
+    }
+    
+    // If only one is filled, show pending message
+    if (!lat || !lng) {
+      setLocationValidation({ valid: null, message: 'Lengkapi koordinat latitude dan longitude' });
+      return;
+    }
+    
+    const latNum = parseFloat(lat);
+    const lngNum = parseFloat(lng);
+    
+    const result = validateLocationInGorontaloUtara(latNum, lngNum);
+    setLocationValidation(result);
   };
 
   const handleSelectChange = (name, value) => {
