@@ -117,66 +117,85 @@ const MapConfigurator = ({ boundaryCoords }) => {
   return null;
 };
 
-// Mask overlay using SVG - dims area outside Gorontalo Utara
+// Mask overlay using Canvas - dims area outside Gorontalo Utara
 const MaskOverlay = () => {
   const map = useMap();
   
   useEffect(() => {
-    // Convert boundary coordinates for SVG
+    // Create canvas element
+    const canvas = document.createElement('canvas');
+    canvas.className = 'boundary-mask-canvas';
+    canvas.style.position = 'absolute';
+    canvas.style.top = '0';
+    canvas.style.left = '0';
+    canvas.style.pointerEvents = 'none';
+    canvas.style.zIndex = '399';
+    
+    // Convert boundary coordinates
     const boundaryCoords = GORONTALO_UTARA_BOUNDARY.geometry.coordinates[0];
     
-    // Create SVG overlay
-    const svgElement = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-    svgElement.setAttribute('class', 'boundary-mask-svg');
-    svgElement.style.position = 'absolute';
-    svgElement.style.top = '0';
-    svgElement.style.left = '0';
-    svgElement.style.width = '100%';
-    svgElement.style.height = '100%';
-    svgElement.style.pointerEvents = 'none';
-    svgElement.style.zIndex = '400';
-    
-    const updateMask = () => {
-      const bounds = map.getBounds();
+    const drawMask = () => {
+      const container = map.getContainer();
       const size = map.getSize();
       
-      // Convert lat/lng to pixel coordinates
-      const boundaryPoints = boundaryCoords.map(coord => {
-        const point = map.latLngToContainerPoint([coord[1], coord[0]]);
-        return `${point.x},${point.y}`;
-      }).join(' ');
+      canvas.width = size.x;
+      canvas.height = size.y;
+      canvas.style.width = size.x + 'px';
+      canvas.style.height = size.y + 'px';
       
-      // Create mask definition
-      svgElement.innerHTML = `
-        <defs>
-          <mask id="boundary-mask">
-            <rect x="0" y="0" width="100%" height="100%" fill="white"/>
-            <polygon points="${boundaryPoints}" fill="black"/>
-          </mask>
-        </defs>
-        <rect x="0" y="0" width="100%" height="100%" fill="rgba(15, 23, 42, 0.5)" mask="url(#boundary-mask)"/>
-      `;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return;
+      
+      // Clear canvas
+      ctx.clearRect(0, 0, size.x, size.y);
+      
+      // Draw dark overlay on entire canvas
+      ctx.fillStyle = 'rgba(15, 23, 42, 0.5)';
+      ctx.fillRect(0, 0, size.x, size.y);
+      
+      // Create clipping path for Gorontalo Utara (to cut out the boundary area)
+      ctx.globalCompositeOperation = 'destination-out';
+      ctx.beginPath();
+      
+      boundaryCoords.forEach((coord, index) => {
+        const point = map.latLngToContainerPoint([coord[1], coord[0]]);
+        if (index === 0) {
+          ctx.moveTo(point.x, point.y);
+        } else {
+          ctx.lineTo(point.x, point.y);
+        }
+      });
+      
+      ctx.closePath();
+      ctx.fill();
+      
+      // Reset composite operation
+      ctx.globalCompositeOperation = 'source-over';
     };
     
-    // Get map container and append SVG
+    // Get map pane and append canvas
     const container = map.getContainer();
-    const paneContainer = container.querySelector('.leaflet-map-pane');
-    if (paneContainer) {
-      paneContainer.appendChild(svgElement);
+    const overlayPane = container.querySelector('.leaflet-overlay-pane');
+    if (overlayPane) {
+      overlayPane.appendChild(canvas);
     }
     
-    // Update on map events
-    updateMask();
-    map.on('move', updateMask);
-    map.on('zoom', updateMask);
-    map.on('resize', updateMask);
+    // Initial draw and event listeners
+    drawMask();
+    map.on('move', drawMask);
+    map.on('zoom', drawMask);
+    map.on('resize', drawMask);
+    map.on('moveend', drawMask);
+    map.on('zoomend', drawMask);
     
     return () => {
-      map.off('move', updateMask);
-      map.off('zoom', updateMask);
-      map.off('resize', updateMask);
-      if (svgElement.parentNode) {
-        svgElement.parentNode.removeChild(svgElement);
+      map.off('move', drawMask);
+      map.off('zoom', drawMask);
+      map.off('resize', drawMask);
+      map.off('moveend', drawMask);
+      map.off('zoomend', drawMask);
+      if (canvas.parentNode) {
+        canvas.parentNode.removeChild(canvas);
       }
     };
   }, [map]);
