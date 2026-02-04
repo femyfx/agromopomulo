@@ -97,7 +97,7 @@ class OPDResponse(BaseModel):
     created_at: str
 
 class PartisipasiCreate(BaseModel):
-    email: Optional[EmailStr] = None
+    email: Optional[str] = None
     nama_lengkap: str
     nip: Optional[str] = None
     opd_id: str
@@ -109,6 +109,16 @@ class PartisipasiCreate(BaseModel):
     lokasi_tanam: str
     titik_lokasi: Optional[str] = None
     bukti_url: Optional[str] = None
+    
+    @validator('email', pre=True)
+    def validate_email(cls, v):
+        if v is None or v == '':
+            return None
+        # Basic email validation
+        import re
+        if v and not re.match(r'^[\w\.-]+@[\w\.-]+\.\w+$', v):
+            raise ValueError('Format email tidak valid')
+        return v
 
 class PartisipasiUpdate(BaseModel):
     email: Optional[EmailStr] = None
