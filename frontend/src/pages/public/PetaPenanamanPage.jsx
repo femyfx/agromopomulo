@@ -1,14 +1,22 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
-import { MapPin, TreePine, Users, Filter, X, Leaf } from 'lucide-react';
+import { MapPin, TreePine, Users, Filter, X, Leaf, AlertTriangle } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/card';
 import { Button } from '../../components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../components/ui/select';
 import { statsApi, partisipasiApi } from '../../lib/api';
 import { motion, AnimatePresence } from 'framer-motion';
-import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, Popup, useMap, GeoJSON, Polygon } from 'react-leaflet';
 import MarkerClusterGroup from 'react-leaflet-cluster';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
+import {
+  GORONTALO_UTARA_BOUNDARY,
+  GORONTALO_UTARA_CENTER,
+  MAX_BOUNDS,
+  DEFAULT_ZOOM,
+  isPointInGorontaloUtara,
+  isPointInBoundingBox
+} from '../../lib/gorontaloUtaraBoundary';
 
 // Fix default marker icon issue in Leaflet with webpack
 delete L.Icon.Default.prototype._getIconUrl;
@@ -85,18 +93,78 @@ const createClusterCustomIcon = (cluster) => {
   });
 };
 
-// Map bounds setter component
-const SetBoundsComponent = ({ markers }) => {
+// Map Configuration Component - sets bounds and restrictions
+const MapConfigurator = ({ boundaryCoords }) => {
   const map = useMap();
   
   useEffect(() => {
-    if (markers && markers.length > 0) {
-      const bounds = L.latLngBounds(markers.map(m => [m.lat, m.lng]));
-      map.fitBounds(bounds, { padding: [50, 50], maxZoom: 13 });
+    // Set max bounds to restrict panning
+    const bounds = L.latLngBounds(MAX_BOUNDS);
+    map.setMaxBounds(bounds);
+    
+    // Fit to Gorontalo Utara boundary
+    if (boundaryCoords && boundaryCoords.length > 0) {
+      const polygonBounds = L.latLngBounds(
+        boundaryCoords.map(coord => [coord[1], coord[0]])
+      );
+      map.fitBounds(polygonBounds, { padding: [30, 30], maxZoom: 11 });
     }
-  }, [markers, map]);
+    
+    // Set minimum zoom
+    map.setMinZoom(9);
+  }, [map, boundaryCoords]);
   
   return null;
+};
+
+// World mask polygon - covers everywhere except Gorontalo Utara
+const WorldMask = () => {
+  // Create a large polygon covering the world with a hole for Gorontalo Utara
+  const worldCoords = [
+    // Outer boundary (large rectangle covering visible area)
+    [
+      [2.5, 120.0],
+      [2.5, 125.0],
+      [-1.0, 125.0],
+      [-1.0, 120.0],
+      [2.5, 120.0]
+    ],
+    // Inner boundary (hole) - Gorontalo Utara polygon (reversed for hole)
+    GORONTALO_UTARA_BOUNDARY.geometry.coordinates[0]
+      .map(coord => [coord[1], coord[0]])
+      .reverse()
+  ];
+
+  return (
+    <Polygon
+      positions={worldCoords}
+      pathOptions={{
+        fillColor: '#1e293b',
+        fillOpacity: 0.6,
+        stroke: false,
+        interactive: false
+      }}
+    />
+  );
+};
+
+// Gorontalo Utara boundary outline
+const BoundaryOutline = () => {
+  const boundaryStyle = {
+    color: '#059669',
+    weight: 3,
+    opacity: 0.9,
+    fillColor: '#059669',
+    fillOpacity: 0.05,
+    dashArray: '5, 5'
+  };
+
+  return (
+    <GeoJSON 
+      data={GORONTALO_UTARA_BOUNDARY}
+      style={boundaryStyle}
+    />
+  );
 };
 
 export const PetaPenanamanPage = () => {
@@ -106,10 +174,7 @@ export const PetaPenanamanPage = () => {
   const [filterKecamatan, setFilterKecamatan] = useState('all');
   const [filterJenisPohon, setFilterJenisPohon] = useState('all');
   const [showFilters, setShowFilters] = useState(false);
-
-  // Gorontalo Utara center coordinates
-  const gorontaloUtaraCenter = [0.9, 122.5];
-  const defaultZoom = 10;
+  const [excludedCount, setExcludedCount] = useState(0);
 
   useEffect(() => {
     loadData();
@@ -138,9 +203,15 @@ export const PetaPenanamanPage = () => {
     const lat = parseFloat(parts[0]);
     const lng = parseFloat(parts[1]);
     if (isNaN(lat) || isNaN(lng)) return null;
-    // Validate coordinates are within reasonable range for Gorontalo
-    if (lat < -2 || lat > 3 || lng < 120 || lng > 126) return null;
     return { lat, lng };
+  }, []);
+
+  // Check if coordinates are within Gorontalo Utara
+  const isWithinGorontaloUtara = useCallback((lat, lng) => {
+    // First do quick bounding box check
+    if (!isPointInBoundingBox(lat, lng)) return false;
+    // Then do precise point-in-polygon check
+    return isPointInGorontaloUtara(lat, lng);
   }, []);
 
   // Get unique kecamatan from OPD names
@@ -167,9 +238,10 @@ export const PetaPenanamanPage = () => {
     return Array.from(jenis).sort();
   }, [partisipasi]);
 
-  // Filter and prepare markers
+  // Filter and prepare markers - ONLY within Gorontalo Utara
   const markers = useMemo(() => {
-    return partisipasi
+    let excluded = 0;
+    const validMarkers = partisipasi
       .filter(p => {
         // Filter by kecamatan
         if (filterKecamatan !== 'all') {
@@ -186,6 +258,13 @@ export const PetaPenanamanPage = () => {
       .map(p => {
         const coords = parseCoordinates(p.titik_lokasi);
         if (!coords) return null;
+        
+        // Check if coordinates are within Gorontalo Utara boundary
+        if (!isWithinGorontaloUtara(coords.lat, coords.lng)) {
+          excluded++;
+          return null; // Exclude markers outside the boundary
+        }
+        
         return {
           ...p,
           lat: coords.lat,
@@ -193,7 +272,12 @@ export const PetaPenanamanPage = () => {
         };
       })
       .filter(Boolean);
-  }, [partisipasi, filterKecamatan, filterJenisPohon, parseCoordinates]);
+    
+    // Update excluded count
+    setExcludedCount(excluded);
+    
+    return validMarkers;
+  }, [partisipasi, filterKecamatan, filterJenisPohon, parseCoordinates, isWithinGorontaloUtara]);
 
   const formatNumber = (num) => {
     return new Intl.NumberFormat('id-ID').format(num || 0);
@@ -217,9 +301,17 @@ export const PetaPenanamanPage = () => {
       'Pala': '#ec4899',
       'Coklat': '#92400e',
       'Aren': '#64748b',
+      'Mahoni': '#0d9488',
+      'Jati': '#b45309',
+      'Trembesi': '#16a34a',
+      'Jambu': '#f43f5e',
+      'Kakao': '#78350f',
     };
     return colors[jenisPohon] || '#059669';
   };
+
+  // Get boundary coordinates for map configuration
+  const boundaryCoords = GORONTALO_UTARA_BOUNDARY.geometry.coordinates[0];
 
   return (
     <div className="min-h-screen" data-testid="peta-penanaman-page">
@@ -262,7 +354,7 @@ export const PetaPenanamanPage = () => {
                       <MapPin className="h-6 w-6 text-emerald-600" />
                     </div>
                     <p className="text-2xl font-bold text-slate-800">{markers.length}</p>
-                    <p className="text-xs text-slate-500">Titik Lokasi</p>
+                    <p className="text-xs text-slate-500">Titik Lokasi Valid</p>
                   </CardContent>
                 </Card>
               </motion.div>
@@ -312,6 +404,22 @@ export const PetaPenanamanPage = () => {
                 </Card>
               </motion.div>
             </div>
+
+            {/* Excluded locations warning */}
+            {excludedCount > 0 && (
+              <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="mb-6"
+              >
+                <div className="flex items-center gap-3 px-4 py-3 bg-amber-50 border border-amber-200 rounded-lg">
+                  <AlertTriangle className="h-5 w-5 text-amber-600 flex-shrink-0" />
+                  <p className="text-sm text-amber-800">
+                    <strong>{excludedCount} titik lokasi</strong> tidak ditampilkan karena berada di luar batas wilayah Kabupaten Gorontalo Utara.
+                  </p>
+                </div>
+              </motion.div>
+            )}
 
             {/* Filter Section */}
             <Card className="mb-6">
@@ -404,67 +512,78 @@ export const PetaPenanamanPage = () => {
                       ({markers.length} lokasi ditampilkan)
                     </span>
                   </CardTitle>
+                  <p className="text-xs text-slate-500 mt-1">
+                    Peta dibatasi hanya pada wilayah Kabupaten Gorontalo Utara. Area di luar batas wilayah ditampilkan dengan overlay gelap.
+                  </p>
                 </CardHeader>
                 <CardContent className="p-0">
-                  <div className="h-[500px] relative">
+                  <div className="h-[550px] relative">
                     <MapContainer
-                      center={gorontaloUtaraCenter}
-                      zoom={defaultZoom}
+                      center={GORONTALO_UTARA_CENTER}
+                      zoom={DEFAULT_ZOOM}
                       style={{ height: '100%', width: '100%' }}
                       scrollWheelZoom={true}
+                      doubleClickZoom={true}
+                      dragging={true}
                     >
                       <TileLayer
                         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                       />
                       
+                      {/* Map configuration - bounds and restrictions */}
+                      <MapConfigurator boundaryCoords={boundaryCoords} />
+                      
+                      {/* World mask - darkens area outside Gorontalo Utara */}
+                      <WorldMask />
+                      
+                      {/* Gorontalo Utara boundary outline */}
+                      <BoundaryOutline />
+                      
                       {markers.length > 0 && (
-                        <>
-                          <SetBoundsComponent markers={markers} />
-                          <MarkerClusterGroup
-                            chunkedLoading
-                            iconCreateFunction={createClusterCustomIcon}
-                            maxClusterRadius={60}
-                            spiderfyOnMaxZoom={true}
-                            showCoverageOnHover={false}
-                            animate={true}
-                          >
-                            {markers.map((marker, index) => (
-                              <Marker
-                                key={marker.id || index}
-                                position={[marker.lat, marker.lng]}
-                                icon={createCustomIcon(getMarkerColor(marker.jenis_pohon))}
-                              >
-                                <Popup>
-                                  <div className="p-2 min-w-[200px]">
-                                    <h4 className="font-bold text-slate-800 mb-2 flex items-center gap-2">
-                                      <TreePine className="h-4 w-4 text-emerald-600" />
-                                      {marker.nama_lengkap}
-                                    </h4>
-                                    <div className="space-y-1.5 text-sm">
-                                      <p className="flex items-center gap-2">
-                                        <span className="text-slate-500">Instansi:</span>
-                                        <span className="font-medium text-slate-700">{marker.opd_nama || '-'}</span>
-                                      </p>
-                                      <p className="flex items-center gap-2">
-                                        <span className="text-slate-500">Lokasi:</span>
-                                        <span className="font-medium text-slate-700">{marker.lokasi_tanam || '-'}</span>
-                                      </p>
-                                      <p className="flex items-center gap-2">
-                                        <span className="text-slate-500">Jenis Pohon:</span>
-                                        <span className="font-medium text-emerald-600">{marker.jenis_pohon}</span>
-                                      </p>
-                                      <p className="flex items-center gap-2">
-                                        <span className="text-slate-500">Jumlah:</span>
-                                        <span className="font-bold text-emerald-700">{formatNumber(marker.jumlah_pohon)} pohon</span>
-                                      </p>
-                                    </div>
+                        <MarkerClusterGroup
+                          chunkedLoading
+                          iconCreateFunction={createClusterCustomIcon}
+                          maxClusterRadius={60}
+                          spiderfyOnMaxZoom={true}
+                          showCoverageOnHover={false}
+                          animate={true}
+                        >
+                          {markers.map((marker, index) => (
+                            <Marker
+                              key={marker.id || index}
+                              position={[marker.lat, marker.lng]}
+                              icon={createCustomIcon(getMarkerColor(marker.jenis_pohon))}
+                            >
+                              <Popup>
+                                <div className="p-2 min-w-[200px]">
+                                  <h4 className="font-bold text-slate-800 mb-2 flex items-center gap-2">
+                                    <TreePine className="h-4 w-4 text-emerald-600" />
+                                    {marker.nama_lengkap}
+                                  </h4>
+                                  <div className="space-y-1.5 text-sm">
+                                    <p className="flex items-center gap-2">
+                                      <span className="text-slate-500">Instansi:</span>
+                                      <span className="font-medium text-slate-700">{marker.opd_nama || '-'}</span>
+                                    </p>
+                                    <p className="flex items-center gap-2">
+                                      <span className="text-slate-500">Lokasi:</span>
+                                      <span className="font-medium text-slate-700">{marker.lokasi_tanam || '-'}</span>
+                                    </p>
+                                    <p className="flex items-center gap-2">
+                                      <span className="text-slate-500">Jenis Pohon:</span>
+                                      <span className="font-medium text-emerald-600">{marker.jenis_pohon}</span>
+                                    </p>
+                                    <p className="flex items-center gap-2">
+                                      <span className="text-slate-500">Jumlah:</span>
+                                      <span className="font-bold text-emerald-700">{formatNumber(marker.jumlah_pohon)} pohon</span>
+                                    </p>
                                   </div>
-                                </Popup>
-                              </Marker>
-                            ))}
-                          </MarkerClusterGroup>
-                        </>
+                                </div>
+                              </Popup>
+                            </Marker>
+                          ))}
+                        </MarkerClusterGroup>
                       )}
                     </MapContainer>
                     
@@ -477,6 +596,25 @@ export const PetaPenanamanPage = () => {
                         </div>
                       </div>
                     )}
+
+                    {/* Legend */}
+                    <div className="absolute bottom-4 right-4 z-[1000] bg-white/95 backdrop-blur-sm rounded-lg shadow-lg p-3 text-xs">
+                      <p className="font-semibold text-slate-700 mb-2">Keterangan</p>
+                      <div className="space-y-1.5">
+                        <div className="flex items-center gap-2">
+                          <div className="w-3 h-3 rounded-full bg-emerald-500 border border-white shadow"></div>
+                          <span className="text-slate-600">Lokasi Penanaman</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <div className="w-4 h-0.5 bg-emerald-500 border-dashed border-t border-emerald-600"></div>
+                          <span className="text-slate-600">Batas Kab. Gorontalo Utara</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <div className="w-3 h-3 bg-slate-700/60 rounded"></div>
+                          <span className="text-slate-600">Area di Luar Kabupaten</span>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </CardContent>
               </Card>
@@ -598,6 +736,9 @@ export const PetaPenanamanPage = () => {
         }
         .marker-cluster-animated {
           transition: all 0.3s ease-out;
+        }
+        .leaflet-container {
+          background: #f1f5f9;
         }
       `}</style>
     </div>
