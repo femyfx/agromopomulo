@@ -92,11 +92,28 @@ Membangun aplikasi web dashboard profesional bergaya e-Government / Smart City u
 **P0 (Implemented):**
 - All core features ✅
 - Agenda & Berita features ✅
+- Interactive Map dengan Leaflet ✅
+- Validasi Spasial Koordinat (Point-in-Polygon) ✅
 
 **P1 (Upcoming):**
 - Import Data Partisipasi dari Excel
 - Filter Laporan berdasarkan rentang tanggal
-- Interactive map with Leaflet
+
+### What's Been Implemented (February 2026)
+**Peta Penanaman Interaktif:**
+- Peta Leaflet dengan batas wilayah Kabupaten Gorontalo Utara
+- Mask overlay gelap untuk area di luar kabupaten
+- Marker clustering untuk performa optimal
+- Filter marker berdasarkan point-in-polygon validation
+- Hanya menampilkan marker yang berada di dalam batas wilayah
+- Legend peta untuk keterangan
+
+**Validasi Spasial (Form Partisipasi):**
+- Real-time validation koordinat saat input
+- Point-in-polygon check untuk wilayah Gorontalo Utara
+- Pesan error jelas jika koordinat di luar wilayah
+- Visual feedback (warna border hijau/merah) untuk status validasi
+- Pencegahan submit jika koordinat tidak valid
 
 **P2 (Nice to have):**
 - WhatsApp notification integration
