@@ -376,21 +376,6 @@ export const PartisipasiPage = () => {
                     </div>
 
                     <div className="space-y-2">
-                      <Label htmlFor="email">Email <span className="text-red-500">*</span></Label>
-                      <Input
-                        id="email"
-                        name="email"
-                        type="email"
-                        placeholder="email@example.com"
-                        value={formData.email}
-                        onChange={handleChange}
-                        className={`form-input ${errors.email ? 'border-red-500' : ''}`}
-                        data-testid="input-email"
-                      />
-                      {errors.email && <p className="text-sm text-red-500">{errors.email}</p>}
-                    </div>
-
-                    <div className="space-y-2">
                       <Label htmlFor="nama_lengkap">Nama Lengkap <span className="text-red-500">*</span></Label>
                       <Input
                         id="nama_lengkap"
@@ -405,17 +390,30 @@ export const PartisipasiPage = () => {
                     </div>
 
                     <div className="space-y-2">
-                      <Label htmlFor="nip">NIP <span className="text-red-500">*</span></Label>
+                      <Label htmlFor="nip">NIP <span className="text-slate-400 text-xs font-normal">(Opsional)</span></Label>
                       <Input
                         id="nip"
                         name="nip"
                         placeholder="Nomor Induk Pegawai"
                         value={formData.nip}
                         onChange={handleChange}
-                        className={`form-input ${errors.nip ? 'border-red-500' : ''}`}
+                        className="form-input"
                         data-testid="input-nip"
                       />
-                      {errors.nip && <p className="text-sm text-red-500">{errors.nip}</p>}
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="email">Email <span className="text-slate-400 text-xs font-normal">(Opsional)</span></Label>
+                      <Input
+                        id="email"
+                        name="email"
+                        type="email"
+                        placeholder="email@example.com"
+                        value={formData.email}
+                        onChange={handleChange}
+                        className="form-input"
+                        data-testid="input-email"
+                      />
                     </div>
                   </motion.div>
                 )}
