@@ -1,92 +1,89 @@
 // GeoJSON boundary for Kabupaten Gorontalo Utara
-// Source: BIG (Badan Informasi Geospasial) / GADM administrative boundaries
+// More accurate boundary focusing on actual administrative area
+// Kecamatan: Kwandang, Anggrek, Sumalata, Tolinggula, Atinggola, Ponelo Kepulauan
 
 export const GORONTALO_UTARA_BOUNDARY = {
   type: "Feature",
   properties: {
     name: "Kabupaten Gorontalo Utara",
     provinsi: "Gorontalo",
-    kode: "75.05"
+    kode: "75.05",
+    ibukota: "Kwandang"
   },
   geometry: {
     type: "Polygon",
     coordinates: [[
-      // Batas utara (Laut Sulawesi) - Barat ke Timur
-      [122.427, 1.140],
-      [122.500, 1.155],
-      [122.600, 1.160],
-      [122.700, 1.165],
-      [122.800, 1.170],
-      [122.900, 1.168],
-      [123.000, 1.162],
-      [123.100, 1.155],
-      [123.200, 1.145],
-      [123.253, 1.130],
+      // Batas barat - Kec. Atinggola (berbatasan dengan Kab. Pohuwato)
+      [122.295, 0.950],
+      [122.320, 0.990],
+      [122.350, 1.030],
+      [122.380, 1.060],
+      [122.420, 1.085],
       
-      // Batas timur (menuju selatan)
-      [123.270, 1.080],
-      [123.280, 1.020],
-      [123.285, 0.960],
-      [123.280, 0.900],
-      [123.270, 0.840],
-      [123.255, 0.780],
-      [123.240, 0.720],
-      [123.220, 0.660],
-      [123.195, 0.600],
-      [123.170, 0.550],
-      [123.140, 0.510],
-      [123.110, 0.480],
-      [123.080, 0.455],
+      // Batas utara - Pantai Laut Sulawesi (Barat ke Timur)
+      [122.480, 1.100],
+      [122.550, 1.108],
+      [122.620, 1.112],
+      [122.700, 1.115],
+      [122.780, 1.112],
+      [122.860, 1.105],
+      [122.940, 1.095],
+      [123.020, 1.082],
+      [123.100, 1.065],
+      [123.160, 1.045],
       
-      // Batas selatan (Teluk Tomini) - Timur ke Barat
-      [123.040, 0.440],
-      [122.980, 0.425],
-      [122.920, 0.415],
-      [122.860, 0.410],
-      [122.800, 0.408],
-      [122.740, 0.410],
-      [122.680, 0.415],
-      [122.620, 0.422],
-      [122.560, 0.432],
-      [122.500, 0.445],
-      [122.450, 0.460],
-      [122.400, 0.480],
-      [122.360, 0.505],
-      [122.330, 0.535],
+      // Batas timur - berbatasan dengan Kab. Bolaang Mongondow (Sulawesi Utara)
+      [123.180, 1.010],
+      [123.195, 0.960],
+      [123.200, 0.910],
+      [123.195, 0.860],
+      [123.185, 0.810],
+      [123.170, 0.765],
       
-      // Batas barat (menuju utara)
-      [122.320, 0.580],
-      [122.315, 0.640],
-      [122.318, 0.700],
-      [122.325, 0.760],
-      [122.335, 0.820],
+      // Batas selatan-timur (Kec. Sumalata - Tolinggula)
+      [123.150, 0.730],
+      [123.110, 0.700],
+      [123.060, 0.680],
+      [123.000, 0.670],
+      
+      // Batas selatan (berbatasan dengan Kab. Gorontalo dan Bone Bolango)
+      [122.940, 0.665],
+      [122.880, 0.668],
+      [122.820, 0.675],
+      [122.760, 0.688],
+      [122.700, 0.705],
+      [122.640, 0.725],
+      [122.580, 0.750],
+      [122.520, 0.778],
+      [122.460, 0.810],
+      [122.400, 0.845],
       [122.350, 0.880],
-      [122.368, 0.940],
-      [122.388, 1.000],
-      [122.408, 1.060],
-      [122.427, 1.140], // Close polygon
+      [122.310, 0.915],
+      
+      // Kembali ke titik awal
+      [122.295, 0.950]
     ]]
   }
 };
 
-// Bounding box for Kabupaten Gorontalo Utara
+// Bounding box for Kabupaten Gorontalo Utara (more accurate)
 export const GORONTALO_UTARA_BOUNDS = {
-  north: 1.170,
-  south: 0.405,
-  west: 122.310,
-  east: 123.290
+  north: 1.115,
+  south: 0.665,
+  west: 122.295,
+  east: 123.200
 };
 
-// Center coordinates
-export const GORONTALO_UTARA_CENTER = [0.78, 122.80];
+// Center coordinates (Kwandang area)
+export const GORONTALO_UTARA_CENTER = [0.85, 122.78];
 
 // Default zoom level
 export const DEFAULT_ZOOM = 10;
 
 // Max bounds with small padding
 export const MAX_BOUNDS = [
-  [0.35, 122.25],   // Southwest corner
-  [1.22, 123.35]    // Northeast corner
+  [0.60, 122.20],   // Southwest corner
+  [1.18, 123.28]    // Northeast corner
 ];
 
 /**
