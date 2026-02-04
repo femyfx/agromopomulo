@@ -478,27 +478,21 @@ export const HomePage = () => {
               </p>
               <div className="space-y-5 mb-8">
                 <div className="flex items-start gap-4">
-                  <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-emerald-400 to-emerald-600 flex items-center justify-center flex-shrink-0 shadow-md">
-                    <Leaf className="h-6 w-6 text-white" />
-                  </div>
+                  <LeafIcon size="sm" />
                   <div>
                     <h4 className="font-bold text-slate-800 text-lg">Pelestarian Lingkungan</h4>
                     <p className="text-slate-500">Menjaga keseimbangan ekosistem dan keanekaragaman hayati</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-4">
-                  <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center flex-shrink-0 shadow-md">
-                    <Target className="h-6 w-6 text-white" />
-                  </div>
+                  <TargetIcon size="sm" />
                   <div>
                     <h4 className="font-bold text-slate-800 text-lg">Ketahanan Pangan</h4>
                     <p className="text-slate-500">Mendukung ketersediaan pangan melalui tanaman produktif</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-4">
-                  <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-rose-400 to-rose-600 flex items-center justify-center flex-shrink-0 shadow-md">
-                    <Heart className="h-6 w-6 text-white" />
-                  </div>
+                  <UsersIcon size="sm" />
                   <div>
                     <h4 className="font-bold text-slate-800 text-lg">Partisipasi Masyarakat</h4>
                     <p className="text-slate-500">Membangun kesadaran kolektif akan pentingnya penghijauan</p>
