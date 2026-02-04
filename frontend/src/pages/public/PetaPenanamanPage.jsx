@@ -119,36 +119,22 @@ const MapConfigurator = ({ boundaryCoords }) => {
 
 // Mask overlay - creates a dark overlay outside Gorontalo Utara boundary
 const MaskOverlay = () => {
-  // Get boundary in Leaflet format [lat, lng]
-  const innerBoundary = GORONTALO_UTARA_BOUNDARY.geometry.coordinates[0]
-    .map(coord => [coord[1], coord[0]]);
-  
-  // Large outer boundary (rectangle covering visible area)
-  const outerBoundary = [
-    [2.0, 119.5],
-    [2.0, 125.5],
-    [-1.5, 125.5],
-    [-1.5, 119.5],
-  ];
-  
-  // For Leaflet Polygon with a hole:
-  // First array is outer ring (counter-clockwise), inner arrays are holes (clockwise)
-  // Leaflet expects [outer, hole1, hole2, ...]
-  // The hole must be in reverse order (clockwise) compared to outer ring
-  const positions = [
-    outerBoundary, 
-    innerBoundary.slice().reverse() // Reverse for clockwise hole
+  // Simple test polygon
+  const testPolygon = [
+    [1.0, 122.3],
+    [1.0, 123.0],
+    [0.5, 123.0],
+    [0.5, 122.3]
   ];
 
   return (
     <Polygon
-      positions={positions}
+      positions={testPolygon}
       pathOptions={{
-        fillColor: '#0f172a',
+        fillColor: 'red',
         fillOpacity: 0.5,
-        stroke: false,
-        interactive: false,
-        className: 'boundary-mask-polygon'
+        color: 'blue',
+        weight: 2
       }}
     />
   );
