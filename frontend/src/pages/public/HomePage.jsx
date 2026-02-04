@@ -588,9 +588,9 @@ export const HomePage = () => {
       <section className="py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
-            <p className="text-emerald-600 text-sm font-semibold tracking-widest uppercase mb-4">INFORMASI</p>
-            <h2 className="text-3xl sm:text-4xl font-bold text-slate-800">Berita Terbaru</h2>
-            <p className="text-slate-500 mt-4 text-lg">Update terkini seputar program Agro Mopomulo</p>
+            <p className="overline mb-4">INFORMASI</p>
+            <h2 className="heading-section">Berita Terbaru</h2>
+            <p className="body-large mt-4 mx-auto">Update terkini seputar program Agro Mopomulo</p>
           </div>
           
           {berita.length > 0 ? (
@@ -603,7 +603,7 @@ export const HomePage = () => {
             <div className="backdrop-blur-md bg-white/90 border border-white/50 rounded-2xl shadow-lg">
               <div className="p-12 text-center">
                 <Newspaper className="h-16 w-16 text-slate-300 mx-auto mb-4" />
-                <p className="text-slate-500 text-lg">Belum ada berita</p>
+                <p className="body-large">Belum ada berita</p>
               </div>
             </div>
           )}
@@ -611,7 +611,7 @@ export const HomePage = () => {
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 bg-gradient-to-br from-emerald-600 via-emerald-700 to-emerald-800 relative overflow-hidden">
+      <section className="py-20 bg-gradient-to-br from-emerald-700 via-emerald-800 to-emerald-900 relative overflow-hidden">
         {/* Decorative elements */}
         <div className="absolute inset-0 opacity-10">
           <div className="absolute top-10 left-10 w-64 h-64 rounded-full bg-white blur-3xl"></div>
@@ -624,19 +624,19 @@ export const HomePage = () => {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
           >
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-6">
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-6 leading-tight">
               Mari Bergabung dalam Gerakan Penghijauan
             </h2>
-            <p className="text-emerald-100 mb-10 text-lg sm:text-xl max-w-2xl mx-auto">
+            <p className="text-emerald-100 mb-10 text-base sm:text-lg max-w-2xl mx-auto leading-relaxed">
               Setiap pohon yang ditanam adalah investasi untuk generasi mendatang. 
               Daftarkan partisipasi Anda sekarang.
             </p>
             <Link to="/partisipasi">
               <Button 
-                className="bg-white text-emerald-700 hover:bg-emerald-50 text-lg px-10 py-6 rounded-xl shadow-xl hover:shadow-2xl transition-all duration-300 font-bold" 
+                className="bg-white text-emerald-800 hover:bg-emerald-50 text-base px-10 py-6 rounded-xl shadow-xl hover:shadow-2xl transition-all duration-300 font-bold tracking-wide" 
                 data-testid="cta-partisipasi-btn"
               >
-                <TreePine className="mr-2 h-6 w-6" />
+                <TreePine className="mr-2 h-5 w-5" />
                 Daftar Partisipasi Sekarang
               </Button>
             </Link>
