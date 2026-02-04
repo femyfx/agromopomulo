@@ -7,115 +7,141 @@ import { statsApi, settingsApi, agendaApi, beritaApi } from '../../lib/api';
 import { motion } from 'framer-motion';
 import { NewsPopup } from '../../components/NewsPopup';
 
-// Custom SVG Icons matching reference design
+// Custom SVG Icons matching reference design - Modern Badge Style
 const TotalPohonIcon = () => (
-  <svg viewBox="0 0 100 100" className="w-full h-full">
-    {/* Outer ring */}
-    <circle cx="50" cy="50" r="46" fill="none" stroke="#a7d7a7" strokeWidth="3" opacity="0.6"/>
-    {/* Inner gradient background */}
+  <svg viewBox="0 0 100 100" className="w-full h-full drop-shadow-lg">
     <defs>
-      <linearGradient id="greenGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-        <stop offset="0%" stopColor="#c8e6c9"/>
-        <stop offset="100%" stopColor="#81c784"/>
+      <linearGradient id="greenBg" x1="0%" y1="100%" x2="0%" y2="0%">
+        <stop offset="0%" stopColor="#e8f5e9"/>
+        <stop offset="100%" stopColor="#c8e6c9"/>
       </linearGradient>
+      <filter id="greenGlow" x="-20%" y="-20%" width="140%" height="140%">
+        <feGaussianBlur stdDeviation="3" result="blur"/>
+        <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+      </filter>
     </defs>
-    <circle cx="50" cy="50" r="40" fill="url(#greenGrad)"/>
-    {/* Hands cupping */}
-    <path d="M30 55 Q25 50 28 42 Q32 38 38 42 L42 48" fill="none" stroke="#2e7d32" strokeWidth="3" strokeLinecap="round"/>
-    <path d="M70 55 Q75 50 72 42 Q68 38 62 42 L58 48" fill="none" stroke="#2e7d32" strokeWidth="3" strokeLinecap="round"/>
-    {/* Bottom of hands */}
-    <path d="M30 55 Q35 65 50 68 Q65 65 70 55" fill="none" stroke="#2e7d32" strokeWidth="3" strokeLinecap="round"/>
-    {/* Plant/Leaf */}
-    <ellipse cx="50" cy="42" rx="12" ry="16" fill="#4caf50"/>
-    <path d="M50 58 L50 40" stroke="#2e7d32" strokeWidth="2"/>
-    <path d="M50 45 Q42 40 38 32" fill="none" stroke="#2e7d32" strokeWidth="1.5"/>
-    <path d="M50 45 Q58 40 62 32" fill="none" stroke="#2e7d32" strokeWidth="1.5"/>
+    {/* Outer glow ring */}
+    <circle cx="50" cy="50" r="47" fill="none" stroke="#a5d6a7" strokeWidth="4" opacity="0.5" filter="url(#greenGlow)"/>
+    {/* Main circle background */}
+    <circle cx="50" cy="50" r="42" fill="url(#greenBg)" stroke="#81c784" strokeWidth="2"/>
+    {/* Tree cross-section rings */}
+    <circle cx="50" cy="50" r="30" fill="none" stroke="#a5d6a7" strokeWidth="3" opacity="0.6"/>
+    <circle cx="50" cy="50" r="22" fill="none" stroke="#81c784" strokeWidth="2" opacity="0.5"/>
+    <circle cx="50" cy="50" r="14" fill="none" stroke="#66bb6a" strokeWidth="2" opacity="0.4"/>
+    {/* Center with sprout */}
+    <circle cx="50" cy="52" r="8" fill="#c8e6c9"/>
+    {/* Sprout/Leaf emerging from center */}
+    <path d="M50 48 Q44 38 50 28 Q56 38 50 48" fill="#4caf50" stroke="#2e7d32" strokeWidth="1"/>
+    <path d="M50 48 L50 32" stroke="#2e7d32" strokeWidth="1.5" fill="none"/>
+    {/* Small leaves */}
+    <path d="M50 38 Q42 34 38 28" fill="none" stroke="#4caf50" strokeWidth="2" strokeLinecap="round"/>
+    <path d="M50 38 Q58 34 62 28" fill="none" stroke="#4caf50" strokeWidth="2" strokeLinecap="round"/>
   </svg>
 );
 
 const PartisipanIcon = () => (
-  <svg viewBox="0 0 100 100" className="w-full h-full">
-    {/* Outer ring */}
-    <circle cx="50" cy="50" r="46" fill="none" stroke="#f0d898" strokeWidth="3" opacity="0.6"/>
-    {/* Inner gradient background */}
+  <svg viewBox="0 0 100 100" className="w-full h-full drop-shadow-lg">
     <defs>
-      <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <linearGradient id="goldBg" x1="0%" y1="100%" x2="0%" y2="0%">
         <stop offset="0%" stopColor="#fff8e1"/>
-        <stop offset="100%" stopColor="#ffe082"/>
+        <stop offset="100%" stopColor="#ffecb3"/>
       </linearGradient>
+      <filter id="goldGlow" x="-20%" y="-20%" width="140%" height="140%">
+        <feGaussianBlur stdDeviation="3" result="blur"/>
+        <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+      </filter>
     </defs>
-    <circle cx="50" cy="50" r="40" fill="url(#goldGrad)"/>
-    {/* Hand holding seedling */}
-    <path d="M32 58 Q28 52 32 46 Q38 42 45 48 L50 54 L55 48 Q62 42 68 46 Q72 52 68 58" fill="none" stroke="#8d6e00" strokeWidth="3" strokeLinecap="round"/>
-    <path d="M32 58 Q40 68 50 70 Q60 68 68 58" fill="none" stroke="#8d6e00" strokeWidth="3" strokeLinecap="round"/>
-    {/* Seedling */}
-    <path d="M50 54 L50 38" stroke="#558b2f" strokeWidth="2.5"/>
-    {/* Leaves */}
-    <ellipse cx="44" cy="35" rx="6" ry="10" fill="#8bc34a" transform="rotate(-20 44 35)"/>
-    <ellipse cx="56" cy="35" rx="6" ry="10" fill="#8bc34a" transform="rotate(20 56 35)"/>
+    {/* Outer glow ring */}
+    <circle cx="50" cy="50" r="47" fill="none" stroke="#ffe082" strokeWidth="4" opacity="0.5" filter="url(#goldGlow)"/>
+    {/* Main circle background */}
+    <circle cx="50" cy="50" r="42" fill="url(#goldBg)" stroke="#ffd54f" strokeWidth="2"/>
+    {/* Cupped hands */}
+    <path d="M28 58 Q24 48 30 40 Q36 38 42 44 L46 50" fill="none" stroke="#8d6e63" strokeWidth="2.5" strokeLinecap="round"/>
+    <path d="M72 58 Q76 48 70 40 Q64 38 58 44 L54 50" fill="none" stroke="#8d6e63" strokeWidth="2.5" strokeLinecap="round"/>
+    <path d="M28 58 Q38 72 50 74 Q62 72 72 58" fill="none" stroke="#8d6e63" strokeWidth="2.5" strokeLinecap="round"/>
+    {/* Soil/base in hands */}
+    <ellipse cx="50" cy="58" rx="14" ry="6" fill="#a1887f"/>
+    {/* Seedling stem */}
+    <path d="M50 52 L50 34" stroke="#558b2f" strokeWidth="2.5" strokeLinecap="round"/>
+    {/* Two leaves */}
+    <ellipse cx="42" cy="32" rx="8" ry="12" fill="#8bc34a" stroke="#689f38" strokeWidth="1" transform="rotate(-25 42 32)"/>
+    <ellipse cx="58" cy="32" rx="8" ry="12" fill="#8bc34a" stroke="#689f38" strokeWidth="1" transform="rotate(25 58 32)"/>
+    {/* Leaf veins */}
+    <path d="M42 38 L42 26" stroke="#689f38" strokeWidth="1" transform="rotate(-25 42 32)"/>
+    <path d="M58 38 L58 26" stroke="#689f38" strokeWidth="1" transform="rotate(25 58 32)"/>
   </svg>
 );
 
 const OPDTerlibatIcon = () => (
-  <svg viewBox="0 0 100 100" className="w-full h-full">
-    {/* Outer ring */}
-    <circle cx="50" cy="50" r="46" fill="none" stroke="#90caf9" strokeWidth="3" opacity="0.6"/>
-    {/* Inner gradient background */}
+  <svg viewBox="0 0 100 100" className="w-full h-full drop-shadow-lg">
     <defs>
-      <linearGradient id="blueGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <linearGradient id="blueBg" x1="0%" y1="100%" x2="0%" y2="0%">
         <stop offset="0%" stopColor="#e3f2fd"/>
-        <stop offset="100%" stopColor="#90caf9"/>
+        <stop offset="100%" stopColor="#bbdefb"/>
       </linearGradient>
+      <filter id="blueGlow" x="-20%" y="-20%" width="140%" height="140%">
+        <feGaussianBlur stdDeviation="3" result="blur"/>
+        <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+      </filter>
     </defs>
-    <circle cx="50" cy="50" r="40" fill="url(#blueGrad)"/>
-    {/* Building */}
-    <rect x="35" y="40" width="30" height="28" fill="#1976d2" rx="2"/>
-    {/* Roof/Tower */}
-    <rect x="44" y="28" width="12" height="12" fill="#1976d2"/>
-    <rect x="48" y="22" width="4" height="6" fill="#1976d2"/>
+    {/* Outer glow ring */}
+    <circle cx="50" cy="50" r="47" fill="none" stroke="#90caf9" strokeWidth="4" opacity="0.5" filter="url(#blueGlow)"/>
+    {/* Main circle background */}
+    <circle cx="50" cy="50" r="42" fill="url(#blueBg)" stroke="#64b5f6" strokeWidth="2"/>
+    {/* Building base */}
+    <rect x="32" y="42" width="36" height="30" fill="#42a5f5" rx="2"/>
+    {/* Building tower/roof */}
+    <rect x="42" y="30" width="16" height="12" fill="#1e88e5"/>
+    {/* Flag pole */}
+    <line x1="50" y1="30" x2="50" y2="20" stroke="#1565c0" strokeWidth="2"/>
     {/* Flag */}
-    <line x1="50" y1="22" x2="50" y2="16" stroke="#1976d2" strokeWidth="1.5"/>
-    <polygon points="50,16 58,19 50,22" fill="#f44336"/>
-    {/* Windows */}
-    <rect x="39" y="44" width="6" height="6" fill="#e3f2fd" rx="1"/>
-    <rect x="47" y="44" width="6" height="6" fill="#e3f2fd" rx="1"/>
-    <rect x="55" y="44" width="6" height="6" fill="#e3f2fd" rx="1"/>
-    <rect x="39" y="54" width="6" height="6" fill="#e3f2fd" rx="1"/>
-    <rect x="55" y="54" width="6" height="6" fill="#e3f2fd" rx="1"/>
+    <path d="M50 20 L60 24 L50 28 Z" fill="#ef5350"/>
+    {/* Windows row 1 */}
+    <rect x="36" y="46" width="6" height="6" fill="#e3f2fd" rx="1"/>
+    <rect x="47" y="46" width="6" height="6" fill="#e3f2fd" rx="1"/>
+    <rect x="58" y="46" width="6" height="6" fill="#e3f2fd" rx="1"/>
+    {/* Windows row 2 */}
+    <rect x="36" y="56" width="6" height="6" fill="#e3f2fd" rx="1"/>
+    <rect x="58" y="56" width="6" height="6" fill="#e3f2fd" rx="1"/>
     {/* Door */}
-    <rect x="47" y="54" width="6" height="14" fill="#e3f2fd" rx="1"/>
-    {/* Plant decoration */}
-    <ellipse cx="28" cy="62" rx="5" ry="8" fill="#4caf50"/>
-    <ellipse cx="72" cy="62" rx="5" ry="8" fill="#4caf50"/>
+    <rect x="47" y="56" width="6" height="16" fill="#e3f2fd" rx="1"/>
+    {/* Decorative leaf on right */}
+    <ellipse cx="76" cy="58" rx="6" ry="12" fill="#66bb6a" stroke="#43a047" strokeWidth="1" transform="rotate(15 76 58)"/>
+    <path d="M76 66 L76 50" stroke="#43a047" strokeWidth="1" transform="rotate(15 76 58)"/>
   </svg>
 );
 
 const LokasiTanamIcon = () => (
-  <svg viewBox="0 0 100 100" className="w-full h-full">
-    {/* Outer ring */}
-    <circle cx="50" cy="50" r="46" fill="none" stroke="#ffab91" strokeWidth="3" opacity="0.6"/>
-    {/* Inner gradient background */}
+  <svg viewBox="0 0 100 100" className="w-full h-full drop-shadow-lg">
     <defs>
-      <linearGradient id="coralGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <linearGradient id="coralBg" x1="0%" y1="100%" x2="0%" y2="0%">
         <stop offset="0%" stopColor="#fbe9e7"/>
-        <stop offset="100%" stopColor="#ffab91"/>
+        <stop offset="100%" stopColor="#ffccbc"/>
       </linearGradient>
+      <filter id="coralGlow" x="-20%" y="-20%" width="140%" height="140%">
+        <feGaussianBlur stdDeviation="3" result="blur"/>
+        <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+      </filter>
     </defs>
-    <circle cx="50" cy="50" r="40" fill="url(#coralGrad)"/>
-    {/* Ground/Hills */}
-    <path d="M15 65 Q30 55 50 60 Q70 55 85 65 L85 75 Q70 70 50 72 Q30 70 15 75 Z" fill="#8bc34a"/>
+    {/* Outer glow ring */}
+    <circle cx="50" cy="50" r="47" fill="none" stroke="#ffab91" strokeWidth="4" opacity="0.5" filter="url(#coralGlow)"/>
+    {/* Main circle background */}
+    <circle cx="50" cy="50" r="42" fill="url(#coralBg)" stroke="#ff8a65" strokeWidth="2"/>
+    {/* Ground segments - blocky terrain */}
+    <path d="M25 65 L35 60 L45 62 L55 58 L65 62 L75 65 L75 75 L25 75 Z" fill="#8bc34a"/>
+    <path d="M30 68 L40 64 L50 66 L60 62 L70 68 L70 75 L30 75 Z" fill="#7cb342"/>
     {/* Large leaf left */}
-    <path d="M35 60 Q30 45 35 30 Q40 35 42 50 Q42 55 35 60 Z" fill="#4caf50"/>
-    <path d="M35 60 L38 35" stroke="#2e7d32" strokeWidth="1.5" fill="none"/>
+    <ellipse cx="35" cy="45" rx="7" ry="14" fill="#66bb6a" stroke="#43a047" strokeWidth="1.5" transform="rotate(-10 35 45)"/>
+    <path d="M35 55 L35 35" stroke="#43a047" strokeWidth="1.5" transform="rotate(-10 35 45)"/>
     {/* Large leaf right */}
-    <path d="M65 60 Q70 45 65 30 Q60 35 58 50 Q58 55 65 60 Z" fill="#4caf50"/>
-    <path d="M65 60 L62 35" stroke="#2e7d32" strokeWidth="1.5" fill="none"/>
-    {/* Center leaves */}
-    <path d="M50 58 Q45 48 50 35 Q55 48 50 58 Z" fill="#66bb6a"/>
-    <path d="M50 58 L50 40" stroke="#2e7d32" strokeWidth="1.5" fill="none"/>
+    <ellipse cx="65" cy="45" rx="7" ry="14" fill="#66bb6a" stroke="#43a047" strokeWidth="1.5" transform="rotate(10 65 45)"/>
+    <path d="M65 55 L65 35" stroke="#43a047" strokeWidth="1.5" transform="rotate(10 65 45)"/>
+    {/* Center plant - main sprout */}
+    <ellipse cx="50" cy="42" rx="9" ry="16" fill="#4caf50" stroke="#388e3c" strokeWidth="1.5"/>
+    <path d="M50 54 L50 30" stroke="#388e3c" strokeWidth="2"/>
     {/* Small sprouts */}
-    <ellipse cx="42" cy="55" rx="3" ry="6" fill="#81c784"/>
-    <ellipse cx="58" cy="55" rx="3" ry="6" fill="#81c784"/>
+    <ellipse cx="42" cy="55" rx="4" ry="8" fill="#81c784" stroke="#66bb6a" strokeWidth="1"/>
+    <ellipse cx="58" cy="55" rx="4" ry="8" fill="#81c784" stroke="#66bb6a" strokeWidth="1"/>
   </svg>
 );
 
