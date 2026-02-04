@@ -250,7 +250,20 @@ export const PartisipasiPage = () => {
       toast.success('Partisipasi berhasil didaftarkan!');
     } catch (error) {
       console.error('Failed to submit:', error);
-      toast.error(error.response?.data?.detail || 'Gagal mendaftarkan partisipasi');
+      // Handle error response properly - it might be an object or array
+      let errorMessage = 'Gagal mendaftarkan partisipasi';
+      if (error.response?.data?.detail) {
+        const detail = error.response.data.detail;
+        if (typeof detail === 'string') {
+          errorMessage = detail;
+        } else if (Array.isArray(detail)) {
+          // Pydantic validation errors are returned as array
+          errorMessage = detail.map(err => err.msg || err.message || 'Validation error').join(', ');
+        } else if (typeof detail === 'object' && detail.msg) {
+          errorMessage = detail.msg;
+        }
+      }
+      toast.error(errorMessage);
     } finally {
       setLoading(false);
     }
