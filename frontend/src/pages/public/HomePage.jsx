@@ -1,11 +1,12 @@
 import { useState, useEffect, useCallback, memo } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight, Leaf, Target, Heart, Calendar, Newspaper, Clock, MapPin, TreePine } from 'lucide-react';
+import { ArrowRight, Calendar, Newspaper, Clock, MapPin, TreePine } from 'lucide-react';
 import { Button } from '../../components/ui/button';
 import { Card, CardContent } from '../../components/ui/card';
 import { statsApi, settingsApi, agendaApi, beritaApi } from '../../lib/api';
 import { motion } from 'framer-motion';
 import { NewsPopup } from '../../components/NewsPopup';
+import { LeafIcon, TargetIcon, UsersIcon } from '../../components/EnvironmentIcons';
 
 // Custom SVG Icons matching reference design - Modern Badge Style
 const TotalPohonIcon = () => (
