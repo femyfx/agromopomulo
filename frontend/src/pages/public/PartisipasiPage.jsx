@@ -302,8 +302,8 @@ export const PartisipasiPage = () => {
             animate={{ opacity: 1, y: 0 }}
             className="text-center"
           >
-            <div className="h-14 w-14 rounded-full bg-white/10 flex items-center justify-center mx-auto mb-4">
-              <TreePine className="h-7 w-7 text-white" />
+            <div className="flex justify-center mb-4">
+              <TreeIcon size="md" />
             </div>
             <h1 className="text-3xl sm:text-4xl font-bold text-white tracking-tight mb-2">
               Form Partisipasi
