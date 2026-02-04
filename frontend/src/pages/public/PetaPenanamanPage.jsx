@@ -119,28 +119,31 @@ const MapConfigurator = ({ boundaryCoords }) => {
 
 // World mask polygon - covers everywhere except Gorontalo Utara
 const WorldMask = () => {
-  // Create a large polygon covering the world with a hole for Gorontalo Utara
+  // Create Gorontalo Utara polygon coordinates in Leaflet format [lat, lng]
+  const gorontaloUtaraCoords = GORONTALO_UTARA_BOUNDARY.geometry.coordinates[0]
+    .map(coord => [coord[1], coord[0]]); // GeoJSON is [lng, lat], Leaflet needs [lat, lng]
+  
+  // Create a large polygon covering the visible area with a hole for Gorontalo Utara
+  const outerBounds = [
+    [2.0, 119.5],   // Top-left
+    [2.0, 125.5],   // Top-right  
+    [-1.5, 125.5],  // Bottom-right
+    [-1.5, 119.5],  // Bottom-left
+    [2.0, 119.5]    // Close
+  ];
+  
+  // For polygon with hole, inner ring needs to be counter-clockwise (reversed)
   const worldCoords = [
-    // Outer boundary (large rectangle covering visible area)
-    [
-      [2.5, 120.0],
-      [2.5, 125.0],
-      [-1.0, 125.0],
-      [-1.0, 120.0],
-      [2.5, 120.0]
-    ],
-    // Inner boundary (hole) - Gorontalo Utara polygon (reversed for hole)
-    GORONTALO_UTARA_BOUNDARY.geometry.coordinates[0]
-      .map(coord => [coord[1], coord[0]])
-      .reverse()
+    outerBounds,
+    [...gorontaloUtaraCoords].reverse()
   ];
 
   return (
     <Polygon
       positions={worldCoords}
       pathOptions={{
-        fillColor: '#1e293b',
-        fillOpacity: 0.6,
+        fillColor: '#0f172a',
+        fillOpacity: 0.55,
         stroke: false,
         interactive: false
       }}
