@@ -121,7 +121,7 @@ class PartisipasiCreate(BaseModel):
         return v
 
 class PartisipasiUpdate(BaseModel):
-    email: Optional[EmailStr] = None
+    email: Optional[str] = None
     nama_lengkap: Optional[str] = None
     nip: Optional[str] = None
     opd_id: Optional[str] = None
