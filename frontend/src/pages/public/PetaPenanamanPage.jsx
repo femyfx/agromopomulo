@@ -156,10 +156,10 @@ const BoundaryOutline = () => {
   const boundaryStyle = {
     color: '#059669',
     weight: 3,
-    opacity: 0.9,
-    fillColor: '#059669',
-    fillOpacity: 0.05,
-    dashArray: '5, 5'
+    opacity: 1,
+    fillColor: 'transparent',
+    fillOpacity: 0,
+    dashArray: '8, 6'
   };
 
   return (
