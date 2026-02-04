@@ -164,16 +164,19 @@ const StatCard = memo(({ iconType, value, label, testId, delay }) => {
       transition={{ delay, duration: 0.5 }}
     >
       <div 
-        className="backdrop-blur-xl bg-white/30 border border-white/50 rounded-2xl p-6 shadow-xl hover:shadow-2xl transition-all duration-300 hover:bg-white/40"
+        className="backdrop-blur-md bg-white/25 border border-white/30 rounded-2xl p-5 transition-all duration-300 hover:bg-white/35"
+        style={{
+          boxShadow: '0 8px 32px rgba(0, 0, 0, 0.08), 0 2px 8px rgba(0, 0, 0, 0.04)',
+        }}
         data-testid={testId}
       >
-        <div className="flex flex-col items-center text-center gap-3">
+        <div className="flex flex-col items-center text-center gap-4">
           <div className="h-20 w-20">
             {renderIcon()}
           </div>
-          <div className="bg-white/40 backdrop-blur-sm rounded-xl px-4 py-2">
-            <p className="text-4xl font-extrabold text-gray-900 tracking-tight">{value}</p>
-            <p className="text-sm text-gray-800 font-bold mt-1">{label}</p>
+          <div className="bg-white/50 backdrop-blur-sm rounded-xl px-5 py-3">
+            <p className="text-3xl font-extrabold text-gray-900 tracking-tight leading-none">{value}</p>
+            <p className="text-xs text-gray-700 font-semibold mt-1.5 uppercase tracking-wide">{label}</p>
           </div>
         </div>
       </div>
