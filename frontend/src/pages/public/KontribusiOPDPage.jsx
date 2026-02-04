@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
-import { Building2, TreePine, Users, TrendingUp } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/card';
 import { statsApi } from '../../lib/api';
 import { motion } from 'framer-motion';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts';
+import { BuildingIcon, UsersIcon, TreeIcon, GrowthIcon } from '../../components/EnvironmentIcons';
 
 export const KontribusiOPDPage = () => {
   const [stats, setStats] = useState(null);
