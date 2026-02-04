@@ -570,8 +570,8 @@ export const PetaPenanamanPage = () => {
                       {/* Map configuration - bounds and restrictions */}
                       <MapConfigurator boundaryCoords={boundaryCoords} />
                       
-                      {/* World mask - darkens area outside Gorontalo Utara */}
-                      <WorldMask />
+                      {/* Mask overlay - dims area outside Gorontalo Utara */}
+                      <MaskOverlay />
                       
                       {/* Gorontalo Utara boundary outline */}
                       <BoundaryOutline />
