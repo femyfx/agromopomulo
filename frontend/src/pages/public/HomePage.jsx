@@ -1,36 +1,160 @@
 import { useState, useEffect, useCallback, memo } from 'react';
 import { Link } from 'react-router-dom';
-import { TreePine, Users, Building2, MapPin, ArrowRight, Leaf, Target, Heart, Calendar, Newspaper, Clock } from 'lucide-react';
+import { ArrowRight, Leaf, Target, Heart, Calendar, Newspaper, Clock, MapPin } from 'lucide-react';
 import { Button } from '../../components/ui/button';
 import { Card, CardContent } from '../../components/ui/card';
 import { statsApi, settingsApi, agendaApi, beritaApi } from '../../lib/api';
 import { motion } from 'framer-motion';
 import { NewsPopup } from '../../components/NewsPopup';
 
-// Glassmorphism stat card component
-const StatCard = memo(({ icon: Icon, value, label, gradientFrom, gradientTo, testId, delay }) => (
-  <motion.div
-    initial={{ opacity: 0, y: 30 }}
-    whileInView={{ opacity: 1, y: 0 }}
-    viewport={{ once: true }}
-    transition={{ delay, duration: 0.5 }}
-  >
-    <div 
-      className="backdrop-blur-xl bg-white/20 border border-white/30 rounded-2xl p-6 shadow-xl hover:shadow-2xl transition-all duration-300 hover:bg-white/30"
-      data-testid={testId}
+// Custom SVG Icons matching reference design
+const TotalPohonIcon = () => (
+  <svg viewBox="0 0 100 100" className="w-full h-full">
+    {/* Outer ring */}
+    <circle cx="50" cy="50" r="46" fill="none" stroke="#a7d7a7" strokeWidth="3" opacity="0.6"/>
+    {/* Inner gradient background */}
+    <defs>
+      <linearGradient id="greenGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stopColor="#c8e6c9"/>
+        <stop offset="100%" stopColor="#81c784"/>
+      </linearGradient>
+    </defs>
+    <circle cx="50" cy="50" r="40" fill="url(#greenGrad)"/>
+    {/* Hands cupping */}
+    <path d="M30 55 Q25 50 28 42 Q32 38 38 42 L42 48" fill="none" stroke="#2e7d32" strokeWidth="3" strokeLinecap="round"/>
+    <path d="M70 55 Q75 50 72 42 Q68 38 62 42 L58 48" fill="none" stroke="#2e7d32" strokeWidth="3" strokeLinecap="round"/>
+    {/* Bottom of hands */}
+    <path d="M30 55 Q35 65 50 68 Q65 65 70 55" fill="none" stroke="#2e7d32" strokeWidth="3" strokeLinecap="round"/>
+    {/* Plant/Leaf */}
+    <ellipse cx="50" cy="42" rx="12" ry="16" fill="#4caf50"/>
+    <path d="M50 58 L50 40" stroke="#2e7d32" strokeWidth="2"/>
+    <path d="M50 45 Q42 40 38 32" fill="none" stroke="#2e7d32" strokeWidth="1.5"/>
+    <path d="M50 45 Q58 40 62 32" fill="none" stroke="#2e7d32" strokeWidth="1.5"/>
+  </svg>
+);
+
+const PartisipanIcon = () => (
+  <svg viewBox="0 0 100 100" className="w-full h-full">
+    {/* Outer ring */}
+    <circle cx="50" cy="50" r="46" fill="none" stroke="#f0d898" strokeWidth="3" opacity="0.6"/>
+    {/* Inner gradient background */}
+    <defs>
+      <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stopColor="#fff8e1"/>
+        <stop offset="100%" stopColor="#ffe082"/>
+      </linearGradient>
+    </defs>
+    <circle cx="50" cy="50" r="40" fill="url(#goldGrad)"/>
+    {/* Hand holding seedling */}
+    <path d="M32 58 Q28 52 32 46 Q38 42 45 48 L50 54 L55 48 Q62 42 68 46 Q72 52 68 58" fill="none" stroke="#8d6e00" strokeWidth="3" strokeLinecap="round"/>
+    <path d="M32 58 Q40 68 50 70 Q60 68 68 58" fill="none" stroke="#8d6e00" strokeWidth="3" strokeLinecap="round"/>
+    {/* Seedling */}
+    <path d="M50 54 L50 38" stroke="#558b2f" strokeWidth="2.5"/>
+    {/* Leaves */}
+    <ellipse cx="44" cy="35" rx="6" ry="10" fill="#8bc34a" transform="rotate(-20 44 35)"/>
+    <ellipse cx="56" cy="35" rx="6" ry="10" fill="#8bc34a" transform="rotate(20 56 35)"/>
+  </svg>
+);
+
+const OPDTerlibatIcon = () => (
+  <svg viewBox="0 0 100 100" className="w-full h-full">
+    {/* Outer ring */}
+    <circle cx="50" cy="50" r="46" fill="none" stroke="#90caf9" strokeWidth="3" opacity="0.6"/>
+    {/* Inner gradient background */}
+    <defs>
+      <linearGradient id="blueGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stopColor="#e3f2fd"/>
+        <stop offset="100%" stopColor="#90caf9"/>
+      </linearGradient>
+    </defs>
+    <circle cx="50" cy="50" r="40" fill="url(#blueGrad)"/>
+    {/* Building */}
+    <rect x="35" y="40" width="30" height="28" fill="#1976d2" rx="2"/>
+    {/* Roof/Tower */}
+    <rect x="44" y="28" width="12" height="12" fill="#1976d2"/>
+    <rect x="48" y="22" width="4" height="6" fill="#1976d2"/>
+    {/* Flag */}
+    <line x1="50" y1="22" x2="50" y2="16" stroke="#1976d2" strokeWidth="1.5"/>
+    <polygon points="50,16 58,19 50,22" fill="#f44336"/>
+    {/* Windows */}
+    <rect x="39" y="44" width="6" height="6" fill="#e3f2fd" rx="1"/>
+    <rect x="47" y="44" width="6" height="6" fill="#e3f2fd" rx="1"/>
+    <rect x="55" y="44" width="6" height="6" fill="#e3f2fd" rx="1"/>
+    <rect x="39" y="54" width="6" height="6" fill="#e3f2fd" rx="1"/>
+    <rect x="55" y="54" width="6" height="6" fill="#e3f2fd" rx="1"/>
+    {/* Door */}
+    <rect x="47" y="54" width="6" height="14" fill="#e3f2fd" rx="1"/>
+    {/* Plant decoration */}
+    <ellipse cx="28" cy="62" rx="5" ry="8" fill="#4caf50"/>
+    <ellipse cx="72" cy="62" rx="5" ry="8" fill="#4caf50"/>
+  </svg>
+);
+
+const LokasiTanamIcon = () => (
+  <svg viewBox="0 0 100 100" className="w-full h-full">
+    {/* Outer ring */}
+    <circle cx="50" cy="50" r="46" fill="none" stroke="#ffab91" strokeWidth="3" opacity="0.6"/>
+    {/* Inner gradient background */}
+    <defs>
+      <linearGradient id="coralGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stopColor="#fbe9e7"/>
+        <stop offset="100%" stopColor="#ffab91"/>
+      </linearGradient>
+    </defs>
+    <circle cx="50" cy="50" r="40" fill="url(#coralGrad)"/>
+    {/* Ground/Hills */}
+    <path d="M15 65 Q30 55 50 60 Q70 55 85 65 L85 75 Q70 70 50 72 Q30 70 15 75 Z" fill="#8bc34a"/>
+    {/* Large leaf left */}
+    <path d="M35 60 Q30 45 35 30 Q40 35 42 50 Q42 55 35 60 Z" fill="#4caf50"/>
+    <path d="M35 60 L38 35" stroke="#2e7d32" strokeWidth="1.5" fill="none"/>
+    {/* Large leaf right */}
+    <path d="M65 60 Q70 45 65 30 Q60 35 58 50 Q58 55 65 60 Z" fill="#4caf50"/>
+    <path d="M65 60 L62 35" stroke="#2e7d32" strokeWidth="1.5" fill="none"/>
+    {/* Center leaves */}
+    <path d="M50 58 Q45 48 50 35 Q55 48 50 58 Z" fill="#66bb6a"/>
+    <path d="M50 58 L50 40" stroke="#2e7d32" strokeWidth="1.5" fill="none"/>
+    {/* Small sprouts */}
+    <ellipse cx="42" cy="55" rx="3" ry="6" fill="#81c784"/>
+    <ellipse cx="58" cy="55" rx="3" ry="6" fill="#81c784"/>
+  </svg>
+);
+
+// Glassmorphism stat card component with custom icons
+const StatCard = memo(({ iconType, value, label, testId, delay }) => {
+  const renderIcon = () => {
+    switch(iconType) {
+      case 'pohon': return <TotalPohonIcon />;
+      case 'partisipan': return <PartisipanIcon />;
+      case 'opd': return <OPDTerlibatIcon />;
+      case 'lokasi': return <LokasiTanamIcon />;
+      default: return null;
+    }
+  };
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 30 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      transition={{ delay, duration: 0.5 }}
     >
-      <div className="flex items-center gap-4">
-        <div className={`h-14 w-14 rounded-xl bg-gradient-to-br ${gradientFrom} ${gradientTo} flex items-center justify-center shadow-lg`}>
-          <Icon className="h-7 w-7 text-white" />
-        </div>
-        <div>
-          <p className="text-3xl font-bold text-white tracking-tight drop-shadow-md">{value}</p>
-          <p className="text-sm text-white/80 font-medium">{label}</p>
+      <div 
+        className="backdrop-blur-xl bg-white/20 border border-white/30 rounded-2xl p-6 shadow-xl hover:shadow-2xl transition-all duration-300 hover:bg-white/30"
+        data-testid={testId}
+      >
+        <div className="flex flex-col items-center text-center gap-3">
+          <div className="h-20 w-20">
+            {renderIcon()}
+          </div>
+          <div>
+            <p className="text-4xl font-bold text-slate-800 tracking-tight drop-shadow-sm">{value}</p>
+            <p className="text-sm text-slate-600 font-medium mt-1">{label}</p>
+          </div>
         </div>
       </div>
-    </div>
-  </motion.div>
-));
+    </motion.div>
+  );
+});
 StatCard.displayName = 'StatCard';
 
 // Memoized agenda card with glassmorphism
