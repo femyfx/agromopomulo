@@ -141,12 +141,25 @@ export const PartisipasiPage = () => {
     navigator.geolocation.getCurrentPosition(
       (position) => {
         const { latitude, longitude } = position.coords;
+        const latStr = latitude.toFixed(6);
+        const lngStr = longitude.toFixed(6);
+        
         setFormData(prev => ({
           ...prev,
-          latitude: latitude.toFixed(6),
-          longitude: longitude.toFixed(6)
+          latitude: latStr,
+          longitude: lngStr
         }));
-        toast.success('Lokasi berhasil didapatkan!');
+        
+        // Validate the obtained location
+        const validation = validateLocationInGorontaloUtara(latitude, longitude);
+        setLocationValidation(validation);
+        
+        if (validation.valid) {
+          toast.success('Lokasi berhasil didapatkan dan valid dalam wilayah Kabupaten Gorontalo Utara!');
+        } else {
+          toast.warning('Lokasi berhasil didapatkan, namun berada di luar wilayah Kabupaten Gorontalo Utara.');
+        }
+        
         setGettingLocation(false);
       },
       (error) => {
