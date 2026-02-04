@@ -469,11 +469,11 @@ export const HomePage = () => {
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
             >
-              <p className="text-emerald-600 text-sm font-semibold tracking-widest uppercase mb-4">TENTANG PROGRAM</p>
-              <h2 className="text-3xl sm:text-4xl font-bold text-slate-800 mb-6">
+              <p className="overline mb-4">TENTANG PROGRAM</p>
+              <h2 className="heading-section mb-6">
                 Mopomulo: Satu Orang Sepuluh Pohon
               </h2>
-              <p className="text-slate-600 mb-8 leading-relaxed text-lg">
+              <p className="body-large mb-8">
                 Program Agro Mopomulo adalah gerakan penghijauan yang mengajak seluruh ASN 
                 dan masyarakat Kabupaten Gorontalo Utara untuk menanam pohon. Dengan target 
                 setiap orang menanam 10 pohon, kita bersama membangun masa depan yang lebih hijau.
@@ -482,27 +482,27 @@ export const HomePage = () => {
                 <div className="flex items-start gap-4">
                   <LeafIcon size="sm" />
                   <div>
-                    <h4 className="font-bold text-slate-800 text-lg">Pelestarian Lingkungan</h4>
-                    <p className="text-slate-500">Menjaga keseimbangan ekosistem dan keanekaragaman hayati</p>
+                    <h4 className="heading-card">Pelestarian Lingkungan</h4>
+                    <p className="body-small mt-1">Menjaga keseimbangan ekosistem dan keanekaragaman hayati</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-4">
                   <TargetIcon size="sm" />
                   <div>
-                    <h4 className="font-bold text-slate-800 text-lg">Ketahanan Pangan</h4>
-                    <p className="text-slate-500">Mendukung ketersediaan pangan melalui tanaman produktif</p>
+                    <h4 className="heading-card">Ketahanan Pangan</h4>
+                    <p className="body-small mt-1">Mendukung ketersediaan pangan melalui tanaman produktif</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-4">
                   <UsersIcon size="sm" />
                   <div>
-                    <h4 className="font-bold text-slate-800 text-lg">Partisipasi Masyarakat</h4>
-                    <p className="text-slate-500">Membangun kesadaran kolektif akan pentingnya penghijauan</p>
+                    <h4 className="heading-card">Partisipasi Masyarakat</h4>
+                    <p className="body-small mt-1">Membangun kesadaran kolektif akan pentingnya penghijauan</p>
                   </div>
                 </div>
               </div>
               <Link to="/tentang">
-                <Button className="bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white px-6 py-3 rounded-xl shadow-md hover:shadow-lg transition-all duration-300">
+                <Button className="btn-primary">
                   Selengkapnya
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
@@ -524,9 +524,9 @@ export const HomePage = () => {
                 decoding="async"
                 className="rounded-3xl shadow-2xl w-full h-[450px] object-cover"
               />
-              <div className="absolute -bottom-6 -left-6 backdrop-blur-xl bg-white/90 border border-white/50 rounded-2xl shadow-xl p-5">
-                <p className="text-5xl font-bold text-emerald-600">10</p>
-                <p className="text-sm text-slate-500 font-medium">Pohon per Orang</p>
+              <div className="absolute -bottom-6 -left-6 backdrop-blur-xl bg-white/95 border border-slate-100 rounded-2xl shadow-xl p-5">
+                <p className="text-4xl font-extrabold text-emerald-600">10</p>
+                <p className="label-text mt-1">Pohon per Orang</p>
               </div>
             </motion.div>
           </div>
