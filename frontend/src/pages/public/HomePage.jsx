@@ -538,8 +538,8 @@ export const HomePage = () => {
         <section className="py-20 bg-white">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-12">
-              <p className="text-emerald-600 text-sm font-semibold tracking-widest uppercase mb-4">KONTRIBUSI</p>
-              <h2 className="text-3xl sm:text-4xl font-bold text-slate-800">OPD dengan Kontribusi Terbanyak</h2>
+              <p className="overline mb-4">KONTRIBUSI</p>
+              <h2 className="heading-section">OPD dengan Kontribusi Terbanyak</h2>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {stats.opd_stats.slice(0, 3).map((opd, index) => (
@@ -548,7 +548,7 @@ export const HomePage = () => {
             </div>
             <div className="text-center mt-10">
               <Link to="/kontribusi-opd">
-                <Button className="bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white px-6 py-3 rounded-xl shadow-md hover:shadow-lg transition-all duration-300">
+                <Button className="btn-primary">
                   Lihat Semua OPD
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
@@ -562,9 +562,9 @@ export const HomePage = () => {
       <section className="py-20 bg-gradient-to-b from-slate-50 to-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
-            <p className="text-emerald-600 text-sm font-semibold tracking-widest uppercase mb-4">KEGIATAN</p>
-            <h2 className="text-3xl sm:text-4xl font-bold text-slate-800">Agenda Penanaman</h2>
-            <p className="text-slate-500 mt-4 text-lg">Jadwal kegiatan penanaman yang akan datang</p>
+            <p className="overline mb-4">KEGIATAN</p>
+            <h2 className="heading-section">Agenda Penanaman</h2>
+            <p className="body-large mt-4 mx-auto">Jadwal kegiatan penanaman yang akan datang</p>
           </div>
           
           {agenda.length > 0 ? (
@@ -577,7 +577,7 @@ export const HomePage = () => {
             <div className="backdrop-blur-md bg-white/90 border border-white/50 rounded-2xl shadow-lg">
               <div className="p-12 text-center">
                 <Calendar className="h-16 w-16 text-slate-300 mx-auto mb-4" />
-                <p className="text-slate-500 text-lg">Belum ada agenda kegiatan</p>
+                <p className="body-large">Belum ada agenda kegiatan</p>
               </div>
             </div>
           )}
