@@ -99,6 +99,11 @@ Membangun aplikasi web dashboard profesional bergaya e-Government / Smart City u
 - Import Data Partisipasi dari Excel
 - Filter Laporan berdasarkan rentang tanggal
 
+**P2 (Nice to have):**
+- WhatsApp notification integration
+- Photo upload for partisipasi evidence
+- Dashboard analytics with trends
+
 ### What's Been Implemented (February 2026)
 **Peta Penanaman Interaktif:**
 - Peta Leaflet dengan batas wilayah Kabupaten Gorontalo Utara
@@ -107,6 +112,7 @@ Membangun aplikasi web dashboard profesional bergaya e-Government / Smart City u
 - Filter marker berdasarkan point-in-polygon validation
 - Hanya menampilkan marker yang berada di dalam batas wilayah
 - Legend peta untuk keterangan
+- Filter berdasarkan Kecamatan dan Jenis Pohon
 
 **Validasi Spasial (Form Partisipasi):**
 - Real-time validation koordinat saat input
@@ -114,11 +120,13 @@ Membangun aplikasi web dashboard profesional bergaya e-Government / Smart City u
 - Pesan error jelas jika koordinat di luar wilayah
 - Visual feedback (warna border hijau/merah) untuk status validasi
 - Pencegahan submit jika koordinat tidak valid
+- Link "Lihat di Maps" untuk koordinat valid
 
-**P2 (Nice to have):**
-- WhatsApp notification integration
-- Photo upload for partisipasi evidence
-- Dashboard analytics with trends
+**Technical Implementation:**
+- GeoJSON boundary data untuk Kabupaten Gorontalo Utara
+- Ray casting algorithm untuk point-in-polygon validation
+- react-leaflet v5.0 dengan marker clustering
+- Responsive design dengan legend dan filter panel
 
 ### Test Credentials
 - Admin Email: admin@gorontaloutara.go.id
