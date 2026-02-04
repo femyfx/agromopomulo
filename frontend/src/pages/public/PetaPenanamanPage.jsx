@@ -526,8 +526,11 @@ export const PetaPenanamanPage = () => {
                       {/* Map configuration - bounds and restrictions */}
                       <MapConfigurator boundaryCoords={boundaryCoords} />
                       
-                      {/* Mask overlay - dims area outside Gorontalo Utara */}
-                      <MaskOverlay />
+                      {/* Test Polygon directly in MapContainer */}
+                      <Polygon 
+                        positions={[[1.0, 122.3], [1.0, 123.0], [0.5, 123.0], [0.5, 122.3]]}
+                        pathOptions={{ fillColor: 'red', fillOpacity: 0.5, color: 'blue', weight: 2 }}
+                      />
                       
                       {/* Gorontalo Utara boundary outline */}
                       <BoundaryOutline />
