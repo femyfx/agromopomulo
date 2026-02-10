@@ -37,6 +37,12 @@ export const PartisipasiPage = () => {
   // Flag untuk mencegah auto-submit saat navigasi antar step
   const [isNavigating, setIsNavigating] = useState(false);
   
+  // State untuk custom input "Lainnya"
+  const [showCustomJenisPohon, setShowCustomJenisPohon] = useState(false);
+  const [customJenisPohon, setCustomJenisPohon] = useState('');
+  const [showCustomSumberBibit, setShowCustomSumberBibit] = useState(false);
+  const [customSumberBibit, setCustomSumberBibit] = useState('');
+  
   const [formData, setFormData] = useState({
     email: '',
     nama_lengkap: '',
