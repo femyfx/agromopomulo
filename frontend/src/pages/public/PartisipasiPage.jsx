@@ -337,8 +337,11 @@ export const PartisipasiPage = () => {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    e.stopPropagation();
+    // Mencegah default form submission jika ada event
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
     
     // PENTING: Hanya submit jika benar-benar di Step 4
     // Ini mencegah auto-submit saat navigasi antar step
