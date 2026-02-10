@@ -342,33 +342,69 @@ export const PartisipasiPage = () => {
     
     if (!validateStep(4)) return;
 
-    // Validate coordinates if provided
-    if (formData.latitude && formData.longitude) {
-      const lat = parseFloat(formData.latitude);
-      const lng = parseFloat(formData.longitude);
-      const validation = validateLocationInGorontaloUtara(lat, lng);
-      
-      if (!validation.valid) {
-        toast.error('Koordinat lokasi berada di luar wilayah Kabupaten Gorontalo Utara. Silakan perbaiki koordinat atau kosongkan field koordinat.');
-        setLocationValidation(validation);
-        return;
+    // Gabungkan lokasi yang ada di currentLokasi (jika ada) dengan lokasiList
+    let allLocations = [...lokasiList];
+    
+    // Jika ada lokasi yang sedang diisi tapi belum ditambahkan, tambahkan otomatis
+    if (currentLokasi.lokasi_tanam.trim()) {
+      // Validasi koordinat jika diisi
+      if (currentLokasi.latitude && currentLokasi.longitude) {
+        const lat = parseFloat(currentLokasi.latitude);
+        const lng = parseFloat(currentLokasi.longitude);
+        const validation = validateLocationInGorontaloUtara(lat, lng);
+        
+        if (!validation.valid) {
+          toast.error('Koordinat lokasi yang sedang diisi berada di luar wilayah Kabupaten Gorontalo Utara. Silakan perbaiki atau hapus koordinat.');
+          setLocationValidation(validation);
+          return;
+        }
       }
+      
+      // Tambahkan lokasi yang sedang diisi ke daftar
+      allLocations.push({
+        ...currentLokasi,
+        id: Date.now(),
+        titik_lokasi: currentLokasi.latitude && currentLokasi.longitude 
+          ? `${currentLokasi.latitude}, ${currentLokasi.longitude}`
+          : ''
+      });
+    }
+
+    // Validasi minimal harus ada 1 lokasi
+    if (allLocations.length === 0) {
+      toast.error('Minimal harus ada 1 lokasi penanaman. Silakan tambahkan lokasi.');
+      return;
     }
 
     setLoading(true);
     try {
-      // Combine latitude and longitude into titik_lokasi
-      const titik_lokasi = formData.latitude && formData.longitude 
-        ? `${formData.latitude}, ${formData.longitude}`
-        : '';
+      // Kirim data untuk setiap lokasi
+      const baseData = {
+        nama_lengkap: formData.nama_lengkap,
+        nip: formData.nip || '',
+        email: formData.email || '',
+        opd_id: formData.opd_id,
+        alamat: formData.alamat || '',
+        nomor_whatsapp: formData.nomor_whatsapp || '',
+        jumlah_pohon: parseInt(formData.jumlah_pohon),
+        jenis_pohon: formData.jenis_pohon || '',
+        sumber_bibit: formData.sumber_bibit || ''
+      };
 
-      await partisipasiApi.create({
-        ...formData,
-        titik_lokasi,
-        jumlah_pohon: parseInt(formData.jumlah_pohon)
-      });
+      // Kirim semua lokasi
+      const promises = allLocations.map(loc => 
+        partisipasiApi.create({
+          ...baseData,
+          lokasi_tanam: loc.lokasi_tanam,
+          titik_lokasi: loc.titik_lokasi,
+          bukti_url: loc.bukti_url || ''
+        })
+      );
+
+      await Promise.all(promises);
+      
       setSubmitted(true);
-      toast.success('Partisipasi berhasil didaftarkan!');
+      toast.success(`Partisipasi berhasil didaftarkan dengan ${allLocations.length} lokasi!`);
     } catch (error) {
       console.error('Failed to submit:', error);
       // Handle error response properly - it might be an object or array
