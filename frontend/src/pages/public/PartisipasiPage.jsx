@@ -768,8 +768,17 @@ export const PartisipasiPage = () => {
                     <div className="space-y-2">
                       <Label htmlFor="jenis_pohon">Jenis Pohon <span className="text-red-500">*</span></Label>
                       <Select 
-                        value={formData.jenis_pohon} 
-                        onValueChange={(value) => handleSelectChange('jenis_pohon', value)}
+                        value={showCustomJenisPohon ? 'Lainnya' : formData.jenis_pohon} 
+                        onValueChange={(value) => {
+                          if (value === 'Lainnya') {
+                            setShowCustomJenisPohon(true);
+                            setFormData(prev => ({ ...prev, jenis_pohon: '' }));
+                          } else {
+                            setShowCustomJenisPohon(false);
+                            setCustomJenisPohon('');
+                            handleSelectChange('jenis_pohon', value);
+                          }
+                        }}
                       >
                         <SelectTrigger className={`form-input ${errors.jenis_pohon ? 'border-red-500' : ''}`} data-testid="select-jenis">
                           <SelectValue placeholder="Pilih jenis pohon" />
@@ -785,17 +794,42 @@ export const PartisipasiPage = () => {
                           <SelectItem value="Jambu">Jambu</SelectItem>
                           <SelectItem value="Kakao">Kakao</SelectItem>
                           <SelectItem value="Cengkeh">Cengkeh</SelectItem>
-                          <SelectItem value="Lainnya">Lainnya</SelectItem>
+                          <SelectItem value="Lainnya">Lainnya (Ketik sendiri)</SelectItem>
                         </SelectContent>
                       </Select>
+                      {showCustomJenisPohon && (
+                        <Input
+                          type="text"
+                          placeholder="Ketik jenis pohon Anda..."
+                          value={customJenisPohon}
+                          onChange={(e) => {
+                            setCustomJenisPohon(e.target.value);
+                            setFormData(prev => ({ ...prev, jenis_pohon: e.target.value }));
+                            if (errors.jenis_pohon) {
+                              setErrors(prev => ({ ...prev, jenis_pohon: '' }));
+                            }
+                          }}
+                          className={`form-input mt-2 ${errors.jenis_pohon ? 'border-red-500' : ''}`}
+                          data-testid="input-jenis-pohon-custom"
+                        />
+                      )}
                       {errors.jenis_pohon && <p className="text-sm text-red-500">{errors.jenis_pohon}</p>}
                     </div>
 
                     <div className="space-y-2">
                       <Label htmlFor="sumber_bibit">Sumber Bibit <span className="text-red-500">*</span></Label>
                       <Select 
-                        value={formData.sumber_bibit} 
-                        onValueChange={(value) => handleSelectChange('sumber_bibit', value)}
+                        value={showCustomSumberBibit ? 'Lainnya' : formData.sumber_bibit} 
+                        onValueChange={(value) => {
+                          if (value === 'Lainnya') {
+                            setShowCustomSumberBibit(true);
+                            setFormData(prev => ({ ...prev, sumber_bibit: '' }));
+                          } else {
+                            setShowCustomSumberBibit(false);
+                            setCustomSumberBibit('');
+                            handleSelectChange('sumber_bibit', value);
+                          }
+                        }}
                       >
                         <SelectTrigger className={`form-input ${errors.sumber_bibit ? 'border-red-500' : ''}`} data-testid="select-sumber-bibit">
                           <SelectValue placeholder="Pilih sumber bibit" />
@@ -807,9 +841,25 @@ export const PartisipasiPage = () => {
                           <SelectItem value="Swadaya Masyarakat">Swadaya Masyarakat</SelectItem>
                           <SelectItem value="Bantuan CSR">Bantuan CSR</SelectItem>
                           <SelectItem value="Pembelian Mandiri">Pembelian Mandiri</SelectItem>
-                          <SelectItem value="Lainnya">Lainnya</SelectItem>
+                          <SelectItem value="Lainnya">Lainnya (Ketik sendiri)</SelectItem>
                         </SelectContent>
                       </Select>
+                      {showCustomSumberBibit && (
+                        <Input
+                          type="text"
+                          placeholder="Ketik sumber bibit Anda..."
+                          value={customSumberBibit}
+                          onChange={(e) => {
+                            setCustomSumberBibit(e.target.value);
+                            setFormData(prev => ({ ...prev, sumber_bibit: e.target.value }));
+                            if (errors.sumber_bibit) {
+                              setErrors(prev => ({ ...prev, sumber_bibit: '' }));
+                            }
+                          }}
+                          className={`form-input mt-2 ${errors.sumber_bibit ? 'border-red-500' : ''}`}
+                          data-testid="input-sumber-bibit-custom"
+                        />
+                      )}
                       {errors.sumber_bibit && <p className="text-sm text-red-500">{errors.sumber_bibit}</p>}
                     </div>
                   </motion.div>
