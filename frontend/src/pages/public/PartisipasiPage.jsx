@@ -34,6 +34,9 @@ export const PartisipasiPage = () => {
   const [selectedKategori, setSelectedKategori] = useState('');
   const fileInputRef = useRef(null);
   
+  // Flag untuk mencegah auto-submit saat navigasi antar step
+  const [isNavigating, setIsNavigating] = useState(false);
+  
   const [formData, setFormData] = useState({
     email: '',
     nama_lengkap: '',
