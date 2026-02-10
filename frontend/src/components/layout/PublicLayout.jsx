@@ -117,14 +117,6 @@ export const PublicLayout = () => {
                     {item.label}
                   </Link>
                 ))}
-                <Link
-                  to="/admin/login"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-100"
-                >
-                  <LogIn className="h-5 w-5" />
-                  Login Admin
-                </Link>
               </nav>
             </motion.div>
           )}
