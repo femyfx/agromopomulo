@@ -346,26 +346,35 @@ export const PartisipasiPage = () => {
     setCurrentStep(prev => Math.max(prev - 1, 1));
   };
 
-  const handleSubmit = async (e) => {
-    // Mencegah default form submission jika ada event
-    if (e) {
-      e.preventDefault();
-      e.stopPropagation();
-    }
+  // Handler khusus untuk tombol submit - dengan debounce dan guard
+  const [canSubmit, setCanSubmit] = useState(true);
+  
+  const handleSubmitClick = useCallback(() => {
+    console.log('handleSubmitClick called', { currentStep, isNavigating, canSubmit, loading });
     
-    // PENTING: Blokir submit jika sedang dalam proses navigasi
-    // Ini mencegah auto-submit saat tombol berubah dari Selanjutnya ke Kirim Data
-    if (isNavigating) {
-      console.log('Submit blocked - navigation in progress');
+    // Guard: Hanya bisa submit jika:
+    // 1. Di Step 4
+    // 2. Tidak sedang navigasi
+    // 3. canSubmit = true
+    // 4. Tidak sedang loading
+    if (currentStep !== 4 || isNavigating || !canSubmit || loading) {
+      console.log('Submit blocked:', { currentStep, isNavigating, canSubmit, loading });
       return;
     }
     
-    // PENTING: Hanya submit jika benar-benar di Step 4
-    if (currentStep !== 4) {
+    // Disable submit sementara
+    setCanSubmit(false);
+    
+    // Panggil handleSubmit yang sebenarnya
+    performSubmit();
+    
+  }, [currentStep, isNavigating, canSubmit, loading]);
+  
+  const performSubmit = async () => {
+    if (!validateStep(4)) {
+      setCanSubmit(true);
       return;
     }
-    
-    if (!validateStep(4)) return;
 
     // Gabungkan lokasi yang ada di currentLokasi (jika ada) dengan lokasiList
     let allLocations = [...lokasiList];
@@ -381,6 +390,7 @@ export const PartisipasiPage = () => {
         if (!validation.valid) {
           toast.error('Koordinat lokasi yang sedang diisi berada di luar wilayah Kabupaten Gorontalo Utara. Silakan perbaiki atau hapus koordinat.');
           setLocationValidation(validation);
+          setCanSubmit(true);
           return;
         }
       }
@@ -398,13 +408,14 @@ export const PartisipasiPage = () => {
     // Validasi minimal harus ada 1 lokasi
     if (allLocations.length === 0) {
       toast.error('Minimal harus ada 1 lokasi penanaman. Silakan tambahkan lokasi.');
+      setCanSubmit(true);
       return;
     }
 
     setLoading(true);
     try {
       // Prepare lokasi_list array
-      const lokasiList = allLocations.map(loc => ({
+      const preparedLokasiList = allLocations.map(loc => ({
         lokasi_tanam: loc.lokasi_tanam,
         titik_lokasi: loc.titik_lokasi || '',
         bukti_url: loc.bukti_url || ''
@@ -421,7 +432,7 @@ export const PartisipasiPage = () => {
         jumlah_pohon: parseInt(formData.jumlah_pohon),
         jenis_pohon: formData.jenis_pohon || '',
         sumber_bibit: formData.sumber_bibit || '',
-        lokasi_list: lokasiList
+        lokasi_list: preparedLokasiList
       });
       
       setSubmitted(true);
