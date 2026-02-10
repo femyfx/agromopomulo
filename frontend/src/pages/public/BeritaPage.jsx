@@ -88,7 +88,22 @@ export const BeritaPage = () => {
                 >
                   <Card 
                     className="h-full hover:shadow-lg transition-shadow overflow-hidden group cursor-pointer"
-                    onClick={() => setSelectedBerita(item)}
+                    onClick={() => {
+                      // Prioritaskan link_berita, fallback ke isi_berita jika itu URL
+                      const link = item.link_berita || item.isi_berita;
+                      if (link) {
+                        try {
+                          new URL(link);
+                          window.open(link, '_blank', 'noopener,noreferrer');
+                        } catch {
+                          // Jika bukan URL, tampilkan modal detail
+                          setSelectedBerita(item);
+                        }
+                      } else {
+                        setSelectedBerita(item);
+                      }
+                    }}
+                    data-testid={`berita-card-${item.id}`}
                   >
                     {item.gambar_url && (
                       <div className="h-48 overflow-hidden">
@@ -107,6 +122,12 @@ export const BeritaPage = () => {
                         {item.judul}
                       </h3>
                       <p className="text-sm text-slate-500 line-clamp-3">{item.deskripsi_singkat}</p>
+                      <div className="mt-3 flex items-center text-emerald-600 text-sm font-medium">
+                        <span>Baca Selengkapnya</span>
+                        <svg className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                        </svg>
+                      </div>
                     </CardContent>
                   </Card>
                 </motion.div>
