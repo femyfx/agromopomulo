@@ -73,8 +73,16 @@ export const AdminBeritaPage = () => {
   };
 
   const handleSave = async () => {
-    if (!formData.judul || !formData.deskripsi_singkat || !formData.isi_berita) {
+    if (!formData.judul || !formData.deskripsi_singkat || !formData.link_berita) {
       toast.error('Mohon lengkapi semua field yang wajib');
+      return;
+    }
+    
+    // Validasi URL
+    try {
+      new URL(formData.link_berita);
+    } catch {
+      toast.error('Link berita harus berupa URL yang valid');
       return;
     }
 
