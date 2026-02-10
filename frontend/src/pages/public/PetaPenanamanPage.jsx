@@ -595,7 +595,7 @@ export const PetaPenanamanPage = () => {
                         >
                           {markers.map((marker, index) => (
                             <Marker
-                              key={marker.id || index}
+                              key={marker.markerId || `${marker.id}-${index}`}
                               position={[marker.lat, marker.lng]}
                               icon={createCustomIcon(getMarkerColor(marker.jenis_pohon))}
                             >
