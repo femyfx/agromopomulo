@@ -377,8 +377,15 @@ export const PartisipasiPage = () => {
 
     setLoading(true);
     try {
-      // Kirim data untuk setiap lokasi
-      const baseData = {
+      // Prepare lokasi_list array
+      const lokasiList = allLocations.map(loc => ({
+        lokasi_tanam: loc.lokasi_tanam,
+        titik_lokasi: loc.titik_lokasi || '',
+        bukti_url: loc.bukti_url || ''
+      }));
+
+      // Kirim satu request dengan semua lokasi dalam array
+      await partisipasiApi.create({
         nama_lengkap: formData.nama_lengkap,
         nip: formData.nip || '',
         email: formData.email || '',
@@ -387,20 +394,9 @@ export const PartisipasiPage = () => {
         nomor_whatsapp: formData.nomor_whatsapp || '',
         jumlah_pohon: parseInt(formData.jumlah_pohon),
         jenis_pohon: formData.jenis_pohon || '',
-        sumber_bibit: formData.sumber_bibit || ''
-      };
-
-      // Kirim semua lokasi
-      const promises = allLocations.map(loc => 
-        partisipasiApi.create({
-          ...baseData,
-          lokasi_tanam: loc.lokasi_tanam,
-          titik_lokasi: loc.titik_lokasi,
-          bukti_url: loc.bukti_url || ''
-        })
-      );
-
-      await Promise.all(promises);
+        sumber_bibit: formData.sumber_bibit || '',
+        lokasi_list: lokasiList
+      });
       
       setSubmitted(true);
       toast.success(`Partisipasi berhasil didaftarkan dengan ${allLocations.length} lokasi!`);
