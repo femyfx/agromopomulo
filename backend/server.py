@@ -1011,6 +1011,13 @@ async def export_pdf(current_user: dict = Depends(get_current_user)):
     opd_list = await db.opd.find({}, {"_id": 0}).to_list(1000)
     opd_map = {o["id"]: o["nama"] for o in opd_list}
     
+    # Tentukan jumlah maksimum lokasi (batasi 3 untuk PDF agar tidak terlalu lebar)
+    max_lokasi = 1
+    for p in partisipasi_list[:100]:
+        lokasi_list = p.get("lokasi_list", [])
+        if len(lokasi_list) > max_lokasi:
+            max_lokasi = min(len(lokasi_list), 3)  # Batasi max 3 kolom lokasi untuk PDF
+    
     buffer = io.BytesIO()
     doc = SimpleDocTemplate(buffer, pagesize=landscape(A4), rightMargin=30, leftMargin=30, topMargin=30, bottomMargin=30)
     
@@ -1022,17 +1029,39 @@ async def export_pdf(current_user: dict = Depends(get_current_user)):
     elements.append(Paragraph(f"Kabupaten Gorontalo Utara - {datetime.now().strftime('%d %B %Y')}", styles['Normal']))
     elements.append(Spacer(1, 20))
     
-    data = [["No", "Nama", "NIP", "OPD", "Pohon", "Jenis", "Lokasi"]]
+    # Header dinamis
+    headers = ["No", "Nama", "NIP", "OPD", "Pohon", "Jenis"]
+    for i in range(1, max_lokasi + 1):
+        if max_lokasi == 1:
+            headers.append("Lokasi")
+        else:
+            headers.append(f"Lokasi {i}")
+    
+    data = [headers]
+    
     for idx, p in enumerate(partisipasi_list[:100], 1):
-        data.append([
+        row = [
             str(idx),
             p.get("nama_lengkap", "")[:20],
-            p.get("nip", ""),
+            p.get("nip", "")[:15],
             opd_map.get(p.get("opd_id"), "")[:15],
             str(p.get("jumlah_pohon", 0)),
-            p.get("jenis_pohon", "")[:15],
-            p.get("lokasi_tanam", "")[:15]
-        ])
+            p.get("jenis_pohon", "")[:12],
+        ]
+        
+        # Tambahkan data lokasi
+        lokasi_list = p.get("lokasi_list", [])
+        if not lokasi_list and p.get("lokasi_tanam"):
+            lokasi_list = [{"lokasi_tanam": p.get("lokasi_tanam", "")}]
+        
+        for i in range(max_lokasi):
+            if i < len(lokasi_list):
+                loc = lokasi_list[i]
+                row.append(loc.get("lokasi_tanam", "")[:15])
+            else:
+                row.append("")
+        
+        data.append(row)
     
     table = Table(data, repeatRows=1)
     table.setStyle(TableStyle([
@@ -1040,12 +1069,12 @@ async def export_pdf(current_user: dict = Depends(get_current_user)):
         ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
         ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
         ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
-        ('FONTSIZE', (0, 0), (-1, 0), 10),
+        ('FONTSIZE', (0, 0), (-1, 0), 9),
         ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
         ('BACKGROUND', (0, 1), (-1, -1), colors.beige),
         ('TEXTCOLOR', (0, 1), (-1, -1), colors.black),
         ('FONTNAME', (0, 1), (-1, -1), 'Helvetica'),
-        ('FONTSIZE', (0, 1), (-1, -1), 8),
+        ('FONTSIZE', (0, 1), (-1, -1), 7),
         ('GRID', (0, 0), (-1, -1), 1, colors.black),
         ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
     ]))
