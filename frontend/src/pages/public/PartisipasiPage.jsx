@@ -567,14 +567,15 @@ export const PartisipasiPage = () => {
 
           <CardContent>
             <form 
-              onSubmit={handleSubmit}
+              onSubmit={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                // Form tidak submit apapun - semua aksi melalui button onClick
+              }}
               onKeyDown={(e) => {
-                // Mencegah submit form dengan tombol Enter kecuali saat di Step 4 dan tombol submit difokuskan
+                // Mencegah submit form dengan tombol Enter
                 if (e.key === 'Enter' && e.target.tagName !== 'TEXTAREA') {
-                  const isSubmitButton = e.target.type === 'submit';
-                  if (!isSubmitButton) {
-                    e.preventDefault();
-                  }
+                  e.preventDefault();
                 }
               }}
             >
