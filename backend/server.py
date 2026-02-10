@@ -96,6 +96,12 @@ class OPDResponse(BaseModel):
     kategori: Optional[str] = "OPD"
     created_at: str
 
+# Model untuk lokasi tanam (per titik)
+class LokasiTanam(BaseModel):
+    lokasi_tanam: str
+    titik_lokasi: Optional[str] = None
+    bukti_url: Optional[str] = None
+
 class PartisipasiCreate(BaseModel):
     email: Optional[str] = None
     nama_lengkap: str
@@ -106,9 +112,12 @@ class PartisipasiCreate(BaseModel):
     jumlah_pohon: int
     jenis_pohon: str
     sumber_bibit: str
-    lokasi_tanam: str
+    # Support both single lokasi (backward compatible) and array of lokasi
+    lokasi_tanam: Optional[str] = None
     titik_lokasi: Optional[str] = None
     bukti_url: Optional[str] = None
+    # Array of multiple locations
+    lokasi_list: Optional[List[LokasiTanam]] = None
     
     @validator('email', pre=True)
     def validate_email(cls, v):
