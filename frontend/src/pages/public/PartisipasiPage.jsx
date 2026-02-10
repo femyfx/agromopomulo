@@ -1058,21 +1058,23 @@ export const PartisipasiPage = () => {
                 Sebelumnya
               </Button>
 
-              {currentStep < 4 ? (
+              <div className="flex gap-2">
+                {/* Tombol Selanjutnya - hanya visible jika currentStep < 4 */}
                 <Button
                   type="button"
                   onClick={nextStep}
-                  className="btn-primary"
+                  className={`btn-primary ${currentStep >= 4 ? 'hidden' : ''}`}
                   data-testid="btn-next"
                 >
                   Selanjutnya
                   <ChevronRight className="h-4 w-4 ml-1" />
                 </Button>
-              ) : (
+                
+                {/* Tombol Kirim Data - hanya visible jika currentStep === 4 */}
                 <Button 
                   type="button"
                   onClick={handleSubmit}
-                  className="btn-primary"
+                  className={`btn-primary ${currentStep !== 4 ? 'hidden' : ''}`}
                   disabled={loading || isNavigating}
                   data-testid="submit-partisipasi-btn"
                 >
@@ -1088,7 +1090,7 @@ export const PartisipasiPage = () => {
                     </span>
                   )}
                 </Button>
-              )}
+              </div>
             </div>
           </CardContent>
         </Card>
