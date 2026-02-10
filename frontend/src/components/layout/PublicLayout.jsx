@@ -81,12 +81,6 @@ export const PublicLayout = () => {
                   Partisipasi
                 </Button>
               </Link>
-              <Link to="/admin/login">
-                <Button variant="outline" size="sm" className="hidden sm:flex" data-testid="admin-login-btn">
-                  <LogIn className="h-4 w-4 mr-2" />
-                  Admin
-                </Button>
-              </Link>
               <button
                 className="lg:hidden p-2 rounded-lg hover:bg-slate-100"
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
