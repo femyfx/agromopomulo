@@ -139,6 +139,11 @@ Membangun aplikasi web dashboard profesional bergaya e-Government / Smart City u
 - Semua lokasi dikirim sekaligus saat "Kirim Data" ditekan
 - Setiap lokasi disimpan sebagai entri terpisah di database dengan data partisipan yang sama
 
+**Bug Fix - Navigasi Form (10 Feb 2026):**
+- Diperbaiki: Form tidak lagi auto-submit saat navigasi Sebelumnya -> Selanjutnya
+- Data hanya terkirim ketika tombol "Kirim Data" diklik secara eksplisit
+- Implementasi: Tombol navigasi dipindahkan ke luar `<form>`, menggunakan useCallback dengan guard conditions, dan menambahkan flag `isNavigating` dan `canSubmit`
+
 **Technical Implementation:**
 - GeoJSON boundary data untuk Kabupaten Gorontalo Utara (akurat)
 - Ray casting algorithm untuk point-in-polygon validation
