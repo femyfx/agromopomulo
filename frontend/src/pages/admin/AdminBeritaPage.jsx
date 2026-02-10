@@ -23,7 +23,7 @@ export const AdminBeritaPage = () => {
   const [formData, setFormData] = useState({
     judul: '',
     deskripsi_singkat: '',
-    isi_berita: '',
+    link_berita: '',
     gambar_url: '',
     gambar_type: 'link'
   });
