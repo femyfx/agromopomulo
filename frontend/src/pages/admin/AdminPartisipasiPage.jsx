@@ -386,7 +386,7 @@ export const AdminPartisipasiPage = () => {
                     <th>Kategori</th>
                     <th>Pohon</th>
                     <th>Jenis</th>
-                    <th>Cek Lokasi</th>
+                    <th>Lokasi</th>
                     <th className="text-center">Aksi</th>
                   </tr>
                 </thead>
@@ -394,6 +394,7 @@ export const AdminPartisipasiPage = () => {
                   {filteredList.map((p) => {
                     const opd = opdList.find(o => o.id === p.opd_id);
                     const kategori = opd?.kategori || 'OPD';
+                    const lokasiCount = p.lokasi_list?.length || (p.lokasi_tanam ? 1 : 0);
                     return (
                       <tr key={p.id}>
                         <td className="font-medium">{p.nama_lengkap}</td>
@@ -412,12 +413,30 @@ export const AdminPartisipasiPage = () => {
                         <td className="font-semibold text-emerald-600">{p.jumlah_pohon}</td>
                         <td>{p.jenis_pohon}</td>
                         <td>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => openLocationInMaps(p.titik_lokasi, p.lokasi_tanam)}
-                            className="text-blue-600 border-blue-300 hover:bg-blue-50"
-                            data-testid={`location-${p.id}`}
+                          {lokasiCount > 0 ? (
+                            <div className="space-y-1">
+                              {(p.lokasi_list || [{ lokasi_tanam: p.lokasi_tanam, titik_lokasi: p.titik_lokasi }]).map((loc, idx) => (
+                                <div key={idx} className="flex items-center gap-1">
+                                  <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => openLocationInMaps(loc.titik_lokasi, loc.lokasi_tanam)}
+                                    className="text-blue-600 border-blue-300 hover:bg-blue-50 text-xs py-1 h-auto"
+                                    data-testid={`location-${p.id}-${idx}`}
+                                  >
+                                    <MapPin className="h-3 w-3 mr-1" />
+                                    <span className="max-w-[100px] truncate">{loc.lokasi_tanam || 'Lokasi ' + (idx + 1)}</span>
+                                    <ExternalLink className="h-3 w-3 ml-1" />
+                                  </Button>
+                                </div>
+                              ))}
+                              {lokasiCount > 1 && (
+                                <span className="text-xs text-slate-500">{lokasiCount} titik lokasi</span>
+                              )}
+                            </div>
+                          ) : (
+                            <span className="text-slate-400 text-sm">-</span>
+                          )}
                           >
                             <MapPin className="h-4 w-4 mr-1" />
                             <span className="hidden sm:inline">Lihat Maps</span>
