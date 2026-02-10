@@ -143,6 +143,8 @@ class PartisipasiUpdate(BaseModel):
     titik_lokasi: Optional[str] = None
     bukti_url: Optional[str] = None
     status: Optional[str] = None
+    # Array of multiple locations
+    lokasi_list: Optional[List[LokasiTanam]] = None
 
 class PartisipasiResponse(BaseModel):
     id: str
@@ -156,9 +158,12 @@ class PartisipasiResponse(BaseModel):
     jumlah_pohon: int
     jenis_pohon: str
     sumber_bibit: Optional[str] = None
-    lokasi_tanam: str
+    # Single lokasi (for backward compatibility)
+    lokasi_tanam: Optional[str] = None
     titik_lokasi: Optional[str] = None
     bukti_url: Optional[str] = None
+    # Array of multiple locations
+    lokasi_list: Optional[List[dict]] = None
     status: str
     created_at: str
 
