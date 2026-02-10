@@ -886,9 +886,10 @@ async def get_stats():
         "total_pohon": total_pohon,
         "total_partisipan": total_partisipan,
         "total_opd": len(opd_list),
+        "total_lokasi": total_lokasi,
         "opd_stats": sorted(opd_stats_list, key=lambda x: x["jumlah_pohon"], reverse=True),
         "jenis_pohon_stats": sorted(jenis_pohon_list, key=lambda x: x["jumlah"], reverse=True),
-        "lokasi_stats": sorted(lokasi_list, key=lambda x: x["jumlah_pohon"], reverse=True)
+        "lokasi_stats": sorted(lokasi_list_result, key=lambda x: x["jumlah_pohon"], reverse=True)
     }
 
 @api_router.get("/progress")
