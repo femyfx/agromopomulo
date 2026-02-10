@@ -989,7 +989,7 @@ async def export_pdf(current_user: dict = Depends(get_current_user)):
     elements.append(Paragraph(f"Kabupaten Gorontalo Utara - {datetime.now().strftime('%d %B %Y')}", styles['Normal']))
     elements.append(Spacer(1, 20))
     
-    data = [["No", "Nama", "NIP", "OPD", "Pohon", "Jenis", "Lokasi", "Status"]]
+    data = [["No", "Nama", "NIP", "OPD", "Pohon", "Jenis", "Lokasi"]]
     for idx, p in enumerate(partisipasi_list[:100], 1):
         data.append([
             str(idx),
@@ -998,8 +998,7 @@ async def export_pdf(current_user: dict = Depends(get_current_user)):
             opd_map.get(p.get("opd_id"), "")[:15],
             str(p.get("jumlah_pohon", 0)),
             p.get("jenis_pohon", "")[:15],
-            p.get("lokasi_tanam", "")[:15],
-            p.get("status", "")
+            p.get("lokasi_tanam", "")[:15]
         ])
     
     table = Table(data, repeatRows=1)
