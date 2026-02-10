@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link, Outlet, useLocation } from 'react-router-dom';
-import { Menu, X, TreePine, Home, Info, Building2, MapPin, Image, BookOpen, UserPlus, LogIn, Calendar, Newspaper } from 'lucide-react';
+import { Menu, X, TreePine, Home, Info, Building2, MapPin, Image, BookOpen, UserPlus, Calendar, Newspaper } from 'lucide-react';
 import { Button } from '../ui/button';
 import { settingsApi } from '../../lib/api';
 import { motion, AnimatePresence } from 'framer-motion';
