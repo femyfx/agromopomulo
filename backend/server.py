@@ -1110,20 +1110,99 @@ async def import_excel(file: UploadFile = File(...), current_user: dict = Depend
     imported = 0
     errors = []
     
+    # Baca header untuk menentukan format
+    header_row = [str(cell.value).lower().strip() if cell.value else "" for cell in ws[1]]
+    
     rows = list(ws.iter_rows(min_row=2, values_only=True))
     for row_idx, row in enumerate(rows, 2):
-        if len(row) < 9:
+        if not row or len(row) < 5:
             errors.append(f"Baris {row_idx}: Data tidak lengkap")
             continue
         
-        nama, nip, email, opd_nama, alamat, wa, jumlah, jenis, lokasi = row[:9]
-        
-        opd_id = opd_name_map.get(str(opd_nama).lower().strip()) if opd_nama else None
-        if not opd_id:
-            errors.append(f"Baris {row_idx}: OPD '{opd_nama}' tidak ditemukan")
+        # Skip row yang kosong
+        if not any(row):
             continue
         
         try:
+            # Format baru: Nama, NIP, Alamat, No. WhatsApp, OPD, Jumlah Pohon, Jenis Pohon, Sumber Bibit, Lokasi Tanam, Latitude, Longitude
+            # Format lama: Nama, NIP, Email, OPD, Alamat, WA, Jumlah, Jenis, Lokasi
+            
+            # Cek apakah format baru (dengan header "alamat" di posisi 3)
+            is_new_format = "alamat" in header_row and header_row.index("alamat") <= 3 if "alamat" in header_row else False
+            
+            if is_new_format or "latitude" in header_row or "sumber bibit" in header_row:
+                # Format baru
+                nama = row[0] if len(row) > 0 else ""
+                nip = row[1] if len(row) > 1 else ""
+                alamat = row[2] if len(row) > 2 else ""
+                wa = row[3] if len(row) > 3 else ""
+                opd_nama = row[4] if len(row) > 4 else ""
+                jumlah = row[5] if len(row) > 5 else 0
+                jenis = row[6] if len(row) > 6 else ""
+                sumber_bibit = row[7] if len(row) > 7 else ""
+                lokasi = row[8] if len(row) > 8 else ""
+                latitude = row[9] if len(row) > 9 else ""
+                longitude = row[10] if len(row) > 10 else ""
+                email = ""
+            else:
+                # Format lama: Nama, NIP, Email, OPD, Alamat, WA, Jumlah, Jenis, Lokasi
+                nama = row[0] if len(row) > 0 else ""
+                nip = row[1] if len(row) > 1 else ""
+                email = row[2] if len(row) > 2 else ""
+                opd_nama = row[3] if len(row) > 3 else ""
+                alamat = row[4] if len(row) > 4 else ""
+                wa = row[5] if len(row) > 5 else ""
+                jumlah = row[6] if len(row) > 6 else 0
+                jenis = row[7] if len(row) > 7 else ""
+                lokasi = row[8] if len(row) > 8 else ""
+                sumber_bibit = ""
+                latitude = ""
+                longitude = ""
+            
+            if not nama:
+                errors.append(f"Baris {row_idx}: Nama tidak boleh kosong")
+                continue
+            
+            opd_id = opd_name_map.get(str(opd_nama).lower().strip()) if opd_nama else None
+            if not opd_id:
+                errors.append(f"Baris {row_idx}: OPD '{opd_nama}' tidak ditemukan")
+                continue
+            
+            # Parse koordinat
+            titik_lokasi = ""
+            if latitude and longitude:
+                titik_lokasi = f"{str(latitude).strip()}, {str(longitude).strip()}"
+            
+            # Buat lokasi_list
+            lokasi_list = []
+            if lokasi:
+                lokasi_list.append({
+                    "lokasi_tanam": str(lokasi).strip(),
+                    "titik_lokasi": titik_lokasi,
+                    "bukti_url": ""
+                })
+            
+            # Cek apakah ada lokasi tambahan (Lokasi Tanam 2, Latitude 2, Longitude 2, dst)
+            col_idx = 11  # Mulai dari kolom setelah Longitude pertama
+            loc_num = 2
+            while col_idx + 2 < len(row):
+                lok = row[col_idx] if col_idx < len(row) else ""
+                lat = row[col_idx + 1] if col_idx + 1 < len(row) else ""
+                lng = row[col_idx + 2] if col_idx + 2 < len(row) else ""
+                
+                if lok:
+                    titik = ""
+                    if lat and lng:
+                        titik = f"{str(lat).strip()}, {str(lng).strip()}"
+                    lokasi_list.append({
+                        "lokasi_tanam": str(lok).strip(),
+                        "titik_lokasi": titik,
+                        "bukti_url": ""
+                    })
+                
+                col_idx += 3
+                loc_num += 1
+            
             partisipasi_id = str(uuid.uuid4())
             doc = {
                 "id": partisipasi_id,
@@ -1135,8 +1214,10 @@ async def import_excel(file: UploadFile = File(...), current_user: dict = Depend
                 "nomor_whatsapp": str(wa).strip() if wa else "",
                 "jumlah_pohon": int(jumlah) if jumlah else 0,
                 "jenis_pohon": str(jenis).strip() if jenis else "",
+                "sumber_bibit": str(sumber_bibit).strip() if sumber_bibit else "",
                 "lokasi_tanam": str(lokasi).strip() if lokasi else "",
-                "status": "imported",
+                "titik_lokasi": titik_lokasi,
+                "lokasi_list": lokasi_list,
                 "created_at": datetime.now(timezone.utc).isoformat()
             }
             await db.partisipasi.insert_one(doc)
