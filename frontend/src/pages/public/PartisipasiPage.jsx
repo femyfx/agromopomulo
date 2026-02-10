@@ -1082,7 +1082,7 @@ export const PartisipasiPage = () => {
                   type="button"
                   onClick={handleSubmitClick}
                   className={`btn-primary ${currentStep !== 4 ? 'hidden' : ''}`}
-                  disabled={loading || isNavigating || !canSubmit}
+                  disabled={loading || isNavigating}
                   data-testid="submit-partisipasi-btn"
                 >
                   {loading ? (
