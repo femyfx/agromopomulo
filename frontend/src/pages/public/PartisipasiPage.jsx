@@ -369,7 +369,6 @@ export const PartisipasiPage = () => {
   
   const performSubmit = async () => {
     if (!validateStep(4)) {
-      setCanSubmit(true);
       return;
     }
 
@@ -387,7 +386,6 @@ export const PartisipasiPage = () => {
         if (!validation.valid) {
           toast.error('Koordinat lokasi yang sedang diisi berada di luar wilayah Kabupaten Gorontalo Utara. Silakan perbaiki atau hapus koordinat.');
           setLocationValidation(validation);
-          setCanSubmit(true);
           return;
         }
       }
@@ -405,7 +403,6 @@ export const PartisipasiPage = () => {
     // Validasi minimal harus ada 1 lokasi
     if (allLocations.length === 0) {
       toast.error('Minimal harus ada 1 lokasi penanaman. Silakan tambahkan lokasi.');
-      setCanSubmit(true);
       return;
     }
 
