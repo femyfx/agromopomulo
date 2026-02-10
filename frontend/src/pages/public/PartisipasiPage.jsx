@@ -535,7 +535,18 @@ export const PartisipasiPage = () => {
           </CardHeader>
 
           <CardContent>
-            <form onSubmit={handleSubmit}>
+            <form 
+              onSubmit={handleSubmit}
+              onKeyDown={(e) => {
+                // Mencegah submit form dengan tombol Enter kecuali saat di Step 4 dan tombol submit difokuskan
+                if (e.key === 'Enter' && e.target.tagName !== 'TEXTAREA') {
+                  const isSubmitButton = e.target.type === 'submit';
+                  if (!isSubmitButton) {
+                    e.preventDefault();
+                  }
+                }
+              }}
+            >
               <AnimatePresence mode="wait">
                 {/* Step 1: Data Pribadi */}
                 {currentStep === 1 && (
