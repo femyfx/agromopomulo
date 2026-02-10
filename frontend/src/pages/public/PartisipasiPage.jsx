@@ -331,7 +331,14 @@ export const PartisipasiPage = () => {
 
   const nextStep = () => {
     if (validateStep(currentStep)) {
+      // Set flag navigating untuk mencegah auto-submit
+      setIsNavigating(true);
       setCurrentStep(prev => Math.min(prev + 1, 4));
+      
+      // Reset flag setelah animasi selesai
+      setTimeout(() => {
+        setIsNavigating(false);
+      }, 500);
     }
   };
 
