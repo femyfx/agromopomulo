@@ -944,7 +944,7 @@ async def export_excel(current_user: dict = Depends(get_current_user)):
     ws = wb.active
     ws.title = "Data Partisipasi"
     
-    headers = ["No", "Nama Lengkap", "NIP", "Email", "OPD", "Alamat", "No. WhatsApp", "Jumlah Pohon", "Jenis Pohon", "Lokasi Tanam", "Status", "Tanggal"]
+    headers = ["No", "Nama Lengkap", "NIP", "Email", "OPD", "Alamat", "No. WhatsApp", "Jumlah Pohon", "Jenis Pohon", "Lokasi Tanam", "Tanggal"]
     ws.append(headers)
     
     for idx, p in enumerate(partisipasi_list, 1):
@@ -959,7 +959,6 @@ async def export_excel(current_user: dict = Depends(get_current_user)):
             p.get("jumlah_pohon", 0),
             p.get("jenis_pohon", ""),
             p.get("lokasi_tanam", ""),
-            p.get("status", ""),
             p.get("created_at", "")[:10] if p.get("created_at") else ""
         ])
     
