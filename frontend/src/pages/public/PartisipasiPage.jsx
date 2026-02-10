@@ -275,7 +275,8 @@ export const PartisipasiPage = () => {
       const res = await axios.post(`${API}/upload/image`, formDataUpload, {
         headers: { 'Content-Type': 'multipart/form-data' }
       });
-      setFormData(prev => ({ ...prev, bukti_url: res.data.url }));
+      // Update currentLokasi instead of formData
+      setCurrentLokasi(prev => ({ ...prev, bukti_url: res.data.url }));
       toast.success('Bukti berhasil diupload');
     } catch (error) {
       console.error('Upload failed:', error);
@@ -286,7 +287,7 @@ export const PartisipasiPage = () => {
   };
 
   const removeBukti = () => {
-    setFormData(prev => ({ ...prev, bukti_url: '' }));
+    setCurrentLokasi(prev => ({ ...prev, bukti_url: '' }));
     if (fileInputRef.current) fileInputRef.current.value = '';
   };
 
