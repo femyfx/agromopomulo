@@ -437,11 +437,6 @@ export const AdminPartisipasiPage = () => {
                           ) : (
                             <span className="text-slate-400 text-sm">-</span>
                           )}
-                          >
-                            <MapPin className="h-4 w-4 mr-1" />
-                            <span className="hidden sm:inline">Lihat Maps</span>
-                            <ExternalLink className="h-3 w-3 ml-1" />
-                          </Button>
                         </td>
                         <td>
                           <div className="flex items-center justify-center gap-2">
