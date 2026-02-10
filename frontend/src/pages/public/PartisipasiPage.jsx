@@ -338,21 +338,17 @@ export const PartisipasiPage = () => {
       // Reset flag setelah animasi selesai
       setTimeout(() => {
         setIsNavigating(false);
-        // Reset canSubmit saat navigasi selesai
-        setCanSubmit(true);
       }, 500);
     }
   };
 
   const prevStep = () => {
     setCurrentStep(prev => Math.max(prev - 1, 1));
-    // Reset canSubmit saat navigasi
-    setCanSubmit(true);
   };
 
   // Handler untuk tombol submit
   const handleSubmitClick = () => {
-    console.log('handleSubmitClick called', { currentStep, isNavigating, canSubmit, loading });
+    console.log('handleSubmitClick called', { currentStep, isNavigating, loading });
     
     // Guard: Hanya bisa submit jika:
     // 1. Di Step 4
