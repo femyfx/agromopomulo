@@ -816,7 +816,8 @@ async def get_stats():
     total_pohon = 0
     total_partisipan = 0
     
-    partisipasi_list = await db.partisipasi.find({"status": {"$in": ["pending", "verified", "approved"]}}, {"_id": 0}).to_list(10000)
+    # Ambil SEMUA data partisipasi (tidak filter by status)
+    partisipasi_list = await db.partisipasi.find({}, {"_id": 0}).to_list(10000)
     total_partisipan = len(partisipasi_list)
     total_pohon = sum(p.get("jumlah_pohon", 0) for p in partisipasi_list)
     
