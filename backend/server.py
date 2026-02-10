@@ -951,33 +951,32 @@ async def export_excel(current_user: dict = Depends(get_current_user)):
     ws = wb.active
     ws.title = "Data Partisipasi"
     
-    # Header dinamis berdasarkan jumlah lokasi
-    headers = ["No", "Nama Lengkap", "NIP", "Email", "OPD", "Alamat", "No. WhatsApp", "Jumlah Pohon", "Jenis Pohon"]
+    # Header yang sesuai dengan format import
+    # Format: Nama, NIP, Alamat, No. WhatsApp, OPD, Jumlah Pohon, Jenis Pohon, Sumber Bibit, Lokasi Tanam 1, Latitude 1, Longitude 1, ...
+    headers = ["Nama", "NIP", "Alamat", "No. WhatsApp", "OPD", "Jumlah Pohon", "Jenis Pohon", "Sumber Bibit"]
     
-    # Tambah kolom lokasi dinamis
+    # Tambah kolom lokasi dinamis dengan Latitude dan Longitude terpisah
     for i in range(1, max_lokasi + 1):
         if max_lokasi == 1:
-            headers.extend(["Lokasi Tanam", "Koordinat"])
+            headers.extend(["Lokasi Tanam", "Latitude", "Longitude"])
         else:
-            headers.extend([f"Lokasi {i}", f"Koordinat {i}"])
+            headers.extend([f"Lokasi Tanam {i}", f"Latitude {i}", f"Longitude {i}"])
     
-    headers.append("Tanggal")
     ws.append(headers)
     
     for idx, p in enumerate(partisipasi_list, 1):
         row = [
-            idx,
             p.get("nama_lengkap", ""),
             p.get("nip", ""),
-            p.get("email", ""),
-            opd_map.get(p.get("opd_id"), "Unknown"),
             p.get("alamat", ""),
             p.get("nomor_whatsapp", ""),
+            opd_map.get(p.get("opd_id"), "Unknown"),
             p.get("jumlah_pohon", 0),
             p.get("jenis_pohon", ""),
+            p.get("sumber_bibit", ""),
         ]
         
-        # Tambahkan data lokasi
+        # Tambahkan data lokasi dengan Latitude dan Longitude terpisah
         lokasi_list = p.get("lokasi_list", [])
         if not lokasi_list and p.get("lokasi_tanam"):
             # Fallback untuk data lama dengan single lokasi
@@ -987,12 +986,20 @@ async def export_excel(current_user: dict = Depends(get_current_user)):
             if i < len(lokasi_list):
                 loc = lokasi_list[i]
                 row.append(loc.get("lokasi_tanam", ""))
-                row.append(loc.get("titik_lokasi", ""))
+                # Parse titik_lokasi untuk mendapatkan lat/lng terpisah
+                titik = loc.get("titik_lokasi", "")
+                if titik and titik != "None" and "," in titik:
+                    coords = titik.split(",")
+                    row.append(coords[0].strip())  # Latitude
+                    row.append(coords[1].strip() if len(coords) > 1 else "")  # Longitude
+                else:
+                    row.append("")  # Latitude
+                    row.append("")  # Longitude
             else:
-                row.append("")
-                row.append("")
+                row.append("")  # Lokasi Tanam
+                row.append("")  # Latitude
+                row.append("")  # Longitude
         
-        row.append(p.get("created_at", "")[:10] if p.get("created_at") else "")
         ws.append(row)
     
     output = io.BytesIO()
