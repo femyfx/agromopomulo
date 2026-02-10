@@ -479,9 +479,49 @@ async def create_partisipasi(data: PartisipasiCreate):
         raise HTTPException(status_code=400, detail="OPD tidak ditemukan")
     
     partisipasi_id = str(uuid.uuid4())
+    
+    # Handle lokasi_list (array of locations)
+    lokasi_list = []
+    if data.lokasi_list and len(data.lokasi_list) > 0:
+        # Use lokasi_list array
+        for loc in data.lokasi_list:
+            lokasi_list.append({
+                "lokasi_tanam": loc.lokasi_tanam,
+                "titik_lokasi": loc.titik_lokasi,
+                "bukti_url": loc.bukti_url
+            })
+        # Set primary lokasi from first item for backward compatibility
+        primary_lokasi = data.lokasi_list[0]
+        lokasi_tanam = primary_lokasi.lokasi_tanam
+        titik_lokasi = primary_lokasi.titik_lokasi
+        bukti_url = primary_lokasi.bukti_url
+    else:
+        # Single lokasi (backward compatible)
+        lokasi_tanam = data.lokasi_tanam or ""
+        titik_lokasi = data.titik_lokasi
+        bukti_url = data.bukti_url
+        if lokasi_tanam:
+            lokasi_list.append({
+                "lokasi_tanam": lokasi_tanam,
+                "titik_lokasi": titik_lokasi,
+                "bukti_url": bukti_url
+            })
+    
     doc = {
         "id": partisipasi_id,
-        **data.model_dump(),
+        "email": data.email,
+        "nama_lengkap": data.nama_lengkap,
+        "nip": data.nip,
+        "opd_id": data.opd_id,
+        "alamat": data.alamat,
+        "nomor_whatsapp": data.nomor_whatsapp,
+        "jumlah_pohon": data.jumlah_pohon,
+        "jenis_pohon": data.jenis_pohon,
+        "sumber_bibit": data.sumber_bibit,
+        "lokasi_tanam": lokasi_tanam,
+        "titik_lokasi": titik_lokasi,
+        "bukti_url": bukti_url,
+        "lokasi_list": lokasi_list,
         "status": "pending",
         "created_at": datetime.now(timezone.utc).isoformat()
     }
