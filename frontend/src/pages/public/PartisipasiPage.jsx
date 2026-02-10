@@ -54,6 +54,15 @@ export const PartisipasiPage = () => {
   const [gettingLocation, setGettingLocation] = useState(false);
   const [locationValidation, setLocationValidation] = useState({ valid: null, message: '' });
 
+  // State untuk menyimpan array lokasi (multi-lokasi)
+  const [lokasiList, setLokasiList] = useState([]);
+  const [currentLokasi, setCurrentLokasi] = useState({
+    lokasi_tanam: '',
+    latitude: '',
+    longitude: '',
+    bukti_url: ''
+  });
+
   const kategoriOptions = [
     { value: 'OPD', label: 'OPD' },
     { value: 'DESA', label: 'Desa' },
