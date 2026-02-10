@@ -95,11 +95,17 @@ export const PartisipasiPage = () => {
     if (errors[name]) {
       setErrors(prev => ({ ...prev, [name]: '' }));
     }
+  };
+
+  // Handle change for current lokasi input
+  const handleLokasiChange = (e) => {
+    const { name, value } = e.target;
+    setCurrentLokasi(prev => ({ ...prev, [name]: value }));
     
     // Validate coordinates when latitude or longitude changes
     if (name === 'latitude' || name === 'longitude') {
-      const newFormData = { ...formData, [name]: value };
-      validateCoordinates(newFormData.latitude, newFormData.longitude);
+      const newLokasi = { ...currentLokasi, [name]: value };
+      validateCoordinates(newLokasi.latitude, newLokasi.longitude);
     }
   };
 
@@ -122,6 +128,55 @@ export const PartisipasiPage = () => {
     
     const result = validateLocationInGorontaloUtara(latNum, lngNum);
     setLocationValidation(result);
+  };
+
+  // Tambah lokasi ke array
+  const handleAddLokasi = () => {
+    // Validasi lokasi_tanam wajib diisi
+    if (!currentLokasi.lokasi_tanam.trim()) {
+      toast.error('Nama lokasi tanam wajib diisi');
+      return;
+    }
+
+    // Validasi koordinat jika diisi
+    if (currentLokasi.latitude && currentLokasi.longitude) {
+      const lat = parseFloat(currentLokasi.latitude);
+      const lng = parseFloat(currentLokasi.longitude);
+      const validation = validateLocationInGorontaloUtara(lat, lng);
+      
+      if (!validation.valid) {
+        toast.error('Koordinat berada di luar wilayah Kabupaten Gorontalo Utara');
+        return;
+      }
+    }
+
+    // Tambah ke array dengan ID unik
+    const newLokasi = {
+      ...currentLokasi,
+      id: Date.now(),
+      titik_lokasi: currentLokasi.latitude && currentLokasi.longitude 
+        ? `${currentLokasi.latitude}, ${currentLokasi.longitude}`
+        : ''
+    };
+    
+    setLokasiList(prev => [...prev, newLokasi]);
+    
+    // Reset form lokasi
+    setCurrentLokasi({
+      lokasi_tanam: '',
+      latitude: '',
+      longitude: '',
+      bukti_url: ''
+    });
+    setLocationValidation({ valid: null, message: '' });
+    
+    toast.success('Lokasi berhasil ditambahkan');
+  };
+
+  // Hapus lokasi dari array
+  const handleRemoveLokasi = (id) => {
+    setLokasiList(prev => prev.filter(loc => loc.id !== id));
+    toast.success('Lokasi berhasil dihapus');
   };
 
   const handleSelectChange = (name, value) => {
