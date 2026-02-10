@@ -1023,52 +1023,54 @@ export const PartisipasiPage = () => {
                 )}
               </AnimatePresence>
 
-              {/* Navigation Buttons */}
-              <div className="flex justify-between mt-8 pt-6 border-t border-slate-200">
+              {/* Navigation Buttons - DI LUAR FORM untuk mencegah auto-submit */}
+            </form>
+            
+            <div className="flex justify-between mt-8 pt-6 border-t border-slate-200">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={prevStep}
+                disabled={currentStep === 1}
+                className={currentStep === 1 ? 'invisible' : ''}
+                data-testid="btn-prev"
+              >
+                <ChevronLeft className="h-4 w-4 mr-1" />
+                Sebelumnya
+              </Button>
+
+              {currentStep < 4 ? (
                 <Button
                   type="button"
-                  variant="outline"
-                  onClick={prevStep}
-                  disabled={currentStep === 1}
-                  className={currentStep === 1 ? 'invisible' : ''}
-                  data-testid="btn-prev"
+                  onClick={nextStep}
+                  className="btn-primary"
+                  data-testid="btn-next"
                 >
-                  <ChevronLeft className="h-4 w-4 mr-1" />
-                  Sebelumnya
+                  Selanjutnya
+                  <ChevronRight className="h-4 w-4 ml-1" />
                 </Button>
-
-                {currentStep < 4 ? (
-                  <Button
-                    type="button"
-                    onClick={nextStep}
-                    className="btn-primary"
-                    data-testid="btn-next"
-                  >
-                    Selanjutnya
-                    <ChevronRight className="h-4 w-4 ml-1" />
-                  </Button>
-                ) : (
-                  <Button 
-                    type="submit" 
-                    className="btn-primary"
-                    disabled={loading}
-                    data-testid="submit-partisipasi-btn"
-                  >
-                    {loading ? (
-                      <span className="flex items-center gap-2">
-                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                        Mengirim...
-                      </span>
-                    ) : (
-                      <span className="flex items-center gap-2">
-                        <Send className="h-4 w-4" />
-                        Kirim Data
-                      </span>
-                    )}
-                  </Button>
-                )}
-              </div>
-            </form>
+              ) : (
+                <Button 
+                  type="button"
+                  onClick={handleSubmit}
+                  className="btn-primary"
+                  disabled={loading}
+                  data-testid="submit-partisipasi-btn"
+                >
+                  {loading ? (
+                    <span className="flex items-center gap-2">
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                      Mengirim...
+                    </span>
+                  ) : (
+                    <span className="flex items-center gap-2">
+                      <Send className="h-4 w-4" />
+                      Kirim Data
+                    </span>
+                  )}
+                </Button>
+              )}
+            </div>
           </CardContent>
         </Card>
       </div>
