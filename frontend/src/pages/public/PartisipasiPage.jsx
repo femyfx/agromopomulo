@@ -1073,7 +1073,7 @@ export const PartisipasiPage = () => {
                   type="button"
                   onClick={handleSubmit}
                   className="btn-primary"
-                  disabled={loading}
+                  disabled={loading || isNavigating}
                   data-testid="submit-partisipasi-btn"
                 >
                   {loading ? (
