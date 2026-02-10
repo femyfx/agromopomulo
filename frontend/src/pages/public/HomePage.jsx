@@ -231,39 +231,63 @@ const AgendaCard = memo(({ item, index }) => (
 AgendaCard.displayName = 'AgendaCard';
 
 // Memoized berita card with glassmorphism
-const BeritaCard = memo(({ item, index }) => (
-  <motion.div
-    initial={{ opacity: 0, y: 20 }}
-    whileInView={{ opacity: 1, y: 0 }}
-    viewport={{ once: true }}
-    transition={{ delay: index * 0.1 }}
-  >
-    <div className="backdrop-blur-md bg-white/90 border border-white/50 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden group cursor-pointer">
-      {item.gambar_url && (
-        <div className="h-48 overflow-hidden">
-          <img 
-            src={item.gambar_url} 
-            alt={item.judul}
-            width={400}
-            height={192}
-            loading="lazy"
-            decoding="async"
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-          />
+const BeritaCard = memo(({ item, index }) => {
+  const handleClick = () => {
+    // Prioritaskan link_berita, fallback ke isi_berita jika itu adalah URL
+    const link = item.link_berita || item.isi_berita;
+    if (link) {
+      // Cek apakah link adalah URL valid
+      try {
+        new URL(link);
+        window.open(link, '_blank', 'noopener,noreferrer');
+      } catch {
+        // Jika bukan URL valid, tidak lakukan apa-apa atau bisa redirect ke halaman detail
+        console.log('Link berita bukan URL valid');
+      }
+    }
+  };
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      transition={{ delay: index * 0.1 }}
+      onClick={handleClick}
+    >
+      <div className="backdrop-blur-md bg-white/90 border border-white/50 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden group cursor-pointer">
+        {item.gambar_url && (
+          <div className="h-48 overflow-hidden">
+            <img 
+              src={item.gambar_url} 
+              alt={item.judul}
+              width={400}
+              height={192}
+              loading="lazy"
+              decoding="async"
+              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+            />
+          </div>
+        )}
+        <div className="p-6">
+          <p className="text-xs text-slate-400 mb-2 font-medium">
+            {new Date(item.created_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}
+          </p>
+          <h3 className="font-bold text-slate-800 mb-2 line-clamp-2 text-lg group-hover:text-emerald-600 transition-colors">
+            {item.judul}
+          </h3>
+          <p className="text-sm text-slate-500 line-clamp-3">{item.deskripsi_singkat}</p>
+          <div className="mt-3 flex items-center text-emerald-600 text-sm font-medium">
+            <span>Baca Selengkapnya</span>
+            <svg className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+            </svg>
+          </div>
         </div>
-      )}
-      <div className="p-6">
-        <p className="text-xs text-slate-400 mb-2 font-medium">
-          {new Date(item.created_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}
-        </p>
-        <h3 className="font-bold text-slate-800 mb-2 line-clamp-2 text-lg group-hover:text-emerald-600 transition-colors">
-          {item.judul}
-        </h3>
-        <p className="text-sm text-slate-500 line-clamp-3">{item.deskripsi_singkat}</p>
       </div>
-    </div>
-  </motion.div>
-));
+    </motion.div>
+  );
+});
 BeritaCard.displayName = 'BeritaCard';
 
 // Memoized OPD card with glassmorphism
