@@ -123,19 +123,29 @@ Membangun aplikasi web dashboard profesional bergaya e-Government / Smart City u
 - Pencegahan submit jika koordinat tidak valid
 - Link "Lihat di Maps" untuk koordinat valid
 
-**Admin Panel - Kelola Partisipasi (NEW):**
+**Admin Panel - Kelola Partisipasi:**
 - Tombol aksi Edit dan Hapus untuk setiap data partisipasi
-- Modal Edit dengan semua field yang dapat diubah (nama, NIP, email, OPD, alamat, whatsapp, jumlah pohon, jenis pohon, sumber bibit, lokasi, koordinat)
+- Modal Edit dengan semua field yang dapat diubah
 - Modal konfirmasi hapus dengan preview data yang akan dihapus
 - Validasi required fields pada form edit
 - Authorization header untuk keamanan API
 
+**Form Partisipasi Multi-Lokasi (NEW):**
+- User dapat menambahkan beberapa lokasi penanaman dalam satu kali pengisian
+- Tombol "Tambah Lokasi" untuk menyimpan lokasi ke daftar sementara
+- Daftar lokasi yang sudah ditambahkan dengan numbered badges
+- Tombol hapus untuk setiap lokasi di daftar
+- Form dikosongkan setelah menambah lokasi untuk input berikutnya
+- Semua lokasi dikirim sekaligus saat "Kirim Data" ditekan
+- Setiap lokasi disimpan sebagai entri terpisah di database dengan data partisipan yang sama
+
 **Technical Implementation:**
-- GeoJSON boundary data untuk Kabupaten Gorontalo Utara
+- GeoJSON boundary data untuk Kabupaten Gorontalo Utara (akurat)
 - Ray casting algorithm untuk point-in-polygon validation
 - react-leaflet v5.0 dengan marker clustering
 - Responsive design dengan legend dan filter panel
 - JWT authorization untuk API admin
+- Multi-location state management dengan array
 
 ### Test Credentials
 - Admin Email: admin@gorontaloutara.go.id
