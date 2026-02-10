@@ -898,11 +898,8 @@ async def get_progress():
     # Get all OPDs with personnel count
     opd_list = await db.opd.find({}, {"_id": 0}).to_list(1000)
     
-    # Get all verified/approved partisipasi
-    partisipasi_list = await db.partisipasi.find(
-        {"status": {"$in": ["pending", "verified", "approved", "imported"]}}, 
-        {"_id": 0}
-    ).to_list(10000)
+    # Get ALL partisipasi (tidak filter by status)
+    partisipasi_list = await db.partisipasi.find({}, {"_id": 0}).to_list(10000)
     
     # Calculate planted trees per OPD
     opd_planted = {}
