@@ -254,13 +254,15 @@ class AgendaResponse(BaseModel):
 class BeritaCreate(BaseModel):
     judul: str
     deskripsi_singkat: str
-    isi_berita: str
+    link_berita: str  # URL ke halaman berita eksternal
+    isi_berita: Optional[str] = None  # Deprecated, untuk backward compatibility
     gambar_url: Optional[str] = None
     gambar_type: Optional[str] = "link"  # "link" atau "file"
 
 class BeritaUpdate(BaseModel):
     judul: Optional[str] = None
     deskripsi_singkat: Optional[str] = None
+    link_berita: Optional[str] = None
     isi_berita: Optional[str] = None
     gambar_url: Optional[str] = None
     gambar_type: Optional[str] = None
@@ -270,7 +272,8 @@ class BeritaResponse(BaseModel):
     id: str
     judul: str
     deskripsi_singkat: str
-    isi_berita: str
+    link_berita: Optional[str] = None
+    isi_berita: Optional[str] = None  # Untuk backward compatibility
     gambar_url: Optional[str] = None
     gambar_type: str
     is_active: bool
