@@ -272,39 +272,50 @@ export const PetaPenanamanPage = () => {
   }, [partisipasi]);
 
   // Filter and prepare markers - ONLY within Gorontalo Utara
+  // Support both single lokasi and lokasi_list array
   const markers = useMemo(() => {
     let excluded = 0;
-    const validMarkers = partisipasi
-      .filter(p => {
-        // Filter by kecamatan
-        if (filterKecamatan !== 'all') {
-          const matchKecamatan = p.opd_nama?.toLowerCase().includes(filterKecamatan.toLowerCase()) ||
-                                  p.lokasi_tanam?.toLowerCase().includes(filterKecamatan.toLowerCase());
-          if (!matchKecamatan) return false;
-        }
-        // Filter by jenis pohon
-        if (filterJenisPohon !== 'all' && p.jenis_pohon !== filterJenisPohon) {
-          return false;
-        }
-        return true;
-      })
-      .map(p => {
-        const coords = parseCoordinates(p.titik_lokasi);
-        if (!coords) return null;
+    const validMarkers = [];
+
+    partisipasi.forEach(p => {
+      // Filter by kecamatan
+      if (filterKecamatan !== 'all') {
+        const matchKecamatan = p.opd_nama?.toLowerCase().includes(filterKecamatan.toLowerCase()) ||
+                                p.lokasi_tanam?.toLowerCase().includes(filterKecamatan.toLowerCase());
+        if (!matchKecamatan) return;
+      }
+      // Filter by jenis pohon
+      if (filterJenisPohon !== 'all' && p.jenis_pohon !== filterJenisPohon) {
+        return;
+      }
+
+      // Check if has lokasi_list array
+      const lokasiArray = p.lokasi_list && p.lokasi_list.length > 0 
+        ? p.lokasi_list 
+        : [{ lokasi_tanam: p.lokasi_tanam, titik_lokasi: p.titik_lokasi, bukti_url: p.bukti_url }];
+
+      lokasiArray.forEach((loc, index) => {
+        const coords = parseCoordinates(loc.titik_lokasi);
+        if (!coords) return;
         
         // Check if coordinates are within Gorontalo Utara boundary
         if (!isWithinGorontaloUtara(coords.lat, coords.lng)) {
           excluded++;
-          return null; // Exclude markers outside the boundary
+          return; // Exclude markers outside the boundary
         }
         
-        return {
+        validMarkers.push({
           ...p,
+          lokasi_tanam: loc.lokasi_tanam,
+          titik_lokasi: loc.titik_lokasi,
+          bukti_url: loc.bukti_url,
           lat: coords.lat,
           lng: coords.lng,
-        };
-      })
-      .filter(Boolean);
+          locationIndex: index,
+          markerId: `${p.id}-${index}`
+        });
+      });
+    });
     
     // Update excluded count
     setExcludedCount(excluded);
