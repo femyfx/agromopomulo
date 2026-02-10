@@ -208,7 +208,8 @@ export const PartisipasiPage = () => {
         const latStr = latitude.toFixed(6);
         const lngStr = longitude.toFixed(6);
         
-        setFormData(prev => ({
+        // Update currentLokasi instead of formData
+        setCurrentLokasi(prev => ({
           ...prev,
           latitude: latStr,
           longitude: lngStr
