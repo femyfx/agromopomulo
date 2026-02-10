@@ -350,29 +350,22 @@ export const PartisipasiPage = () => {
     setCanSubmit(true);
   };
 
-  // Handler khusus untuk tombol submit - dengan debounce dan guard
-  const [canSubmit, setCanSubmit] = useState(true);
-  
-  const handleSubmitClick = useCallback(() => {
+  // Handler untuk tombol submit
+  const handleSubmitClick = () => {
     console.log('handleSubmitClick called', { currentStep, isNavigating, canSubmit, loading });
     
     // Guard: Hanya bisa submit jika:
     // 1. Di Step 4
     // 2. Tidak sedang navigasi
-    // 3. canSubmit = true
-    // 4. Tidak sedang loading
-    if (currentStep !== 4 || isNavigating || !canSubmit || loading) {
-      console.log('Submit blocked:', { currentStep, isNavigating, canSubmit, loading });
+    // 3. Tidak sedang loading
+    if (currentStep !== 4 || isNavigating || loading) {
+      console.log('Submit blocked:', { currentStep, isNavigating, loading });
       return;
     }
     
-    // Disable submit sementara
-    setCanSubmit(false);
-    
-    // Panggil handleSubmit yang sebenarnya
+    // Langsung panggil performSubmit
     performSubmit();
-    
-  }, [currentStep, isNavigating, canSubmit, loading]);
+  };
   
   const performSubmit = async () => {
     if (!validateStep(4)) {
