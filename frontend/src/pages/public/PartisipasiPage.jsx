@@ -353,8 +353,14 @@ export const PartisipasiPage = () => {
       e.stopPropagation();
     }
     
+    // PENTING: Blokir submit jika sedang dalam proses navigasi
+    // Ini mencegah auto-submit saat tombol berubah dari Selanjutnya ke Kirim Data
+    if (isNavigating) {
+      console.log('Submit blocked - navigation in progress');
+      return;
+    }
+    
     // PENTING: Hanya submit jika benar-benar di Step 4
-    // Ini mencegah auto-submit saat navigasi antar step
     if (currentStep !== 4) {
       return;
     }
