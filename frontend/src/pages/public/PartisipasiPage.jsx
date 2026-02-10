@@ -455,6 +455,7 @@ export const PartisipasiPage = () => {
       toast.error(errorMessage);
     } finally {
       setLoading(false);
+      setCanSubmit(true);
     }
   };
 
