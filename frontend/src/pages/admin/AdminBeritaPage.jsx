@@ -55,7 +55,7 @@ export const AdminBeritaPage = () => {
       setFormData({
         judul: berita.judul,
         deskripsi_singkat: berita.deskripsi_singkat,
-        isi_berita: berita.isi_berita,
+        link_berita: berita.link_berita || berita.isi_berita || '',
         gambar_url: berita.gambar_url || '',
         gambar_type: berita.gambar_type || 'link'
       });
@@ -64,7 +64,7 @@ export const AdminBeritaPage = () => {
       setFormData({
         judul: '',
         deskripsi_singkat: '',
-        isi_berita: '',
+        link_berita: '',
         gambar_url: '',
         gambar_type: 'link'
       });
