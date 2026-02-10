@@ -853,16 +853,34 @@ async def get_stats():
     
     jenis_pohon_list = [{"jenis": k, "jumlah": v} for k, v in jenis_pohon_stats.items()]
     
-    # Lokasi tanam stats
+    # Lokasi tanam stats - hitung dari lokasi_list atau single lokasi
     lokasi_stats = {}
+    total_lokasi = 0
     for p in partisipasi_list:
-        lokasi = p.get("lokasi_tanam", "Tidak diketahui")
-        if lokasi not in lokasi_stats:
-            lokasi_stats[lokasi] = {"jumlah_pohon": 0, "jumlah_partisipan": 0}
-        lokasi_stats[lokasi]["jumlah_pohon"] += p.get("jumlah_pohon", 0)
-        lokasi_stats[lokasi]["jumlah_partisipan"] += 1
+        # Prioritaskan lokasi_list jika ada
+        lokasi_list = p.get("lokasi_list", [])
+        if lokasi_list and len(lokasi_list) > 0:
+            for loc in lokasi_list:
+                lokasi = loc.get("lokasi_tanam", "Tidak diketahui")
+                if lokasi and lokasi.strip():
+                    if lokasi not in lokasi_stats:
+                        lokasi_stats[lokasi] = {"jumlah_pohon": 0, "jumlah_partisipan": 0}
+                    # Distribusikan pohon ke setiap lokasi secara proporsional
+                    pohon_per_lokasi = p.get("jumlah_pohon", 0) // len(lokasi_list)
+                    lokasi_stats[lokasi]["jumlah_pohon"] += pohon_per_lokasi
+                    lokasi_stats[lokasi]["jumlah_partisipan"] += 1
+                    total_lokasi += 1
+        else:
+            # Fallback ke single lokasi
+            lokasi = p.get("lokasi_tanam", "Tidak diketahui")
+            if lokasi and lokasi.strip():
+                if lokasi not in lokasi_stats:
+                    lokasi_stats[lokasi] = {"jumlah_pohon": 0, "jumlah_partisipan": 0}
+                lokasi_stats[lokasi]["jumlah_pohon"] += p.get("jumlah_pohon", 0)
+                lokasi_stats[lokasi]["jumlah_partisipan"] += 1
+                total_lokasi += 1
     
-    lokasi_list = [{"lokasi": k, **v} for k, v in lokasi_stats.items()]
+    lokasi_list_result = [{"lokasi": k, **v} for k, v in lokasi_stats.items()]
     
     return {
         "total_pohon": total_pohon,
