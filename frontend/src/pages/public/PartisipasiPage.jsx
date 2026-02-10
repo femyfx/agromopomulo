@@ -316,8 +316,7 @@ export const PartisipasiPage = () => {
         if (!formData.sumber_bibit) newErrors.sumber_bibit = 'Sumber bibit wajib dipilih';
         break;
       case 4:
-        // Lokasi tanam WAJIB
-        if (!formData.lokasi_tanam) newErrors.lokasi_tanam = 'Lokasi tanam wajib diisi';
+        // Validasi multi-lokasi dilakukan di handleSubmit
         break;
       default:
         break;
