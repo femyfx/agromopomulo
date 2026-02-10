@@ -338,12 +338,16 @@ export const PartisipasiPage = () => {
       // Reset flag setelah animasi selesai
       setTimeout(() => {
         setIsNavigating(false);
+        // Reset canSubmit saat navigasi selesai
+        setCanSubmit(true);
       }, 500);
     }
   };
 
   const prevStep = () => {
     setCurrentStep(prev => Math.max(prev - 1, 1));
+    // Reset canSubmit saat navigasi
+    setCanSubmit(true);
   };
 
   // Handler khusus untuk tombol submit - dengan debounce dan guard
