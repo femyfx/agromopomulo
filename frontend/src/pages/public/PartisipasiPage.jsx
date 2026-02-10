@@ -775,7 +775,7 @@ export const PartisipasiPage = () => {
                   </motion.div>
                 )}
 
-                {/* Step 4: Lokasi & Bukti */}
+                {/* Step 4: Lokasi & Bukti - Multi Lokasi */}
                 {currentStep === 4 && (
                   <motion.div
                     key="step4"
@@ -785,170 +785,251 @@ export const PartisipasiPage = () => {
                     className="space-y-5"
                   >
                     <div className="mb-6">
-                      <h3 className="text-lg font-semibold text-slate-800">Lokasi & Bukti</h3>
-                      <p className="text-sm text-slate-500">Informasi lokasi penanaman dan bukti dokumentasi</p>
+                      <h3 className="text-lg font-semibold text-slate-800">Lokasi Penanaman</h3>
+                      <p className="text-sm text-slate-500">
+                        Anda dapat menambahkan <strong>beberapa lokasi penanaman</strong> sekaligus. 
+                        Isi data lokasi lalu klik "Tambah Lokasi" untuk setiap titik lokasi yang berbeda.
+                      </p>
                     </div>
 
-                    <div className="space-y-2">
-                      <Label htmlFor="lokasi_tanam">Lokasi Tanam <span className="text-red-500">*</span></Label>
-                      <Input
-                        id="lokasi_tanam"
-                        name="lokasi_tanam"
-                        placeholder="Nama lokasi penanaman (Desa/Kelurahan)"
-                        value={formData.lokasi_tanam}
-                        onChange={handleChange}
-                        className={`form-input ${errors.lokasi_tanam ? 'border-red-500' : ''}`}
-                        data-testid="input-lokasi"
-                      />
-                      {errors.lokasi_tanam && <p className="text-sm text-red-500">{errors.lokasi_tanam}</p>}
-                    </div>
+                    {/* Daftar Lokasi yang Sudah Ditambahkan */}
+                    {lokasiList.length > 0 && (
+                      <div className="mb-6">
+                        <Label className="mb-3 block">Lokasi yang Sudah Ditambahkan ({lokasiList.length})</Label>
+                        <div className="space-y-3">
+                          {lokasiList.map((loc, index) => (
+                            <div 
+                              key={loc.id}
+                              className="flex items-start gap-3 p-3 bg-emerald-50 rounded-lg border border-emerald-200"
+                            >
+                              <div className="flex items-center justify-center h-8 w-8 rounded-full bg-emerald-600 text-white text-sm font-medium flex-shrink-0">
+                                {index + 1}
+                              </div>
+                              <div className="flex-1 min-w-0">
+                                <p className="font-medium text-slate-800">{loc.lokasi_tanam}</p>
+                                {loc.titik_lokasi && (
+                                  <p className="text-xs text-slate-500 mt-0.5">
+                                    <MapPin className="h-3 w-3 inline mr-1" />
+                                    {loc.titik_lokasi}
+                                  </p>
+                                )}
+                                {loc.bukti_url && (
+                                  <div className="mt-2">
+                                    <img 
+                                      src={loc.bukti_url} 
+                                      alt={`Bukti ${index + 1}`}
+                                      className="h-16 w-24 object-cover rounded border border-emerald-300"
+                                    />
+                                  </div>
+                                )}
+                              </div>
+                              <Button
+                                type="button"
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => handleRemoveLokasi(loc.id)}
+                                className="text-red-500 hover:text-red-700 hover:bg-red-50 flex-shrink-0"
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
 
-                    {/* Koordinat Section */}
-                    <div className="space-y-3">
-                      <div className="flex items-center justify-between">
-                        <Label>Titik Koordinat (Opsional)</Label>
+                    {/* Form Input Lokasi Baru */}
+                    <div className="p-4 bg-slate-50 rounded-lg border border-slate-200">
+                      <Label className="mb-3 block font-medium text-slate-700">
+                        {lokasiList.length > 0 ? 'Tambah Lokasi Baru' : 'Input Lokasi Pertama'}
+                      </Label>
+
+                      <div className="space-y-4">
+                        {/* Nama Lokasi */}
+                        <div className="space-y-2">
+                          <Label htmlFor="lokasi_tanam">Nama Lokasi Tanam <span className="text-red-500">*</span></Label>
+                          <Input
+                            id="lokasi_tanam"
+                            name="lokasi_tanam"
+                            placeholder="Nama lokasi penanaman (Desa/Kelurahan)"
+                            value={currentLokasi.lokasi_tanam}
+                            onChange={handleLokasiChange}
+                            className="form-input"
+                            data-testid="input-lokasi"
+                          />
+                        </div>
+
+                        {/* Koordinat Section */}
+                        <div className="space-y-3">
+                          <div className="flex items-center justify-between">
+                            <Label>Titik Koordinat (Opsional)</Label>
+                            <Button
+                              type="button"
+                              variant="outline"
+                              size="sm"
+                              onClick={getCurrentLocation}
+                              disabled={gettingLocation}
+                              className="text-emerald-600 border-emerald-300 hover:bg-emerald-50"
+                              data-testid="btn-get-location"
+                            >
+                              {gettingLocation ? (
+                                <>
+                                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                                  Mencari...
+                                </>
+                              ) : (
+                                <>
+                                  <Navigation className="h-4 w-4 mr-2" />
+                                  Lokasi Saat Ini
+                                </>
+                              )}
+                            </Button>
+                          </div>
+
+                          <div className="grid grid-cols-2 gap-3">
+                            <div className="space-y-1">
+                              <Label htmlFor="latitude" className="text-xs text-slate-500">Latitude</Label>
+                              <Input
+                                id="latitude"
+                                name="latitude"
+                                type="text"
+                                placeholder="Contoh: 0.85"
+                                value={currentLokasi.latitude}
+                                onChange={handleLokasiChange}
+                                className={`form-input ${locationValidation.valid === false ? 'border-red-300' : locationValidation.valid === true ? 'border-emerald-300' : ''}`}
+                                data-testid="input-latitude"
+                              />
+                            </div>
+                            <div className="space-y-1">
+                              <Label htmlFor="longitude" className="text-xs text-slate-500">Longitude</Label>
+                              <Input
+                                id="longitude"
+                                name="longitude"
+                                type="text"
+                                placeholder="Contoh: 122.78"
+                                value={currentLokasi.longitude}
+                                onChange={handleLokasiChange}
+                                className={`form-input ${locationValidation.valid === false ? 'border-red-300' : locationValidation.valid === true ? 'border-emerald-300' : ''}`}
+                                data-testid="input-longitude"
+                              />
+                            </div>
+                          </div>
+                          
+                          <p className="text-xs text-slate-500">
+                            Koordinat harus berada dalam wilayah Kabupaten Gorontalo Utara
+                          </p>
+                          
+                          {/* Location validation status */}
+                          {locationValidation.message && (
+                            <div className={`flex items-start gap-2 p-3 rounded-lg border ${
+                              locationValidation.valid === true 
+                                ? 'bg-emerald-50 border-emerald-200' 
+                                : locationValidation.valid === false
+                                  ? 'bg-red-50 border-red-200'
+                                  : 'bg-white border-slate-200'
+                            }`}>
+                              {locationValidation.valid === true ? (
+                                <CheckCircle className="h-4 w-4 text-emerald-600 flex-shrink-0 mt-0.5" />
+                              ) : locationValidation.valid === false ? (
+                                <AlertCircle className="h-4 w-4 text-red-600 flex-shrink-0 mt-0.5" />
+                              ) : (
+                                <MapPin className="h-4 w-4 text-slate-400 flex-shrink-0 mt-0.5" />
+                              )}
+                              <span className={`text-sm ${
+                                locationValidation.valid === true 
+                                  ? 'text-emerald-700' 
+                                  : locationValidation.valid === false
+                                    ? 'text-red-700'
+                                    : 'text-slate-600'
+                              }`}>
+                                {locationValidation.message}
+                              </span>
+                            </div>
+                          )}
+                          
+                          {/* Preview coordinates if both filled and valid */}
+                          {currentLokasi.latitude && currentLokasi.longitude && locationValidation.valid === true && (
+                            <div className="flex items-center gap-2 p-2 bg-emerald-50 rounded-lg border border-emerald-200">
+                              <MapPin className="h-4 w-4 text-emerald-600 flex-shrink-0" />
+                              <span className="text-sm text-emerald-700">
+                                Koordinat: {currentLokasi.latitude}, {currentLokasi.longitude}
+                              </span>
+                              <a 
+                                href={`https://www.google.com/maps?q=${currentLokasi.latitude},${currentLokasi.longitude}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="ml-auto text-xs text-emerald-600 hover:underline"
+                              >
+                                Lihat di Maps
+                              </a>
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Upload Bukti */}
+                        <div className="space-y-2">
+                          <Label>Foto Bukti Penanaman (Opsional)</Label>
+                          <div className="mt-2">
+                            {currentLokasi.bukti_url ? (
+                              <div className="relative inline-block">
+                                <img 
+                                  src={currentLokasi.bukti_url} 
+                                  alt="Bukti"
+                                  className="w-full max-w-xs h-40 object-cover rounded-lg border border-slate-200"
+                                />
+                                <button
+                                  type="button"
+                                  onClick={removeBukti}
+                                  className="absolute -top-2 -right-2 h-6 w-6 bg-red-500 text-white rounded-full flex items-center justify-center hover:bg-red-600"
+                                >
+                                  <X className="h-4 w-4" />
+                                </button>
+                              </div>
+                            ) : (
+                              <div
+                                onClick={() => fileInputRef.current?.click()}
+                                className="border-2 border-dashed border-slate-300 rounded-lg p-6 text-center cursor-pointer hover:border-emerald-500 hover:bg-emerald-50/50 transition-colors"
+                              >
+                                <input
+                                  type="file"
+                                  accept="image/*"
+                                  onChange={handleFileUpload}
+                                  ref={fileInputRef}
+                                  className="hidden"
+                                  id="bukti-upload"
+                                />
+                                <Upload className="h-8 w-8 text-slate-400 mx-auto mb-2" />
+                                <p className="text-sm text-slate-600">
+                                  {uploading ? 'Mengupload...' : 'Klik untuk upload foto'}
+                                </p>
+                                <p className="text-xs text-slate-400 mt-1">PNG, JPG (max 2MB)</p>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+
+                        {/* Tombol Tambah Lokasi */}
                         <Button
                           type="button"
                           variant="outline"
-                          size="sm"
-                          onClick={getCurrentLocation}
-                          disabled={gettingLocation}
-                          className="text-emerald-600 border-emerald-300 hover:bg-emerald-50"
-                          data-testid="btn-get-location"
+                          onClick={handleAddLokasi}
+                          className="w-full border-emerald-300 text-emerald-600 hover:bg-emerald-50"
+                          data-testid="btn-add-lokasi"
                         >
-                          {gettingLocation ? (
-                            <>
-                              <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                              Mencari Lokasi...
-                            </>
-                          ) : (
-                            <>
-                              <Navigation className="h-4 w-4 mr-2" />
-                              Pilih Lokasi Saat Ini
-                            </>
-                          )}
+                          <Plus className="h-4 w-4 mr-2" />
+                          Tambah Lokasi
                         </Button>
                       </div>
-
-                      <div className="grid grid-cols-2 gap-3">
-                        <div className="space-y-1">
-                          <Label htmlFor="latitude" className="text-xs text-slate-500">Latitude</Label>
-                          <Input
-                            id="latitude"
-                            name="latitude"
-                            type="text"
-                            placeholder="Contoh: 0.78"
-                            value={formData.latitude}
-                            onChange={handleChange}
-                            className={`form-input ${locationValidation.valid === false ? 'border-red-300' : locationValidation.valid === true ? 'border-emerald-300' : ''}`}
-                            data-testid="input-latitude"
-                          />
-                        </div>
-                        <div className="space-y-1">
-                          <Label htmlFor="longitude" className="text-xs text-slate-500">Longitude</Label>
-                          <Input
-                            id="longitude"
-                            name="longitude"
-                            type="text"
-                            placeholder="Contoh: 122.80"
-                            value={formData.longitude}
-                            onChange={handleChange}
-                            className={`form-input ${locationValidation.valid === false ? 'border-red-300' : locationValidation.valid === true ? 'border-emerald-300' : ''}`}
-                            data-testid="input-longitude"
-                          />
-                        </div>
-                      </div>
-                      
-                      <p className="text-xs text-slate-500">
-                        Koordinat harus berada dalam wilayah Kabupaten Gorontalo Utara (Lat: 0.4° - 1.17°, Lng: 122.3° - 123.3°)
-                      </p>
-                      
-                      {/* Location validation status */}
-                      {locationValidation.message && (
-                        <div className={`flex items-start gap-2 p-3 rounded-lg border ${
-                          locationValidation.valid === true 
-                            ? 'bg-emerald-50 border-emerald-200' 
-                            : locationValidation.valid === false
-                              ? 'bg-red-50 border-red-200'
-                              : 'bg-slate-50 border-slate-200'
-                        }`}>
-                          {locationValidation.valid === true ? (
-                            <CheckCircle className="h-4 w-4 text-emerald-600 flex-shrink-0 mt-0.5" />
-                          ) : locationValidation.valid === false ? (
-                            <AlertCircle className="h-4 w-4 text-red-600 flex-shrink-0 mt-0.5" />
-                          ) : (
-                            <MapPin className="h-4 w-4 text-slate-400 flex-shrink-0 mt-0.5" />
-                          )}
-                          <span className={`text-sm ${
-                            locationValidation.valid === true 
-                              ? 'text-emerald-700' 
-                              : locationValidation.valid === false
-                                ? 'text-red-700'
-                                : 'text-slate-600'
-                          }`}>
-                            {locationValidation.message}
-                          </span>
-                        </div>
-                      )}
-                      
-                      {/* Preview coordinates if both filled and valid */}
-                      {formData.latitude && formData.longitude && locationValidation.valid === true && (
-                        <div className="flex items-center gap-2 p-2 bg-emerald-50 rounded-lg border border-emerald-200">
-                          <MapPin className="h-4 w-4 text-emerald-600 flex-shrink-0" />
-                          <span className="text-sm text-emerald-700">
-                            Koordinat: {formData.latitude}, {formData.longitude}
-                          </span>
-                          <a 
-                            href={`https://www.google.com/maps?q=${formData.latitude},${formData.longitude}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="ml-auto text-xs text-emerald-600 hover:underline"
-                          >
-                            Lihat di Maps
-                          </a>
-                        </div>
-                      )}
                     </div>
 
-                    <div className="space-y-2">
-                      <Label>Upload Bukti Penanaman (Opsional)</Label>
-                      <div className="mt-2">
-                        {formData.bukti_url ? (
-                          <div className="relative inline-block">
-                            <img 
-                              src={formData.bukti_url} 
-                              alt="Bukti"
-                              className="w-full max-w-xs h-40 object-cover rounded-lg border border-slate-200"
-                            />
-                            <button
-                              type="button"
-                              onClick={removeBukti}
-                              className="absolute -top-2 -right-2 h-6 w-6 bg-red-500 text-white rounded-full flex items-center justify-center hover:bg-red-600"
-                            >
-                              <X className="h-4 w-4" />
-                            </button>
-                          </div>
-                        ) : (
-                          <div
-                            onClick={() => fileInputRef.current?.click()}
-                            className="border-2 border-dashed border-slate-300 rounded-lg p-8 text-center cursor-pointer hover:border-emerald-500 hover:bg-emerald-50/50 transition-colors"
-                          >
-                            <input
-                              type="file"
-                              accept="image/*"
-                              onChange={handleFileUpload}
-                              ref={fileInputRef}
-                              className="hidden"
-                              id="bukti-upload"
-                            />
-                            <Upload className="h-10 w-10 text-slate-400 mx-auto mb-2" />
-                            <p className="text-sm text-slate-600">
-                              {uploading ? 'Mengupload...' : 'Klik untuk upload foto bukti penanaman'}
-                            </p>
-                            <p className="text-xs text-slate-400 mt-1">PNG, JPG (max 5MB)</p>
-                          </div>
+                    {/* Info Multi Lokasi */}
+                    <div className="p-3 bg-blue-50 rounded-lg border border-blue-200">
+                      <p className="text-sm text-blue-700">
+                        <strong>Total: {lokasiList.length + (currentLokasi.lokasi_tanam.trim() ? 1 : 0)} lokasi</strong>
+                        {lokasiList.length === 0 && !currentLokasi.lokasi_tanam.trim() && (
+                          <span className="ml-2 text-blue-600">• Minimal 1 lokasi diperlukan</span>
                         )}
-                      </div>
+                      </p>
                     </div>
                   </motion.div>
                 )}
