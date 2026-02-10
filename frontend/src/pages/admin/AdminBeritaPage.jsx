@@ -289,14 +289,15 @@ export const AdminBeritaPage = () => {
               />
             </div>
             <div className="space-y-2">
-              <Label>Isi Berita *</Label>
-              <Textarea
-                value={formData.isi_berita}
-                onChange={(e) => setFormData({ ...formData, isi_berita: e.target.value })}
-                placeholder="Isi lengkap berita..."
-                className="min-h-[150px]"
-                data-testid="input-isi"
+              <Label>Link Berita *</Label>
+              <Input
+                type="url"
+                value={formData.link_berita}
+                onChange={(e) => setFormData({ ...formData, link_berita: e.target.value })}
+                placeholder="https://contoh.com/berita/artikel-berita"
+                data-testid="input-link"
               />
+              <p className="text-xs text-slate-500">Masukkan URL lengkap halaman berita dari sumber eksternal</p>
             </div>
             <div className="space-y-2">
               <Label>Gambar</Label>
