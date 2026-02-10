@@ -164,7 +164,7 @@ class PartisipasiResponse(BaseModel):
     bukti_url: Optional[str] = None
     # Array of multiple locations
     lokasi_list: Optional[List[dict]] = None
-    status: str
+    status: Optional[str] = None
     created_at: str
 
 class SettingsUpdate(BaseModel):
