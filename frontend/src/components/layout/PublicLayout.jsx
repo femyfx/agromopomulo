@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
 import { Link, Outlet, useLocation } from 'react-router-dom';
-import { Menu, X, TreePine, Home, Info, Building2, MapPin, Image, BookOpen, UserPlus, Calendar, Newspaper } from 'lucide-react';
+import { Menu, X, TreePine, Home, Info, Building2, MapPin, Image, BookOpen, UserPlus, Calendar, Newspaper, MessageCircle } from 'lucide-react';
 import { Button } from '../ui/button';
-import { settingsApi } from '../../lib/api';
+import { settingsApi, kontakWhatsAppApi } from '../../lib/api';
 import { motion, AnimatePresence } from 'framer-motion';
+import { toast } from 'sonner';
 
 const navItems = [
   { path: '/', label: 'Beranda', icon: Home },
@@ -14,16 +15,17 @@ const navItems = [
   { path: '/berita', label: 'Berita', icon: Newspaper },
   { path: '/galeri', label: 'Galeri', icon: Image },
   { path: '/edukasi', label: 'Edukasi', icon: BookOpen },
-  { path: '/partisipasi', label: 'Partisipasi', icon: UserPlus },
 ];
 
 export const PublicLayout = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [settings, setSettings] = useState(null);
+  const [kontakWA, setKontakWA] = useState(null);
   const location = useLocation();
 
   useEffect(() => {
     loadSettings();
+    loadKontakWA();
   }, []);
 
   const loadSettings = async () => {
@@ -33,6 +35,28 @@ export const PublicLayout = () => {
     } catch (error) {
       console.error('Failed to load settings:', error);
     }
+  };
+
+  const loadKontakWA = async () => {
+    try {
+      const res = await kontakWhatsAppApi.get();
+      setKontakWA(res.data);
+    } catch (error) {
+      console.error('Failed to load kontak WA:', error);
+    }
+  };
+
+  const handleHubungiKami = () => {
+    if (!kontakWA?.nomor_whatsapp) {
+      toast.error('Nomor WhatsApp belum tersedia. Silakan hubungi admin.');
+      return;
+    }
+    
+    let url = `https://wa.me/${kontakWA.nomor_whatsapp}`;
+    if (kontakWA.pesan_default) {
+      url += `?text=${encodeURIComponent(kontakWA.pesan_default)}`;
+    }
+    window.open(url, '_blank');
   };
 
   return (
