@@ -1001,6 +1001,40 @@ async def get_progress():
         }
     }
 
+# ============== KONTAK WHATSAPP ENDPOINTS ==============
+
+@api_router.get("/kontak-whatsapp")
+async def get_kontak_whatsapp():
+    """Get WhatsApp contact settings (public endpoint)"""
+    kontak = await db.kontak_whatsapp.find_one({}, {"_id": 0})
+    if not kontak:
+        return {"nomor_whatsapp": None, "pesan_default": None}
+    return kontak
+
+@api_router.post("/kontak-whatsapp", response_model=KontakWhatsAppResponse)
+async def save_kontak_whatsapp(
+    data: KontakWhatsAppCreate,
+    current_user: dict = Depends(get_current_user)
+):
+    """Save WhatsApp contact settings (admin only)"""
+    # Hapus kontak lama jika ada (hanya simpan 1 nomor aktif)
+    await db.kontak_whatsapp.delete_many({})
+    
+    # Simpan kontak baru
+    kontak_doc = {
+        "nomor_whatsapp": data.nomor_whatsapp,
+        "pesan_default": data.pesan_default or "",
+        "updated_at": datetime.now(timezone.utc).isoformat()
+    }
+    
+    await db.kontak_whatsapp.insert_one(kontak_doc)
+    
+    return KontakWhatsAppResponse(
+        nomor_whatsapp=data.nomor_whatsapp,
+        pesan_default=data.pesan_default,
+        updated_at=kontak_doc["updated_at"]
+    )
+
 # ============== EXPORT ENDPOINTS ==============
 
 @api_router.get("/export/excel")
