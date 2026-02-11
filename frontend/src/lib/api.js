@@ -119,3 +119,14 @@ export const importApi = {
     });
   },
 };
+
+// Kontak WhatsApp API
+export const kontakWhatsAppApi = {
+  get: () => axios.get(`${API}/kontak-whatsapp`),
+  save: (data) => {
+    const token = localStorage.getItem('token');
+    return axios.post(`${API}/kontak-whatsapp`, data, {
+      headers: token ? { 'Authorization': `Bearer ${token}` } : {}
+    });
+  },
+};
