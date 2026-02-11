@@ -150,6 +150,24 @@ export const PublicLayout = () => {
                     {item.label}
                   </Link>
                 ))}
+                <Link
+                  to="/partisipasi"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-emerald-600 hover:bg-emerald-50"
+                >
+                  <UserPlus className="h-5 w-5" />
+                  Partisipasi
+                </Link>
+                <button
+                  onClick={() => {
+                    setMobileMenuOpen(false);
+                    handleHubungiKami();
+                  }}
+                  className="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-green-600 hover:bg-green-50 w-full text-left"
+                >
+                  <MessageCircle className="h-5 w-5" />
+                  Hubungi Kami
+                </button>
               </nav>
             </motion.div>
           )}
