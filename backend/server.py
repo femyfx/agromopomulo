@@ -279,6 +279,36 @@ class BeritaResponse(BaseModel):
     is_active: bool
     created_at: str
 
+# ============== KONTAK WHATSAPP MODELS ==============
+
+class KontakWhatsAppCreate(BaseModel):
+    nomor_whatsapp: str
+    pesan_default: Optional[str] = None
+    
+    @validator('nomor_whatsapp')
+    def normalize_phone(cls, v):
+        if not v:
+            raise ValueError('Nomor WhatsApp wajib diisi')
+        # Hapus karakter non-digit kecuali +
+        cleaned = ''.join(c for c in v if c.isdigit() or c == '+')
+        # Hapus + di awal
+        cleaned = cleaned.lstrip('+')
+        # Konversi format 08 ke 628
+        if cleaned.startswith('08'):
+            cleaned = '62' + cleaned[1:]
+        # Pastikan dimulai dengan 62
+        elif not cleaned.startswith('62'):
+            cleaned = '62' + cleaned
+        # Validasi panjang (minimal 10 digit setelah 62)
+        if len(cleaned) < 10:
+            raise ValueError('Nomor WhatsApp tidak valid')
+        return cleaned
+
+class KontakWhatsAppResponse(BaseModel):
+    nomor_whatsapp: str
+    pesan_default: Optional[str] = None
+    updated_at: Optional[str] = None
+
 # ============== AUTH HELPERS ==============
 
 def hash_password(password: str) -> str:
