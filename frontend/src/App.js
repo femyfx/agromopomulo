@@ -32,6 +32,7 @@ const AdminEdukasiPage = lazy(() => import("./pages/admin/AdminEdukasiPage").the
 const AdminLaporanPage = lazy(() => import("./pages/admin/AdminLaporanPage").then(m => ({ default: m.AdminLaporanPage })));
 const AdminAgendaPage = lazy(() => import("./pages/admin/AdminAgendaPage").then(m => ({ default: m.AdminAgendaPage })));
 const AdminBeritaPage = lazy(() => import("./pages/admin/AdminBeritaPage").then(m => ({ default: m.AdminBeritaPage })));
+const AdminKontakPage = lazy(() => import("./pages/admin/AdminKontakPage").then(m => ({ default: m.AdminKontakPage })));
 
 // Loading fallback component - memoized
 const PageLoader = memo(() => (
