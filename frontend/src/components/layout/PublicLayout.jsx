@@ -99,6 +99,15 @@ export const PublicLayout = () => {
 
             {/* Right Actions */}
             <div className="flex items-center gap-2">
+              <Button 
+                onClick={handleHubungiKami}
+                variant="outline"
+                className="hidden sm:flex border-green-500 text-green-600 hover:bg-green-50"
+                data-testid="hubungi-kami-btn"
+              >
+                <MessageCircle className="h-4 w-4 mr-2" />
+                Hubungi Kami
+              </Button>
               <Link to="/partisipasi">
                 <Button className="hidden sm:flex btn-primary" data-testid="partisipasi-btn">
                   <UserPlus className="h-4 w-4 mr-2" />
