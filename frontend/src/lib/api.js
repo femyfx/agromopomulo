@@ -150,9 +150,9 @@ export const deteksiGandaApi = {
   },
   mergeDuplicates: (primaryId, secondaryIds) => {
     const token = localStorage.getItem('token');
-    return axios.post(`${API}/deteksi-ganda/gabung`, null, {
-      params: { primary_id: primaryId, secondary_ids: secondaryIds },
-      headers: token ? { 'Authorization': `Bearer ${token}` } : {}
-    });
+    return axios.post(`${API}/deteksi-ganda/gabung`, 
+      { primary_id: primaryId, secondary_ids: secondaryIds },
+      { headers: token ? { 'Authorization': `Bearer ${token}` } : {} }
+    );
   },
 };
