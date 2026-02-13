@@ -1332,6 +1332,195 @@ async def import_excel(file: UploadFile = File(...), current_user: dict = Depend
 
 # ============== HEALTH CHECK ==============
 
+# ============== DETEKSI GANDA (DUPLICATE DETECTION) ENDPOINTS ==============
+
+class DuplicateGroupResponse(BaseModel):
+    key_field: str  # "nama", "nip", or "nomor_whatsapp"
+    key_value: str
+    count: int
+    participant_ids: List[str]
+
+class DuplicateDetailItem(BaseModel):
+    id: str
+    nama_lengkap: str
+    nip: Optional[str] = None
+    nomor_whatsapp: Optional[str] = None
+    opd_nama: Optional[str] = None
+    jumlah_pohon: int
+    jenis_pohon: str
+    created_at: str
+
+@api_router.get("/deteksi-ganda")
+async def get_duplicates(
+    field: str = "nama_lengkap",  # nama_lengkap, nip, nomor_whatsapp
+    opd_id: Optional[str] = None,
+    current_user: dict = Depends(get_current_user)
+):
+    """
+    Deteksi data duplikat berdasarkan field tertentu.
+    Returns groups of duplicates with count > 1.
+    """
+    valid_fields = ["nama_lengkap", "nip", "nomor_whatsapp"]
+    if field not in valid_fields:
+        raise HTTPException(status_code=400, detail=f"Field harus salah satu dari: {', '.join(valid_fields)}")
+    
+    # Build match stage
+    match_stage = {}
+    if opd_id and opd_id != "all":
+        match_stage["opd_id"] = opd_id
+    
+    # Exclude empty/null values for the field we're checking
+    match_stage[field] = {"$ne": None, "$ne": ""}
+    
+    # Aggregation pipeline to find duplicates
+    pipeline = [
+        {"$match": match_stage},
+        {
+            "$group": {
+                "_id": f"${field}",
+                "count": {"$sum": 1},
+                "participant_ids": {"$push": "$id"},
+                "participants": {"$push": {
+                    "id": "$id",
+                    "nama_lengkap": "$nama_lengkap",
+                    "nip": "$nip",
+                    "nomor_whatsapp": "$nomor_whatsapp",
+                    "opd_id": "$opd_id",
+                    "jumlah_pohon": "$jumlah_pohon",
+                    "jenis_pohon": "$jenis_pohon",
+                    "created_at": "$created_at"
+                }}
+            }
+        },
+        {"$match": {"count": {"$gt": 1}}},  # Only groups with more than 1 entry
+        {"$sort": {"count": -1}}  # Sort by count descending
+    ]
+    
+    duplicates = await db.partisipasi.aggregate(pipeline).to_list(1000)
+    
+    # Get OPD map for enrichment
+    opd_list = await db.opd.find({}, {"_id": 0}).to_list(1000)
+    opd_map = {o["id"]: o["nama"] for o in opd_list}
+    
+    # Format response
+    result = []
+    for dup in duplicates:
+        # Enrich participants with OPD names
+        participants = []
+        for p in dup.get("participants", []):
+            p["opd_nama"] = opd_map.get(p.get("opd_id"), "Unknown")
+            participants.append(p)
+        
+        result.append({
+            "key_field": field,
+            "key_value": dup["_id"],
+            "count": dup["count"],
+            "participant_ids": dup["participant_ids"],
+            "participants": participants
+        })
+    
+    return {
+        "field": field,
+        "total_groups": len(result),
+        "total_duplicates": sum(d["count"] for d in result),
+        "duplicates": result
+    }
+
+@api_router.delete("/deteksi-ganda/hapus")
+async def delete_duplicates(
+    ids: List[str],
+    current_user: dict = Depends(get_current_user)
+):
+    """
+    Hapus beberapa data partisipasi sekaligus (untuk menghapus duplikat).
+    """
+    if not ids:
+        raise HTTPException(status_code=400, detail="Tidak ada ID yang diberikan")
+    
+    deleted_count = 0
+    for pid in ids:
+        result = await db.partisipasi.delete_one({"id": pid})
+        deleted_count += result.deleted_count
+    
+    return {
+        "success": True,
+        "deleted_count": deleted_count,
+        "message": f"Berhasil menghapus {deleted_count} data"
+    }
+
+@api_router.post("/deteksi-ganda/gabung")
+async def merge_duplicates(
+    primary_id: str,
+    secondary_ids: List[str],
+    current_user: dict = Depends(get_current_user)
+):
+    """
+    Gabungkan data duplikat menjadi satu.
+    Data dari secondary_ids akan dihapus, dan jumlah pohon akan ditambahkan ke primary.
+    lokasi_list dari semua data akan digabungkan.
+    """
+    if not primary_id or not secondary_ids:
+        raise HTTPException(status_code=400, detail="primary_id dan secondary_ids diperlukan")
+    
+    # Get primary data
+    primary = await db.partisipasi.find_one({"id": primary_id}, {"_id": 0})
+    if not primary:
+        raise HTTPException(status_code=404, detail="Data primer tidak ditemukan")
+    
+    # Get secondary data
+    total_added_trees = 0
+    merged_lokasi_list = list(primary.get("lokasi_list", []))
+    
+    # If primary has single lokasi, convert to list
+    if not merged_lokasi_list and primary.get("lokasi_tanam"):
+        merged_lokasi_list.append({
+            "lokasi_tanam": primary.get("lokasi_tanam"),
+            "titik_lokasi": primary.get("titik_lokasi"),
+            "bukti_url": primary.get("bukti_url")
+        })
+    
+    for sec_id in secondary_ids:
+        secondary = await db.partisipasi.find_one({"id": sec_id}, {"_id": 0})
+        if secondary:
+            # Add trees
+            total_added_trees += secondary.get("jumlah_pohon", 0)
+            
+            # Merge lokasi_list
+            sec_lokasi_list = secondary.get("lokasi_list", [])
+            if sec_lokasi_list:
+                merged_lokasi_list.extend(sec_lokasi_list)
+            elif secondary.get("lokasi_tanam"):
+                merged_lokasi_list.append({
+                    "lokasi_tanam": secondary.get("lokasi_tanam"),
+                    "titik_lokasi": secondary.get("titik_lokasi"),
+                    "bukti_url": secondary.get("bukti_url")
+                })
+            
+            # Delete secondary
+            await db.partisipasi.delete_one({"id": sec_id})
+    
+    # Update primary with merged data
+    new_total_trees = primary.get("jumlah_pohon", 0) + total_added_trees
+    
+    await db.partisipasi.update_one(
+        {"id": primary_id},
+        {
+            "$set": {
+                "jumlah_pohon": new_total_trees,
+                "lokasi_list": merged_lokasi_list
+            }
+        }
+    )
+    
+    return {
+        "success": True,
+        "primary_id": primary_id,
+        "merged_count": len(secondary_ids),
+        "new_total_trees": new_total_trees,
+        "total_locations": len(merged_lokasi_list),
+        "message": f"Berhasil menggabungkan {len(secondary_ids)} data ke data primer"
+    }
+
 @api_router.get("/health")
 async def health_check():
     return {"status": "healthy", "service": "Agro Mopomulo API"}

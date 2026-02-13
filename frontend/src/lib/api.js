@@ -130,3 +130,29 @@ export const kontakWhatsAppApi = {
     });
   },
 };
+
+// Deteksi Ganda (Duplicate Detection) API
+export const deteksiGandaApi = {
+  getDuplicates: (field = 'nama_lengkap', opdId = null) => {
+    const token = localStorage.getItem('token');
+    const params = new URLSearchParams({ field });
+    if (opdId && opdId !== 'all') params.append('opd_id', opdId);
+    return axios.get(`${API}/deteksi-ganda?${params.toString()}`, {
+      headers: token ? { 'Authorization': `Bearer ${token}` } : {}
+    });
+  },
+  deleteDuplicates: (ids) => {
+    const token = localStorage.getItem('token');
+    return axios.delete(`${API}/deteksi-ganda/hapus`, {
+      data: ids,
+      headers: token ? { 'Authorization': `Bearer ${token}` } : {}
+    });
+  },
+  mergeDuplicates: (primaryId, secondaryIds) => {
+    const token = localStorage.getItem('token');
+    return axios.post(`${API}/deteksi-ganda/gabung`, null, {
+      params: { primary_id: primaryId, secondary_ids: secondaryIds },
+      headers: token ? { 'Authorization': `Bearer ${token}` } : {}
+    });
+  },
+};
