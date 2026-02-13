@@ -1462,11 +1462,11 @@ async def merge_duplicates(
     Data dari secondary_ids akan dihapus, dan jumlah pohon akan ditambahkan ke primary.
     lokasi_list dari semua data akan digabungkan.
     """
-    if not primary_id or not secondary_ids:
+    if not request.primary_id or not request.secondary_ids:
         raise HTTPException(status_code=400, detail="primary_id dan secondary_ids diperlukan")
     
     # Get primary data
-    primary = await db.partisipasi.find_one({"id": primary_id}, {"_id": 0})
+    primary = await db.partisipasi.find_one({"id": request.primary_id}, {"_id": 0})
     if not primary:
         raise HTTPException(status_code=404, detail="Data primer tidak ditemukan")
     
