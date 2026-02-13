@@ -1517,11 +1517,11 @@ async def merge_duplicates(
     
     return {
         "success": True,
-        "primary_id": primary_id,
-        "merged_count": len(secondary_ids),
+        "primary_id": request.primary_id,
+        "merged_count": len(request.secondary_ids),
         "new_total_trees": new_total_trees,
         "total_locations": len(merged_lokasi_list),
-        "message": f"Berhasil menggabungkan {len(secondary_ids)} data ke data primer"
+        "message": f"Berhasil menggabungkan {len(request.secondary_ids)} data ke data primer"
     }
 
 @api_router.get("/health")
