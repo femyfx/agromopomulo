@@ -3,7 +3,7 @@ import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { 
   LayoutDashboard, Building2, Users, Settings, LogOut, Menu, X, 
   TreePine, FileDown, FileUp, Image, BookOpen, ChevronDown, FileText,
-  Calendar, Newspaper, Phone
+  Calendar, Newspaper, Phone, Copy
 } from 'lucide-react';
 import { Button } from '../ui/button';
 import { useAuth } from '../../contexts/AuthContext';
@@ -14,6 +14,7 @@ const sidebarItems = [
   { path: '/admin', label: 'Dashboard', icon: LayoutDashboard },
   { path: '/admin/opd', label: 'Kelola OPD', icon: Building2 },
   { path: '/admin/partisipasi', label: 'Kelola Partisipasi', icon: Users },
+  { path: '/admin/deteksi-ganda', label: 'Deteksi Ganda', icon: Copy },
   { path: '/admin/laporan', label: 'Laporan', icon: FileText },
   { path: '/admin/galeri', label: 'Kelola Galeri', icon: Image },
   { path: '/admin/edukasi', label: 'Kelola Edukasi', icon: BookOpen },

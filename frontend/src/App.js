@@ -33,6 +33,7 @@ const AdminLaporanPage = lazy(() => import("./pages/admin/AdminLaporanPage").the
 const AdminAgendaPage = lazy(() => import("./pages/admin/AdminAgendaPage").then(m => ({ default: m.AdminAgendaPage })));
 const AdminBeritaPage = lazy(() => import("./pages/admin/AdminBeritaPage").then(m => ({ default: m.AdminBeritaPage })));
 const AdminKontakPage = lazy(() => import("./pages/admin/AdminKontakPage").then(m => ({ default: m.AdminKontakPage })));
+const AdminDeteksiGandaPage = lazy(() => import("./pages/admin/AdminDeteksiGandaPage").then(m => ({ default: m.AdminDeteksiGandaPage })));
 
 // Loading fallback component - memoized
 const PageLoader = memo(() => (
@@ -93,6 +94,7 @@ function AppRoutes() {
           <Route index element={<AdminDashboardPage />} />
           <Route path="opd" element={<AdminOPDPage />} />
           <Route path="partisipasi" element={<AdminPartisipasiPage />} />
+          <Route path="deteksi-ganda" element={<AdminDeteksiGandaPage />} />
           <Route path="laporan" element={<AdminLaporanPage />} />
           <Route path="galeri" element={<AdminGaleriPage />} />
           <Route path="edukasi" element={<AdminEdukasiPage />} />
