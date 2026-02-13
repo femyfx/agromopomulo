@@ -4,64 +4,83 @@ The user wants to build a professional e-Government/Smart City web dashboard nam
 **PRODUCT REQUIREMENTS:**
 - **User Roles:** Public User, Super Admin (Pemda).
 - **Sidebar Menu:** Dashboard, Tentang Program, Kontribusi OPD, Peta Penanaman, Laporan, Galeri, Edukasi, Partisipasi.
-- **Admin Functionality:** Manage OPD/Desa/Publik, customize hero/about content, manage participation data (CRUD), view progress reports, export reports, and manage Agenda and Berita (News).
-- **Participation Form ():** A multi-step form where a single participant can submit multiple planting locations in one go. Each location includes coordinates (manual or GPS-based) and a photo.
-- **Interactive Map ():** Displays all planting locations. The map must be strictly bounded to the Gorontalo Utara regency, with areas outside the boundary visually dimmed and non-interactive.
-- **Spatial Validation:** All location inputs must be validated to ensure they fall within the official Gorontalo Utara administrative boundary (point-in-polygon check).
-- **Authentication:** JWT-based authentication for the admin panel.
+- **Admin Functionality:** Manage OPD/Desa/Publik, customize hero/about content, manage participation data (CRUD), view progress reports, export/import reports, manage Agenda and Berita (News), and manage contact settings.
+- **Participation Form ():** A multi-step form where a single participant can submit multiple planting locations. It includes a custom other option for tree type and seed source.
+- **Interactive Map ():** Displays all planting locations, strictly bounded to the Gorontalo Utara regency.
+- **Duplicate Detection:** A feature to detect and manage duplicate participant entries.
+- **Contact Feature:** A Contact Us button linking to a configurable admin WhatsApp number.
+- **Authentication:** JWT-based authentication for the admin panel, which should only be accessible via a direct link.
 
 **User's preferred language**:
 Indonesian (Bahasa Indonesia). The next agent MUST respond in Indonesian.
 
 **what currently exists?**
-A full-stack application with a FastAPI backend, React frontend, and MongoDB. The application features JWT authentication and an admin panel. Key features implemented include:
-- **Interactive Map:** A Leaflet map on the Peta Penanaman page that is strictly bounded to the Gorontalo Utara regency. It features a masking overlay for outside areas, marker clustering, and only displays validated locations.
-- **Multi-Location Participation Form:** The public participation form has been refactored to allow a user to add multiple distinct planting locations (each with its own coordinates and photo) within a single submission.
-- **Backend Data Structure:** The  data model was updated to store a single participant record with an array of nested location objects (), correctly representing the one-to-many relationship.
-- **Spatial Validation:** Real-time point-in-polygon validation is implemented on the participation form to reject coordinates outside the regency boundary.
-- **Admin CRUD:** The Kelola Partisipasi admin page now includes fully functional Edit and Hapus actions with confirmation modals for each participant record. The table correctly displays multiple location points for a single participant.
+A full-stack application with a FastAPI backend, React frontend, and MongoDB. The application is mostly feature-complete according to the user's requests.
+- **Authentication:** JWT-based auth for the admin panel, accessible only via direct URL (the public login button has been removed).
+- **Public Form:** A complex, multi-step participation form that allows single participants to submit multiple locations, with spatial validation against the regency boundary and custom input for other tree types.
+- **Interactive Map:** A Leaflet map displaying clustered and validated planting locations, strictly bounded to the Gorontalo Utara regency.
+- **Admin Panel:** Features full CRUD for participants, news, and agenda. It includes dynamic forms for editing multi-location entries, robust import/export functionality for participant data (Excel/PDF), and dashboard statistics.
+- **Contact Feature:** A Pengaturan Kontak page in the admin panel allows setting a WhatsApp number and default message, which is linked from a Hubungi Kami button on the public site.
+- **News Feature:** The admin can now add news by providing an external link, which users can open from the public-facing news sections.
 
 **Last working item**:
-    - Last item agent was working: Refining the UI of the multi-location participation form (). The agent moved the  button to be directly under the coordinate inputs and widened the main form container to better utilize screen space and improve responsiveness.
-    - Status: USER VERIFICATION PENDING
-    - Agent Testing Done: Y (Functionality was tested, but a final visual confirmation of the new layout is needed).
-    - Which testing method agent to use? screenshot tool
+    - Last item agent was working: The user requested a new feature called Deteksi Ganda (Duplicate Detection) to find and manage duplicate participant entries. The agent acknowledged the request and was about to start the backend implementation.
+    - Status: IN PROGRESS
+    - Agent Testing Done: N
+    - Which testing method agent to use? backend testing agent
     - User Testing Done: N
 
 **All Pending/In progress Issue list**:
-  - There are no known pending bugs or issues.
+  - Issue 1: Import fails for 34 rows due to OPD name mismatch (Priority: P1, BLOCKED)
+
+  Issues Detail:
+  - Issue 1: 
+     - **Description**: The user reported that an Excel import failed for 34 rows. The agent diagnosed the issue as a mismatch between the OPD names in the Excel file and the names stored in the database. The user clarified they had edited the OPD names in the admin panel, but the agent found the database still contained the old names, suggesting the edits did not save correctly. The agent asked for confirmation to update the database names, but the user changed the topic to a new feature request.
+     - **Attempted fixes**: The agent correctly identified the mismatched names by comparing the Excel file and the database records.
+     - **Next debug checklist**: 
+       1. Re-confirm with the user: Saya melihat nama OPD di database belum diperbarui. Apakah Anda ingin saya memperbarui nama OPD di database agar sesuai dengan nama di file Excel, atau Anda akan memperbaiki file Excel tersebut? (I see the OPD names in the database have not been updated. Should I update the database names to match the Excel file, or will you fix the Excel file?).
+       2. Based on user's choice, either update the database records or instruct the user to correct their Excel file.
+     - **Why fix this issue and what will be achieved with the fix?**: This will resolve the data import failure, allowing the admin to bulk-upload participant data successfully.
+     - **Status**:  BLOCKED
+     - **Is recurring issue?**: Y (Data integrity issues related to OPD names have occurred before).
+     - **Should Test frontend/backend/both after fix?**: Backend (by re-attempting the import).
+     - **Blocked on other issue**: User confirmation.
 
 **In progress Task List**:
-  - Task 1:  Finalize UI/UX Refinements on Participation Form
+  - Task 1:  Implement Deteksi Ganda (Duplicate Detection) Feature
     - **Priority**: P0 (HIGHEST)
-    - **Description**: The agent moved the + Tambah Lokasi button and made the form container wider to improve responsiveness as requested. The final layout needs to be visually confirmed and presented to the user.
-    - **Where to resume**: Take a screenshot of the  page to verify the new layout of the form in Step 4.
-    - **What will be achieved with this?**: Confirmation that the UI changes requested by the user are correctly implemented and visually appealing.
-    - **Status**: USER VERIFICATION PENDING
-    - **Should Test frontend/backend/both after fix?**: Frontend
+    - **Description**: Create a new menu in the admin panel named Deteksi Ganda. This page should detect duplicate participant entries based on Nama, NIP, and Nomor WhatsApp. The results should be displayed in a list showing the participant's name and the number of duplicates found. The user also requested Lihat Detail, Hapus Data Ganda, and Gabungkan Data actions, along with filtering by OPD/Kecamatan/etc.
+    - **Where to resume**: The agent was about to start the backend implementation. Resume by creating the API endpoint in . The endpoint should contain the logic to query the  collection, group by name/NIP/WhatsApp, and return records with counts greater than one.
+    - **What will be achieved with this?**: Admins will be able to easily identify and clean up duplicate data, improving data integrity.
+    - **Status**:  IN PROGRESS
+    - **Should Test frontend/backend/both after fix?**: Both
     - **Blocked on something**: No.
 
 **Upcoming and Future Tasks**
 Upcoming Tasks:
-- **P1: Filter and Export Reports:** Implement date range filters on the Laporan page and add functionality to export the filtered reports to PDF/Excel.
+- **P1: Complete Deteksi Ganda functionality:** Implement the Lihat Detail, Hapus Data Ganda, and Gabungkan Data actions, plus filtering capabilities.
 
 Future Tasks:
-- **P2: Bulk Actions for Admin:** Add bulk actions (e.g., delete multiple selections) to the Kelola Partisipasi page to help manage test data or multiple entries more efficiently.
-- **P3: Enhance OPD/Desa/Publik Management:** Add more detailed fields for Desa and Publik entries, such as contact person or full address.
+- **P2: Refactor :** This file is over 1000 lines and should be broken down into smaller, manageable components (e.g., , ) to improve maintainability.
+- **P3: Bulk Admin Actions:** Add bulk actions (e.g., delete multiple selections) to the Kelola Partisipasi page.
+- **P4: Enhance OPD/Desa/Publik Management:** Add more detailed fields for Desa and Publik entries, such as contact person or full address.
 
 **Completed work in this session**
-- **Feature: Strict Map Boundary & Masking:** Implemented an accurate administrative boundary for Gorontalo Utara on  and added a masking overlay to dim areas outside.
-- **Feature: Spatial Validation (Point-in-Polygon):** Added real-time validation on  to ensure coordinates are within the regency and updated the map to filter out invalid markers.
-- **Feature: Admin CRUD for Participation:** Added Edit and Delete actions with modals to .
-- **Feature: Multi-Location Submissions:**
-    - Refactored  to allow users to add multiple locations in a single submission.
-    - Refactored the backend  models to store an array of locations () within a single participant record.
-    - Updated  and  to correctly process and display the new data structure.
-- **UI/UX: Participation Form Layout:** Moved the Tambah Lokasi button and made the form container more responsive on .
-- **Bug Fix: Corrected Map Boundary:** Replaced an overly broad map boundary with a precise polygon for Gorontalo Utara in .
+- **Feature: Contact Us via WhatsApp:** Implemented a new admin page to configure a WhatsApp number and a Hubungi Kami button on the public site that directs users to the configured number.
+- **Feature: Custom Other Input:** Added functionality to the Jenis Pohon and Sumber Bibit dropdowns on the participation form, allowing users to select Lainnya and enter a custom value.
+- **Feature: News Section Link-Based:** Refactored the Berita (News) feature so admins submit an external URL instead of content, and users are redirected to that URL.
+- **Feature Enhancement: Admin Participant Management:**
+  - The Edit modal now dynamically shows multiple location fields for participants with more than one location.
+  - Added Export to Excel/PDF buttons.
+- **Bug Fix: Data Import/Export Synchronization:** Fixed a critical bug where the exported Excel file format did not match the required import format. Both import and export now use a consistent format with separate Latitude/Longitude columns.
+- **Bug Fix: Dashboard Statistics:** Resolved an issue where dashboard stats did not count imported participants or participants with multiple locations correctly.
+- **Bug Fix: Form Auto-Submission:** Fixed a persistent bug in the multi-step form where navigating backward and then forward would incorrectly trigger a form submission.
+- **Bug Fix: Map Participant Count:** Corrected the logic on the map page to count a single participant with multiple locations as only one person.
+- **UI: Hide Admin Button:** Removed the Admin login button from the public navigation bar as requested.
+- **Cleanup:** Removed the unused Status column from the admin reports page and all data exports.
 
 **Earlier issues found/mentioned but not fixed**
-   - None.
+   - Issue 1: Import fails for 34 rows due to OPD name mismatch. This is now listed in **All Pending/In progress Issue list** and is blocked on user input.
 
 **Known issue recurrence from previous fork**
   - None.
@@ -70,67 +89,70 @@ Future Tasks:
 
 
 **Key Technical Concepts**
-- **Backend:** FastAPI, Pydantic (nested models for array of objects).
-- **Frontend:** React, Tailwind CSS, Shadcn UI, Framer Motion, React-Leaflet.
-- **Database:** MongoDB.
-- **Authentication:** JWT.
-- **Mapping:** Advanced Leaflet usage with GeoJSON overlays, polygon masking, and point-in-polygon validation.
+- **Backend:** FastAPI, Pydantic (Optional fields, data cleaning/formatting).
+- **Frontend:** React (Hooks: , , ), Tailwind CSS, Shadcn UI, React-Leaflet.
+- **Data Handling:** Excel file parsing () for import/export, dynamic header/column generation.
+- **Debugging:** Extensive debugging of React component lifecycle issues (re-renders causing phantom clicks) and data consistency between frontend, backend, and database.
 
 **key DB schema**
-  - **partisipasi:**  (A single participant now contains an array of location objects).
+  - **partisipasi:** 
+  - **kontak_settings:**  (Singleton document in a new collection).
 
 **changes in tech stack**
   - No new dependencies were added.
 
 **All files of reference**
-- : Heavily refactored for multi-location input, spatial validation, and UI layout changes.
-- : Significantly modified to implement the strict boundary, masking, and read the new multi-location data structure.
-- : Overwritten to add Edit/Delete modals and display multiple location points for a single participant.
-- : Modified to refactor data models to handle an array of locations ().
-- : Overwritten with accurate GeoJSON coordinates for the regency boundary.
+- : Heavily modified for numerous features and bug fixes across stats, import/export, and new contact API.
+- : Key file for the public form, modified to fix critical submission bugs and add the Lainnya input feature.
+- : The main admin CRUD page, updated to handle multi-location data and add export functionality.
+- : New page for the WhatsApp contact feature.
+- : Controls the main public navigation, modified to add/remove buttons.
 
 **Areas that need refactoring**:
-- The  file has grown to over 1000 lines and is very complex. It should be broken down into smaller, more manageable components (e.g., , ).
-- Obsolete root-level config files (, , etc.) can be removed.
+-  remains extremely large (1000+ lines) and complex. It is a high-priority candidate for being broken down into smaller, single-responsibility components to improve readability and future maintenance.
 
 **key api endpoints**
-- : Logic updated to accept a  array and create a single participant record.
-- : Added for the new Edit functionality in the admin panel.
-- : Added for the new Hapus functionality in the admin panel.
+- : Logic was completely overhauled to support a new format with separate Latitude/Longitude and dynamic location columns.
+- , : Logic updated to generate dynamic location columns that match the new import format.
+- : Logic updated to correctly count all participants, including imported ones, and handle multi-location data.
+- , : New endpoints to manage the WhatsApp contact settings.
+- , : Models and logic updated to use  instead of .
 
 **Critical Info for New Agent**
-- **Language:** All communication with the user MUST be in **Bahasa Indonesia**.
-- **Data Structure Change:** The  data model now uses a  array for locations. This change affects the participation form, the admin panel, and the map. The system is backwards-compatible with old data, but all new data follows this structure.
-- **Map Boundary is Critical:** The map is strictly confined to the Gorontalo Utara regency. This is a core user requirement and must be maintained.
-- **Complex Frontend State:**  is a large and complex component. Any modifications require careful testing.
+- **Language:** All user communication MUST be in **Bahasa Indonesia**.
+- **Blocked Issue:** The user's data import is failing due to an OPD name mismatch. You must get clarification from the user on how to resolve this (update the database or have them fix the Excel file) before starting new work. It is a blocker for data integrity.
+- **New Feature:** The highest priority task is to implement the Deteksi Ganda (Duplicate Detection) feature. Start with the backend API.
 
 **documents and test reports created in this job**
-- : A comprehensive frontend test report validating the map boundary and spatial validation features.
+-  has been updated.
 
-**Last 10 User Messages and any pending HUMAN messages**
-1. **Request:** pindahkan button tambah lokasi ke atas...buat responsif tampilanya... (Move the 'add location' button up... make the display responsive). **Status:** In Progress (implementation done, verification pending).
-2. **Request:** kondisi yg di inginkan adalah tetap satu nama hanya titik mapsnya yng bertambah (The desired condition is one name with multiple map points). **Status:** Completed.
-3. **Request:** coba batasi batas lokasi penanaman hanya berada pada wilayah kabupaten gorontalo utara... (try to limit the planting location boundary to only the gorontalo utara regency...). **Status:** Completed.
-4. **Request:** coaba beri aksi pada menu kelola partisipan ini...tambahkan menu aksi hapus dan edit... (try to add actions to this participant management menu... add delete and edit action menus...). **Status:** Completed.
-5. **Feedback:** anda mengatakan ada partisipan yg tidak punya titik lokasi sementara saya cek pada admin ini lengkapan... (you said some participants don't have location points, but I checked in the admin and it's complete...). **Status:** Clarified (Agent explained this was due to test data without GPS and the UI's fallback behavior).
-6. **Request:** Peta harus menampilkan... Titik lokasi aktual hasil input partisipan... (The map must display... the actual location points from participant input). **Status:** Completed and Verified.
-7. **Confirmation:** Agent finished the map implementation and was waiting for user feedback.
-8. **Request:** User asked to implement multi-location submissions in the participation form. **Status:** Completed.
+**Last 10 User Messages and any pending HUMAN messages** 
+1. **Request:** Add a new Deteksi Ganda (Duplicate Detection) feature.
+2. **Clarification:** User explains that they edited OPD names, which is the root cause of the import failure.
+3. **Bug Report:** User asks why an Excel import is failing for 34 rows.
+4. **Question:** User asks why the redeploy button is not visible and how to deploy.
+5. **Inquiry:** User sent a formal inquiry asking for detailed specifications about the production server infrastructure, resource limits, and credit consumption under their plan.
+6. **Request:** Implement a Hubungi Kami feature linking to a configurable WhatsApp number.
+7. **Bug Report:** The participant count on the map is incorrect (shows 2 for a single participant with 2 locations).
+8. **Request:** Add a custom text input when Lainnya (Other) is selected for the tree type.
+9. **Bug Report:** Data imported from Excel is not being reflected in the dashboard statistics.
+10. **Request:** Remove the Admin button from the public navigation bar.
 
 **Project Health Check:**
-- **Running:** Both frontend and backend services are running correctly.
-- **Broken:** Nothing is broken.
-- **Mocked:** No mocked data is in use.
+- **Running:** All services (frontend, backend, mongodb) are running correctly.
+- **Broken:** The Excel import functionality is partially broken due to data mismatch (see pending issues).
+- **Mocked:** No mocked data.
 
 **3rd Party Integrations**
 - **Leaflet (Map Rendering):**
     - 
     - 
     - 
+- **openpyxl (Excel Parsing):** Used in the backend for import/export.
 
 **Testing status**
-  - Testing agent used after significant changes: YES ( was used to validate the map boundary features).
-  - Troubleshoot agent used after agent stuck in loop: NO.
+  - Testing agent used after significant changes: NO
+  - Troubleshoot agent used after agent stuck in loop: NO
   - Test files created: None.
   - Known regressions: None.
 
@@ -139,5 +161,4 @@ Future Tasks:
 - **Password:** 
 
 **What agent forgot to execute**
-- The agent has not performed a final visual verification (via screenshot) of the responsive UI changes made to the  component.
-- Minor, non-critical linting warnings in  were noted but not fixed.</analysis>
+- The agent did not resolve the data import issue caused by the OPD name mismatch. After diagnosing the problem, the agent asked the user for confirmation on the fix but then immediately moved on to the next feature request without waiting for an answer. This dangling issue needs to be addressed.</analysis>
