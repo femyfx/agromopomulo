@@ -1350,6 +1350,10 @@ class DuplicateDetailItem(BaseModel):
     jenis_pohon: str
     created_at: str
 
+class MergeDuplicatesRequest(BaseModel):
+    primary_id: str
+    secondary_ids: List[str]
+
 @api_router.get("/deteksi-ganda")
 async def get_duplicates(
     field: str = "nama_lengkap",  # nama_lengkap, nip, nomor_whatsapp
