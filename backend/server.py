@@ -1482,7 +1482,7 @@ async def merge_duplicates(
             "bukti_url": primary.get("bukti_url")
         })
     
-    for sec_id in secondary_ids:
+    for sec_id in request.secondary_ids:
         secondary = await db.partisipasi.find_one({"id": sec_id}, {"_id": 0})
         if secondary:
             # Add trees
