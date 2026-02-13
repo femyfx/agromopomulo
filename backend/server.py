@@ -1506,7 +1506,7 @@ async def merge_duplicates(
     new_total_trees = primary.get("jumlah_pohon", 0) + total_added_trees
     
     await db.partisipasi.update_one(
-        {"id": primary_id},
+        {"id": request.primary_id},
         {
             "$set": {
                 "jumlah_pohon": new_total_trees,
