@@ -1454,8 +1454,7 @@ async def delete_duplicates(
 
 @api_router.post("/deteksi-ganda/gabung")
 async def merge_duplicates(
-    primary_id: str,
-    secondary_ids: List[str],
+    request: MergeDuplicatesRequest,
     current_user: dict = Depends(get_current_user)
 ):
     """
