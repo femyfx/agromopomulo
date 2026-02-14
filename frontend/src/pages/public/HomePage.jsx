@@ -591,9 +591,9 @@ export const HomePage = () => {
             <p className="body-large mt-4 mx-auto">Jadwal kegiatan penanaman yang akan datang</p>
           </div>
           
-          {agenda.length > 0 ? (
+          {Array.isArray(agenda) && agenda.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {agenda.slice(0, 6).map((item, index) => (
+              {(Array.isArray(agenda) ? agenda : []).slice(0, 6).map((item, index) => (
                 <AgendaCard key={item.id} item={item} index={index} />
               ))}
             </div>
@@ -617,9 +617,9 @@ export const HomePage = () => {
             <p className="body-large mt-4 mx-auto">Update terkini seputar program Agro Mopomulo</p>
           </div>
           
-          {berita.length > 0 ? (
+          {Array.isArray(berita) && berita.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {berita.slice(0, 6).map((item, index) => (
+              {(Array.isArray(berita) ? berita : []).slice(0, 6).map((item, index) => (
                 <BeritaCard key={item.id} item={item} index={index} />
               ))}
             </div>

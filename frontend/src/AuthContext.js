@@ -2,8 +2,7 @@ import { createContext, useContext, useState, useEffect } from 'react';
 import axios from 'axios';
 
 const AuthContext = createContext(null);
-
-const API = process.env.REACT_APP_BACKEND_URL;
+const API = process.env.REACT_APP_BACKEND_URL; // pastikan di .env: REACT_APP_BACKEND_URL=http://31.97.110.246/api
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
@@ -32,23 +31,34 @@ export const AuthProvider = ({ children }) => {
   };
 
   const login = async (email, password) => {
-    const response = await axios.post(`${API}/auth/login`, { email, password });
-    const { token: newToken, user: userData } = response.data;
-    localStorage.setItem('token', newToken);
-    axios.defaults.headers.common['Authorization'] = `Bearer ${newToken}`;
-    setToken(newToken);
-    setUser(userData);
-    return userData;
+    try {
+      const response = await axios.post(`${API}/auth/login`, { email, password });
+      const { token } = response.data;
+localStorage.setItem('token', token);
+axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+setToken(token);
+      await fetchUser();
+      return user;
+    } catch (err) {
+      console.error('Login failed:', err);
+      throw err;
+    }
   };
 
   const register = async (email, password, nama) => {
-    const response = await axios.post(`${API}/auth/register`, { email, password, nama });
-    const { token: newToken, user: userData } = response.data;
-    localStorage.setItem('token', newToken);
-    axios.defaults.headers.common['Authorization'] = `Bearer ${newToken}`;
-    setToken(newToken);
-    setUser(userData);
-    return userData;
+    try {
+      const response = await axios.post(`${API}/auth/register`, { email, password, nama });
+      const { access_token } = response.data;
+      localStorage.setItem('token', access_token);
+      axios.defaults.headers.common['Authorization'] = `Bearer ${access_token}`;
+      setToken(access_token);
+
+      await fetchUser();
+      return user;
+    } catch (err) {
+      console.error('Register failed:', err);
+      throw err;
+    }
   };
 
   const logout = () => {
@@ -67,8 +77,6 @@ export const AuthProvider = ({ children }) => {
 
 export const useAuth = () => {
   const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error('useAuth must be used within an AuthProvider');
-  }
+  if (!context) throw new Error('useAuth must be used within an AuthProvider');
   return context;
 };
