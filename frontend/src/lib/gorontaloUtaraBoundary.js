@@ -13,7 +13,10 @@ export const GORONTALO_UTARA_BOUNDARY = {
   geometry: {
     type: "Polygon",
     coordinates: [[
-      // Batas barat - Kec. Atinggola (berbatasan dengan Kab. Pohuwato)
+      // Batas barat - area Tolinggula/Cempaka Putih sampai Atinggola
+      [122.000, 0.900],
+      [122.020, 0.970],
+      [122.120, 1.040],
       [122.295, 0.950],
       [122.320, 0.990],
       [122.350, 1.030],
@@ -59,9 +62,11 @@ export const GORONTALO_UTARA_BOUNDARY = {
       [122.400, 0.845],
       [122.350, 0.880],
       [122.310, 0.915],
+      [122.180, 0.875],
+      [122.060, 0.880],
       
       // Kembali ke titik awal
-      [122.295, 0.950]
+      [122.000, 0.900]
     ]]
   }
 };
@@ -70,7 +75,7 @@ export const GORONTALO_UTARA_BOUNDARY = {
 export const GORONTALO_UTARA_BOUNDS = {
   north: 1.115,
   south: 0.665,
-  west: 122.295,
+  west: 122.000,
   east: 123.200
 };
 
