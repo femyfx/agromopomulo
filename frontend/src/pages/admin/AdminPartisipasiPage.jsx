@@ -536,57 +536,121 @@ export const AdminPartisipasiPage = () => {
                     <th>Pohon</th>
                     <th>Jenis</th>
                     <th>Lokasi</th>
+                    <th>Bukti</th>
                     <th className="text-center">Aksi</th>
                   </tr>
                 </thead>
+
                 <tbody>
                   {filteredList.map((p) => {
                     const opd = opdList.find(o => o.id === p.opd_id);
                     const kategori = opd?.kategori || 'OPD';
-                    const lokasiCount = p.lokasi_list?.length || (p.lokasi_tanam ? 1 : 0);
+                    const lokasiCount =
+                      p.lokasi_list?.length || (p.lokasi_tanam ? 1 : 0);
+
                     return (
                       <tr key={p.id}>
                         <td className="font-medium">{p.nama_lengkap}</td>
                         <td>{p.nip || '-'}</td>
                         <td className="max-w-[150px] truncate">{p.opd_nama}</td>
+
                         <td>
-                          <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${
-                            kategori === 'OPD' ? 'bg-emerald-100 text-emerald-700' :
-                            kategori === 'DESA' ? 'bg-blue-100 text-blue-700' :
-                            kategori === 'KECAMATAN' ? 'bg-purple-100 text-purple-700' :
-                            'bg-amber-100 text-amber-700'
-                          }`}>
+                          <span
+                            className={`px-2 py-0.5 rounded-full text-xs font-medium ${kategori === 'OPD'
+                                ? 'bg-emerald-100 text-emerald-700'
+                                : kategori === 'DESA'
+                                  ? 'bg-blue-100 text-blue-700'
+                                  : kategori === 'KECAMATAN'
+                                    ? 'bg-purple-100 text-purple-700'
+                                    : 'bg-amber-100 text-amber-700'
+                              }`}
+                          >
                             {kategori}
                           </span>
                         </td>
-                        <td className="font-semibold text-emerald-600">{p.jumlah_pohon}</td>
+
+                        <td className="font-semibold text-emerald-600">
+                          {p.jumlah_pohon}
+                        </td>
+
                         <td>{p.jenis_pohon}</td>
+
                         <td>
                           {lokasiCount > 0 ? (
                             <div className="space-y-1">
-                              {(p.lokasi_list || [{ lokasi_tanam: p.lokasi_tanam, titik_lokasi: p.titik_lokasi }]).map((loc, idx) => (
+                              {(p.lokasi_list || [
+                                {
+                                  lokasi_tanam: p.lokasi_tanam,
+                                  titik_lokasi: p.titik_lokasi,
+                                },
+                              ]).map((loc, idx) => (
                                 <div key={idx} className="flex items-center gap-1">
                                   <Button
                                     variant="outline"
                                     size="sm"
-                                    onClick={() => openLocationInMaps(loc.titik_lokasi, loc.lokasi_tanam)}
+                                    onClick={() =>
+                                      openLocationInMaps(
+                                        loc.titik_lokasi,
+                                        loc.lokasi_tanam
+                                      )
+                                    }
                                     className="text-blue-600 border-blue-300 hover:bg-blue-50 text-xs py-1 h-auto"
                                     data-testid={`location-${p.id}-${idx}`}
                                   >
                                     <MapPin className="h-3 w-3 mr-1" />
-                                    <span className="max-w-[100px] truncate">{loc.lokasi_tanam || 'Lokasi ' + (idx + 1)}</span>
+                                    <span className="max-w-[100px] truncate">
+                                      {loc.lokasi_tanam ||
+                                        'Lokasi ' + (idx + 1)}
+                                    </span>
                                     <ExternalLink className="h-3 w-3 ml-1" />
                                   </Button>
                                 </div>
                               ))}
+
                               {lokasiCount > 1 && (
-                                <span className="text-xs text-slate-500">{lokasiCount} titik lokasi</span>
+                                <span className="text-xs text-slate-500">
+                                  {lokasiCount} titik lokasi
+                                </span>
                               )}
                             </div>
                           ) : (
                             <span className="text-slate-400 text-sm">-</span>
                           )}
                         </td>
+
+                        <td>
+                          {(p.lokasi_list || []).length > 0 ? (
+                            p.lokasi_list.map((loc, idx) =>
+                              loc.bukti_url ? (
+                                <img
+                                  key={idx}
+                                  src={loc.bukti_url}
+                                  alt="bukti"
+                                  className="w-16 h-16 object-cover rounded border mb-1"
+                                />
+                              ) : (
+                                <span
+                                  key={idx}
+                                  className="text-xs text-slate-400"
+                                >
+                                  Tidak ada
+                                </span>
+                              )
+                            )
+                          ) : p.bukti_url ? (
+                            <img
+                              src={p.bukti_url}
+                              alt="bukti"
+                              className="w-16 h-16 object-cover rounded border"
+                            />
+                          ) : (
+                            <span className="text-xs text-slate-400">
+                              Tidak ada
+                            </span>
+                          )}
+                        </td>
+
+                        {/* AKSI HARUS DI DALAM TD */}
                         <td>
                           <div className="flex items-center justify-center gap-2">
                             <Button
@@ -597,8 +661,11 @@ export const AdminPartisipasiPage = () => {
                               data-testid={`edit-${p.id}`}
                             >
                               <Pencil className="h-4 w-4" />
-                              <span className="hidden lg:inline ml-1">Edit</span>
+                              <span className="hidden lg:inline ml-1">
+                                Edit
+                              </span>
                             </Button>
+
                             <Button
                               variant="outline"
                               size="sm"
@@ -607,7 +674,9 @@ export const AdminPartisipasiPage = () => {
                               data-testid={`delete-${p.id}`}
                             >
                               <Trash2 className="h-4 w-4" />
-                              <span className="hidden lg:inline ml-1">Hapus</span>
+                              <span className="hidden lg:inline ml-1">
+                                Hapus
+                              </span>
                             </Button>
                           </div>
                         </td>
@@ -624,10 +693,10 @@ export const AdminPartisipasiPage = () => {
           <CardContent className="p-12 text-center">
             <TreePine className="h-12 w-12 text-slate-300 mx-auto mb-4" />
             <p className="text-slate-500">
-              {kategoriFilter !== 'all' 
-                ? `Tidak ada data partisipasi untuk kategori ${kategoriOptions.find(o => o.value === kategoriFilter)?.label}`
-                : 'Tidak ada data partisipasi'
-              }
+              {kategoriFilter !== 'all'
+                ? `Tidak ada data partisipasi untuk kategori ${kategoriOptions.find(o => o.value === kategoriFilter)?.label
+                }`
+                : 'Tidak ada data partisipasi'}
             </p>
           </CardContent>
         </Card>

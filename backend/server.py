@@ -1040,7 +1040,7 @@ async def save_kontak_whatsapp(
 @api_router.get("/export/excel")
 async def export_excel(current_user: dict = Depends(get_current_user)):
     partisipasi_list = await db.partisipasi.find({}, {"_id": 0}).to_list(10000)
-    opd_list = await db.opd.find({}, {"_id": 0}).to_list(1000)
+    opd_list = await db.opd.find({}, {"_id": 0}).to_list(10000)
     opd_map = {o["id"]: o["nama"] for o in opd_list}
     
     # Tentukan jumlah maksimum lokasi
@@ -1117,13 +1117,13 @@ async def export_excel(current_user: dict = Depends(get_current_user)):
 
 @api_router.get("/export/pdf")
 async def export_pdf(current_user: dict = Depends(get_current_user)):
-    partisipasi_list = await db.partisipasi.find({}, {"_id": 0}).to_list(10000)
-    opd_list = await db.opd.find({}, {"_id": 0}).to_list(1000)
+    partisipasi_list = await db.partisipasi.find({}, {"_id": 0}).to_list(50000)
+    opd_list = await db.opd.find({}, {"_id": 0}).to_list(50000)
     opd_map = {o["id"]: o["nama"] for o in opd_list}
     
     # Tentukan jumlah maksimum lokasi (batasi 3 untuk PDF agar tidak terlalu lebar)
     max_lokasi = 1
-    for p in partisipasi_list[:100]:
+    for p in partisipasi_list:
         lokasi_list = p.get("lokasi_list", [])
         if len(lokasi_list) > max_lokasi:
             max_lokasi = min(len(lokasi_list), 3)  # Batasi max 3 kolom lokasi untuk PDF
@@ -1149,7 +1149,7 @@ async def export_pdf(current_user: dict = Depends(get_current_user)):
     
     data = [headers]
     
-    for idx, p in enumerate(partisipasi_list[:100], 1):
+    for idx, p in enumerate(partisipasi_list[:99999], 1):
         row = [
             str(idx),
             p.get("nama_lengkap", "")[:20],

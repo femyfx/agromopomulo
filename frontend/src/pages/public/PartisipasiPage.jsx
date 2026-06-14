@@ -281,9 +281,9 @@ export const PartisipasiPage = () => {
     try {
       const formDataUpload = new FormData();
       formDataUpload.append('file', file);
-      const res = await axios.post(`${API}/upload/image`, formDataUpload, {
-        headers: { 'Content-Type': 'multipart/form-data' }
-      });
+      const res = await axios.post(`/api/upload/image`, formDataUpload, {
+  headers: { 'Content-Type': 'multipart/form-data' }
+});
       // Update currentLokasi instead of formData
       setCurrentLokasi(prev => ({ ...prev, bukti_url: res.data.url }));
       toast.success('Bukti berhasil diupload');
@@ -414,7 +414,7 @@ export const PartisipasiPage = () => {
       const preparedLokasiList = allLocations.map(loc => ({
         lokasi_tanam: loc.lokasi_tanam,
         titik_lokasi: loc.titik_lokasi || '',
-        bukti_url: loc.bukti_url || ''
+        bukti_url: loc.bukti_url || currentLokasi.bukti_url || ''
       }));
 
       // Kirim satu request dengan semua lokasi dalam array
