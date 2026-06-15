@@ -79,7 +79,7 @@ export const AdminLaporanPage = () => {
     try {
       const [statsRes, partisipasiRes, progressRes] = await Promise.all([
         statsApi.get(),
-        partisipasiApi.getAll(),
+        partisipasiApi.getRecent(10),
         statsApi.getProgress()
       ]);
       setStats(statsRes.data);
