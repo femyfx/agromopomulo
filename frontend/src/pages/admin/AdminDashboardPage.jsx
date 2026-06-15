@@ -67,7 +67,7 @@ export const AdminDashboardPage = () => {
     try {
       const [statsRes, partisipasiRes] = await Promise.all([
         statsApi.get(),
-        partisipasiApi.getAll()
+        partisipasiApi.getRecent(5)
       ]);
       setStats(statsRes.data);
       setRecentPartisipasi(partisipasiRes.data.slice(0, 5));

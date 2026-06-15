@@ -495,6 +495,29 @@ async def get_all_partisipasi():
         p["opd_nama"] = opd_map.get(p.get("opd_id"), "Unknown")
     return partisipasi_list
 
+@api_router.get("/partisipasi/recent", response_model=List[PartisipasiResponse])
+async def get_recent_partisipasi(limit: int = 5):
+    safe_limit = max(1, min(limit, 20))
+    projection = {
+        "_id": 0,
+        "id": 1,
+        "nama_lengkap": 1,
+        "opd_id": 1,
+        "jumlah_pohon": 1,
+        "jenis_pohon": 1,
+        "created_at": 1,
+    }
+    partisipasi_list = await db.partisipasi.find({}, projection).sort("created_at", -1).to_list(safe_limit)
+
+    opd_ids = list({p.get("opd_id") for p in partisipasi_list if p.get("opd_id")})
+    opd_list = await db.opd.find({"id": {"$in": opd_ids}}, {"_id": 0, "id": 1, "nama": 1}).to_list(1000) if opd_ids else []
+    opd_map = {o["id"]: o["nama"] for o in opd_list}
+
+    for p in partisipasi_list:
+        p["opd_nama"] = opd_map.get(p.get("opd_id"), "Unknown")
+
+    return partisipasi_list
+
 @api_router.get("/partisipasi/{partisipasi_id}", response_model=PartisipasiResponse)
 async def get_partisipasi(partisipasi_id: str):
     p = await db.partisipasi.find_one({"id": partisipasi_id}, {"_id": 0})
@@ -1537,4 +1560,3 @@ logger = logging.getLogger(__name__)
 @app.on_event("shutdown")
 async def shutdown_db_client():
     client.close()
-
