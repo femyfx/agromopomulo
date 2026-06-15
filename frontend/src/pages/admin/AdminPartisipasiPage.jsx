@@ -56,7 +56,7 @@ export const AdminPartisipasiPage = () => {
   const loadData = async () => {
     try {
       const [partisipasiRes, opdRes] = await Promise.all([
-        partisipasiApi.getAll(),
+        partisipasiApi.getAdminList(),
         opdApi.getAll()
       ]);
       setPartisipasiList(partisipasiRes.data);
@@ -71,7 +71,7 @@ export const AdminPartisipasiPage = () => {
 
   const loadPartisipasi = async () => {
     try {
-      const res = await partisipasiApi.getAll();
+      const res = await partisipasiApi.getAdminList();
       setPartisipasiList(res.data);
     } catch (error) {
       console.error('Failed to load partisipasi:', error);
@@ -149,7 +149,15 @@ export const AdminPartisipasiPage = () => {
   };
 
   // === EDIT FUNCTIONS ===
-  const openEditModal = (partisipasi) => {
+  const openEditModal = async (partisipasi) => {
+    try {
+      const res = await partisipasiApi.getById(partisipasi.id);
+      partisipasi = res.data;
+    } catch (error) {
+      console.error('Failed to load full partisipasi:', error);
+      toast.error('Gagal memuat detail partisipasi');
+      return;
+    }
     setEditingPartisipasi(partisipasi);
     
     // Set basic form data
