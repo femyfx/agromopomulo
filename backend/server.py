@@ -1268,106 +1268,361 @@ async def export_excel(kategori: str = "all", current_user: dict = Depends(get_c
     )
 
 
+def format_report_number(value):
+    try:
+        return f"{int(value):,}".replace(",", ".")
+    except (TypeError, ValueError):
+        return "0"
+
+
+def format_report_percent(value):
+    return f"{value:.1f}%"
+
+
+async def get_entity_summary_for_export(kategori: str):
+    selected = normalize_export_category(kategori)
+
+    opd_docs = await db.opd.find(
+        {},
+        {"_id": 0, "id": 1, "nama": 1, "kategori": 1}
+    ).to_list(50000)
+
+    partisipasi_docs = await db.partisipasi.find(
+        {},
+        {"_id": 0, "opd_id": 1, "jumlah_pohon": 1}
+    ).to_list(50000)
+
+    entities_by_category = {category: {} for category in EXPORT_CATEGORY_ORDER}
+    entity_category_map = {}
+
+    for entity in opd_docs:
+        entity_id = entity.get("id")
+        if not entity_id:
+            continue
+
+        category = (entity.get("kategori") or "OPD").upper()
+        if category not in EXPORT_CATEGORY_LABELS:
+            category = "OPD"
+
+        entity_category_map[entity_id] = category
+        entities_by_category.setdefault(category, {})[entity_id] = {
+            "id": entity_id,
+            "nama": entity.get("nama", "Unknown"),
+            "kategori": category,
+            "jumlah_partisipan": 0,
+            "jumlah_pohon": 0,
+        }
+
+    for item in partisipasi_docs:
+        entity_id = item.get("opd_id")
+        category = entity_category_map.get(entity_id)
+        if not category:
+            continue
+
+        entity_stats = entities_by_category.get(category, {}).get(entity_id)
+        if not entity_stats:
+            continue
+
+        entity_stats["jumlah_partisipan"] += 1
+        entity_stats["jumlah_pohon"] += int(item.get("jumlah_pohon") or 0)
+
+    categories = EXPORT_CATEGORY_ORDER if selected == "all" else [selected]
+    summaries = []
+
+    for category in categories:
+        category_entities = list(entities_by_category.get(category, {}).values())
+        participating_entities = [
+            entity for entity in category_entities
+            if entity["jumlah_partisipan"] > 0
+        ]
+        participating_entities.sort(
+            key=lambda entity: (
+                -entity["jumlah_partisipan"],
+                -entity["jumlah_pohon"],
+                entity["nama"].lower(),
+            )
+        )
+
+        total_entities = len(category_entities)
+        participated_count = len(participating_entities)
+        not_participated_count = max(total_entities - participated_count, 0)
+        total_participants = sum(entity["jumlah_partisipan"] for entity in participating_entities)
+        total_trees = sum(entity["jumlah_pohon"] for entity in participating_entities)
+        percentage = (participated_count / total_entities * 100) if total_entities else 0
+
+        summaries.append({
+            "category": category,
+            "label": EXPORT_CATEGORY_LABELS[category],
+            "total_entities": total_entities,
+            "participated_count": participated_count,
+            "not_participated_count": not_participated_count,
+            "percentage": percentage,
+            "total_participants": total_participants,
+            "total_trees": total_trees,
+            "entities": participating_entities,
+        })
+
+    grand_total_entities = sum(summary["total_entities"] for summary in summaries)
+    grand_participated = sum(summary["participated_count"] for summary in summaries)
+    grand_not_participated = sum(summary["not_participated_count"] for summary in summaries)
+    grand_percentage = (grand_participated / grand_total_entities * 100) if grand_total_entities else 0
+    grand_total_participants = sum(summary["total_participants"] for summary in summaries)
+    grand_total_trees = sum(summary["total_trees"] for summary in summaries)
+
+    grand_summary = {
+        "total_entities": grand_total_entities,
+        "participated_count": grand_participated,
+        "not_participated_count": grand_not_participated,
+        "percentage": grand_percentage,
+        "total_participants": grand_total_participants,
+        "total_trees": grand_total_trees,
+    }
+
+    return selected, summaries, grand_summary
+
+
+def make_report_paragraph(text, style):
+    return Paragraph(str(text or ""), style)
+
+
 @api_router.get("/export/pdf")
 async def export_pdf(kategori: str = "all", current_user: dict = Depends(get_current_user)):
-    selected, groups, ordered_categories, total_partisipan, total_pohon = await get_grouped_partisipasi_for_export(kategori)
-
-    max_lokasi = 1
-    for category in ordered_categories:
-        for item in groups[category]:
-            max_lokasi = max(max_lokasi, min(len(get_lokasi_list_for_export(item)), 3))
+    selected, summaries, grand_summary = await get_entity_summary_for_export(kategori)
 
     buffer = io.BytesIO()
-    doc = SimpleDocTemplate(buffer, pagesize=landscape(A4), rightMargin=30, leftMargin=30, topMargin=30, bottomMargin=30)
+    doc = SimpleDocTemplate(
+        buffer,
+        pagesize=landscape(A4),
+        rightMargin=26,
+        leftMargin=26,
+        topMargin=22,
+        bottomMargin=22,
+    )
 
     elements = []
     styles = getSampleStyleSheet()
-    title_style = ParagraphStyle('CustomTitle', parent=styles['Heading1'], fontSize=16, spaceAfter=12, alignment=1)
-    group_style = ParagraphStyle('GroupTitle', parent=styles['Heading2'], fontSize=12, spaceBefore=12, spaceAfter=6)
+
+    green = colors.Color(0.02, 0.48, 0.35)
+    soft_green = colors.Color(0.90, 0.98, 0.94)
+    pale_green = colors.Color(0.95, 0.99, 0.97)
+    orange = colors.Color(0.88, 0.45, 0.10)
+    light_orange = colors.Color(1.00, 0.94, 0.86)
+    dark_text = colors.Color(0.10, 0.16, 0.24)
+    border = colors.Color(0.78, 0.84, 0.82)
+
+    title_style = ParagraphStyle(
+        "ReportTitle",
+        parent=styles["Heading1"],
+        fontName="Helvetica-Bold",
+        fontSize=18,
+        leading=22,
+        textColor=green,
+        spaceAfter=4,
+    )
+    subtitle_style = ParagraphStyle(
+        "ReportSubtitle",
+        parent=styles["Normal"],
+        fontSize=8.5,
+        leading=11,
+        textColor=dark_text,
+    )
+    section_style = ParagraphStyle(
+        "SectionTitle",
+        parent=styles["Heading2"],
+        fontName="Helvetica-Bold",
+        fontSize=11,
+        leading=14,
+        textColor=green,
+        spaceBefore=8,
+        spaceAfter=6,
+    )
+    normal_style = ParagraphStyle(
+        "ReportNormal",
+        parent=styles["Normal"],
+        fontSize=8,
+        leading=10,
+        textColor=dark_text,
+    )
+    small_style = ParagraphStyle(
+        "ReportSmall",
+        parent=styles["Normal"],
+        fontSize=7,
+        leading=8.5,
+        textColor=dark_text,
+    )
+    small_bold_style = ParagraphStyle(
+        "ReportSmallBold",
+        parent=small_style,
+        fontName="Helvetica-Bold",
+    )
+    brand_style = ParagraphStyle(
+        "Brand",
+        parent=styles["Normal"],
+        fontName="Helvetica-Bold",
+        fontSize=12,
+        leading=14,
+        textColor=green,
+    )
+    meta_style = ParagraphStyle(
+        "Meta",
+        parent=styles["Normal"],
+        fontSize=7.5,
+        leading=10,
+        textColor=dark_text,
+        alignment=1,
+    )
 
     filter_label = "Semua Kelompok" if selected == "all" else EXPORT_CATEGORY_LABELS[selected]
-    elements.append(Paragraph("Laporan Data Partisipasi Program Agro Mopomulo", title_style))
-    elements.append(Paragraph(f"Kabupaten Gorontalo Utara - {datetime.now().strftime('%d %B %Y')}", styles['Normal']))
-    elements.append(Paragraph(f"Filter Export: {filter_label}", styles['Normal']))
-    elements.append(Paragraph(f"Grand Total Partisipan: {total_partisipan} | Grand Total Pohon: {total_pohon}", styles['Normal']))
-    elements.append(Spacer(1, 16))
+    today = datetime.now().strftime("%d %B %Y")
 
-    headers = ["No", "Nama", "NIP", "OPD", "Pohon", "Jenis"]
-    for i in range(1, max_lokasi + 1):
-        headers.append("Lokasi" if max_lokasi == 1 else f"Lokasi {i}")
+    header_data = [[
+        make_report_paragraph("AGRO MOPOMULO<br/><font size='7'>ADMIN PANEL</font>", brand_style),
+        make_report_paragraph(
+            "LAPORAN EKSPORT PARTISIPASI<br/>"
+            "<font size='8' color='#334155'>Struktur laporan PDF dengan ringkasan per kelompok dan tabel detail yang menampilkan entitas yang sudah berpartisipasi.</font>",
+            title_style,
+        ),
+        make_report_paragraph(f"Tanggal: {today}<br/>Filter: {filter_label}", meta_style),
+    ]]
+    header_table = Table(header_data, colWidths=[150, 470, 150])
+    header_table.setStyle(TableStyle([
+        ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
+        ("BOX", (2, 0), (2, 0), 0.5, border),
+        ("BACKGROUND", (2, 0), (2, 0), pale_green),
+        ("LEFTPADDING", (0, 0), (-1, -1), 8),
+        ("RIGHTPADDING", (0, 0), (-1, -1), 8),
+        ("TOPPADDING", (0, 0), (-1, -1), 6),
+        ("BOTTOMPADDING", (0, 0), (-1, -1), 6),
+    ]))
+    elements.append(header_table)
+    elements.append(Spacer(1, 10))
 
-    if not ordered_categories:
-        elements.append(Paragraph("Tidak ada data untuk filter ini.", styles['Normal']))
-    else:
-        for category in ordered_categories:
-            rows = groups[category]
-            category_label = EXPORT_CATEGORY_LABELS[category]
-            subtotal_pohon = sum(int(item.get("jumlah_pohon") or 0) for item in rows)
+    elements.append(Paragraph("1. RINGKASAN SEBARAN PER KELOMPOK", section_style))
 
-            elements.append(Paragraph(f"Kelompok {category_label}", group_style))
-            elements.append(Paragraph(f"Jumlah Partisipan: {len(rows)} | Jumlah Pohon: {subtotal_pohon}", styles['Normal']))
-            elements.append(Spacer(1, 6))
+    summary_headers = [
+        "Kelompok",
+        "Total Entitas",
+        "Sudah Berpartisipasi",
+        "Belum Berpartisipasi",
+        "Persentase",
+        "Total Partisipan",
+        "Total Pohon",
+    ]
+    summary_data = [summary_headers]
 
-            data = [headers]
-            for idx, item in enumerate(rows, 1):
-                row = [
-                    str(idx),
-                    item.get("nama_lengkap", "")[:22],
-                    item.get("nip", "")[:15],
-                    item.get("_opd_nama", "")[:18],
-                    str(item.get("jumlah_pohon", 0)),
-                    item.get("jenis_pohon", "")[:14],
-                ]
+    for summary in summaries:
+        summary_data.append([
+            summary["label"],
+            format_report_number(summary["total_entities"]),
+            format_report_number(summary["participated_count"]),
+            format_report_number(summary["not_participated_count"]),
+            format_report_percent(summary["percentage"]),
+            format_report_number(summary["total_participants"]),
+            format_report_number(summary["total_trees"]),
+        ])
 
-                lokasi_list = get_lokasi_list_for_export(item)
-                for i in range(max_lokasi):
-                    if i < len(lokasi_list):
-                        row.append(lokasi_list[i].get("lokasi_tanam", "")[:18])
-                    else:
-                        row.append("")
+    summary_data.append([
+        "Grand Total",
+        format_report_number(grand_summary["total_entities"]),
+        format_report_number(grand_summary["participated_count"]),
+        format_report_number(grand_summary["not_participated_count"]),
+        format_report_percent(grand_summary["percentage"]),
+        format_report_number(grand_summary["total_participants"]),
+        format_report_number(grand_summary["total_trees"]),
+    ])
 
-                data.append(row)
+    summary_table = Table(summary_data, repeatRows=1, colWidths=[105, 95, 125, 125, 85, 110, 100])
+    summary_table.setStyle(TableStyle([
+        ("BACKGROUND", (0, 0), (-1, 0), green),
+        ("TEXTCOLOR", (0, 0), (-1, 0), colors.whitesmoke),
+        ("FONTNAME", (0, 0), (-1, 0), "Helvetica-Bold"),
+        ("FONTSIZE", (0, 0), (-1, 0), 7.5),
+        ("ALIGN", (1, 1), (-1, -1), "CENTER"),
+        ("GRID", (0, 0), (-1, -1), 0.35, border),
+        ("BACKGROUND", (0, 1), (-1, -2), colors.white),
+        ("BACKGROUND", (0, -1), (-1, -1), soft_green),
+        ("FONTNAME", (0, -1), (-1, -1), "Helvetica-Bold"),
+        ("FONTSIZE", (0, 1), (-1, -1), 7.4),
+        ("TOPPADDING", (0, 0), (-1, -1), 5),
+        ("BOTTOMPADDING", (0, 0), (-1, -1), 5),
+    ]))
+    elements.append(summary_table)
+    elements.append(Spacer(1, 10))
 
-            subtotal_row = [""] * len(headers)
-            subtotal_row[0] = "Subtotal"
-            subtotal_row[1] = f"{len(rows)} partisipan"
-            subtotal_row[4] = str(subtotal_pohon)
-            data.append(subtotal_row)
+    for section_index, summary in enumerate(summaries, 2):
+        label = summary["label"]
+        title = f"{section_index}. JUMLAH SEBARAN PARTISIPAN MASING-MASING {label.upper()}"
+        elements.append(Paragraph(title, section_style))
 
-            table = Table(data, repeatRows=1)
-            table.setStyle(TableStyle([
-                ('BACKGROUND', (0, 0), (-1, 0), colors.Color(0.02, 0.59, 0.41)),
-                ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
-                ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
-                ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
-                ('FONTSIZE', (0, 0), (-1, 0), 8),
-                ('BOTTOMPADDING', (0, 0), (-1, 0), 8),
-                ('BACKGROUND', (0, 1), (-1, -2), colors.beige),
-                ('BACKGROUND', (0, -1), (-1, -1), colors.lightgrey),
-                ('FONTNAME', (0, -1), (-1, -1), 'Helvetica-Bold'),
-                ('TEXTCOLOR', (0, 1), (-1, -1), colors.black),
-                ('FONTNAME', (0, 1), (-1, -2), 'Helvetica'),
-                ('FONTSIZE', (0, 1), (-1, -1), 7),
-                ('GRID', (0, 0), (-1, -1), 0.5, colors.black),
-                ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
-            ]))
-
-            elements.append(table)
-            elements.append(Spacer(1, 12))
-
-        grand_data = [
-            ["Grand Total Partisipan", "Grand Total Pohon"],
-            [str(total_partisipan), str(total_pohon)],
-        ]
-        grand_table = Table(grand_data)
-        grand_table.setStyle(TableStyle([
-            ('BACKGROUND', (0, 0), (-1, 0), colors.Color(0.02, 0.59, 0.41)),
-            ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
-            ('FONTNAME', (0, 0), (-1, -1), 'Helvetica-Bold'),
-            ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
-            ('GRID', (0, 0), (-1, -1), 0.5, colors.black),
+        kpi_data = [[
+            make_report_paragraph(f"Total {label}<br/><font size='16'><b>{format_report_number(summary['total_entities'])}</b></font>", normal_style),
+            make_report_paragraph(f"{label} Sudah Berpartisipasi<br/><font size='16'><b>{format_report_number(summary['participated_count'])}</b></font> ({format_report_percent(summary['percentage'])})", normal_style),
+            make_report_paragraph(f"{label} Belum Berpartisipasi<br/><font size='16'><b>{format_report_number(summary['not_participated_count'])}</b></font>", normal_style),
+            make_report_paragraph(f"Total Pohon<br/><font size='16'><b>{format_report_number(summary['total_trees'])}</b></font>", normal_style),
+        ]]
+        kpi_table = Table(kpi_data, colWidths=[185, 185, 185, 185])
+        kpi_table.setStyle(TableStyle([
+            ("BACKGROUND", (0, 0), (-1, -1), pale_green),
+            ("BOX", (0, 0), (-1, -1), 0.35, border),
+            ("INNERGRID", (0, 0), (-1, -1), 0.35, border),
+            ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
+            ("ALIGN", (0, 0), (-1, -1), "CENTER"),
+            ("TOPPADDING", (0, 0), (-1, -1), 7),
+            ("BOTTOMPADDING", (0, 0), (-1, -1), 7),
         ]))
-        elements.append(grand_table)
+        elements.append(kpi_table)
+        elements.append(Spacer(1, 6))
+
+        detail_headers = ["No", f"Nama {label}", "Status", "Jumlah Partisipan", "Jumlah Pohon"]
+        detail_data = [detail_headers]
+
+        if summary["entities"]:
+            for idx, entity in enumerate(summary["entities"], 1):
+                detail_data.append([
+                    str(idx),
+                    make_report_paragraph(entity["nama"], small_style),
+                    "Sudah",
+                    format_report_number(entity["jumlah_partisipan"]),
+                    format_report_number(entity["jumlah_pohon"]),
+                ])
+        else:
+            detail_data.append(["-", f"Belum ada {label} yang berpartisipasi", "-", "0", "0"])
+
+        detail_table = Table(detail_data, repeatRows=1, colWidths=[35, 430, 70, 110, 95])
+        detail_table.setStyle(TableStyle([
+            ("BACKGROUND", (0, 0), (-1, 0), green),
+            ("TEXTCOLOR", (0, 0), (-1, 0), colors.whitesmoke),
+            ("FONTNAME", (0, 0), (-1, 0), "Helvetica-Bold"),
+            ("FONTSIZE", (0, 0), (-1, 0), 7.4),
+            ("BACKGROUND", (0, 1), (-1, -1), colors.white),
+            ("TEXTCOLOR", (2, 1), (2, -1), green),
+            ("FONTNAME", (2, 1), (2, -1), "Helvetica-Bold"),
+            ("ALIGN", (0, 0), (0, -1), "CENTER"),
+            ("ALIGN", (2, 1), (-1, -1), "CENTER"),
+            ("GRID", (0, 0), (-1, -1), 0.35, border),
+            ("FONTSIZE", (0, 1), (-1, -1), 7.2),
+            ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
+            ("TOPPADDING", (0, 0), (-1, -1), 4),
+            ("BOTTOMPADDING", (0, 0), (-1, -1), 4),
+        ]))
+        elements.append(detail_table)
+        elements.append(Spacer(1, 10))
+
+    note = Table([[
+        make_report_paragraph(
+            "<b>Catatan:</b> Entitas yang belum memiliki partisipasi tetap dihitung pada ringkasan dan persentase, namun tidak ditampilkan pada tabel detail kelompok.",
+            small_bold_style,
+        )
+    ]], colWidths=[745])
+    note.setStyle(TableStyle([
+        ("BACKGROUND", (0, 0), (-1, -1), soft_green),
+        ("BOX", (0, 0), (-1, -1), 0.5, border),
+        ("LEFTPADDING", (0, 0), (-1, -1), 8),
+        ("RIGHTPADDING", (0, 0), (-1, -1), 8),
+        ("TOPPADDING", (0, 0), (-1, -1), 7),
+        ("BOTTOMPADDING", (0, 0), (-1, -1), 7),
+    ]))
+    elements.append(note)
 
     doc.build(elements)
 
