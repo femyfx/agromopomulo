@@ -110,14 +110,14 @@ export const AdminPartisipasiPage = () => {
   const handleExportExcel = async () => {
     setExporting(true);
     try {
-      const response = await exportApi.excel();
+      const response = await exportApi.excel(kategoriFilter);
       const blob = new Blob([response.data], { 
         type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' 
       });
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = url;
-      link.download = 'data_partisipasi_agro_mopomulo.xlsx';
+      link.download = `data_partisipasi_agro_mopomulo_${kategoriFilter === 'all' ? 'all' : kategoriFilter.toLowerCase()}.xlsx`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
@@ -134,12 +134,12 @@ export const AdminPartisipasiPage = () => {
   const handleExportPDF = async () => {
     setExporting(true);
     try {
-      const response = await exportApi.pdf();
+      const response = await exportApi.pdf(kategoriFilter);
       const blob = new Blob([response.data], { type: 'application/pdf' });
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = url;
-      link.download = 'laporan_partisipasi_agro_mopomulo.pdf';
+      link.download = `laporan_partisipasi_agro_mopomulo_${kategoriFilter === 'all' ? 'all' : kategoriFilter.toLowerCase()}.pdf`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);

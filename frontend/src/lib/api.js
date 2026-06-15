@@ -95,16 +95,18 @@ export const statsApi = {
 
 // Export API
 export const exportApi = {
-  excel: () => {
+  excel: (kategori = 'all') => {
     const token = localStorage.getItem('token');
     return axios.get(`${API}/export/excel`, { 
+        params: { kategori },
       responseType: 'blob',
       headers: token ? { 'Authorization': `Bearer ${token}` } : {}
     });
   },
-  pdf: () => {
+  pdf: (kategori = 'all') => {
     const token = localStorage.getItem('token');
     return axios.get(`${API}/export/pdf`, { 
+        params: { kategori },
       responseType: 'blob',
       headers: token ? { 'Authorization': `Bearer ${token}` } : {}
     });

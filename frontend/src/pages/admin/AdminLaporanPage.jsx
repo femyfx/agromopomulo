@@ -99,11 +99,11 @@ export const AdminLaporanPage = () => {
   const handleExportExcel = useCallback(async () => {
     setExporting(true);
     try {
-      const res = await exportApi.excel();
+      const res = await exportApi.excel(kategoriFilter);
       const url = window.URL.createObjectURL(new Blob([res.data]));
       const link = document.createElement('a');
       link.href = url;
-      link.setAttribute('download', 'data_partisipasi_agro_mopomulo.xlsx');
+      link.setAttribute('download', `data_partisipasi_agro_mopomulo_${kategoriFilter === 'all' ? 'all' : kategoriFilter.toLowerCase()}.xlsx`);
       document.body.appendChild(link);
       link.click();
       link.remove();
@@ -115,16 +115,16 @@ export const AdminLaporanPage = () => {
     } finally {
       setExporting(false);
     }
-  }, []);
+  }, [kategoriFilter]);
 
   const handleExportPDF = useCallback(async () => {
     setExporting(true);
     try {
-      const res = await exportApi.pdf();
+      const res = await exportApi.pdf(kategoriFilter);
       const url = window.URL.createObjectURL(new Blob([res.data]));
       const link = document.createElement('a');
       link.href = url;
-      link.setAttribute('download', 'laporan_agro_mopomulo.pdf');
+      link.setAttribute('download', `laporan_agro_mopomulo_${kategoriFilter === 'all' ? 'all' : kategoriFilter.toLowerCase()}.pdf`);
       document.body.appendChild(link);
       link.click();
       link.remove();
@@ -136,7 +136,7 @@ export const AdminLaporanPage = () => {
     } finally {
       setExporting(false);
     }
-  }, []);
+  }, [kategoriFilter]);
 
   const formatNumber = useCallback((num) => {
     return new Intl.NumberFormat('id-ID').format(num || 0);

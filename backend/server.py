@@ -1093,166 +1093,290 @@ async def save_kontak_whatsapp(
 
 # ============== EXPORT ENDPOINTS ==============
 
+EXPORT_CATEGORY_LABELS = {
+    "OPD": "OPD",
+    "KECAMATAN": "Kecamatan",
+    "DESA": "Desa",
+    "PUBLIK": "Publik",
+}
+EXPORT_CATEGORY_ORDER = ["OPD", "KECAMATAN", "DESA", "PUBLIK"]
+
+
+def normalize_export_category(kategori: str):
+    selected = (kategori or "all").strip().upper()
+    if selected == "ALL":
+        return "all"
+    if selected not in EXPORT_CATEGORY_LABELS:
+        raise HTTPException(status_code=400, detail="Kategori export tidak valid")
+    return selected
+
+
+def get_lokasi_list_for_export(partisipasi: dict):
+    lokasi_list = partisipasi.get("lokasi_list") or []
+    if not lokasi_list and partisipasi.get("lokasi_tanam"):
+        lokasi_list = [
+            {
+                "lokasi_tanam": partisipasi.get("lokasi_tanam", ""),
+                "titik_lokasi": partisipasi.get("titik_lokasi", ""),
+            }
+        ]
+    return lokasi_list
+
+
+def split_lat_lng(titik_lokasi: str):
+    if titik_lokasi and titik_lokasi != "None" and "," in titik_lokasi:
+        coords = titik_lokasi.split(",")
+        return coords[0].strip(), coords[1].strip() if len(coords) > 1 else ""
+    return "", ""
+
+
+async def get_grouped_partisipasi_for_export(kategori: str):
+    selected = normalize_export_category(kategori)
+
+    projection = {
+        "_id": 0,
+        "id": 1,
+        "nama_lengkap": 1,
+        "nip": 1,
+        "alamat": 1,
+        "nomor_whatsapp": 1,
+        "opd_id": 1,
+        "jumlah_pohon": 1,
+        "jenis_pohon": 1,
+        "sumber_bibit": 1,
+        "lokasi_tanam": 1,
+        "titik_lokasi": 1,
+        "created_at": 1,
+        "lokasi_list.lokasi_tanam": 1,
+        "lokasi_list.titik_lokasi": 1,
+    }
+
+    partisipasi_list = await db.partisipasi.find({}, projection).sort("created_at", -1).to_list(50000)
+    opd_list = await db.opd.find({}, {"_id": 0, "id": 1, "nama": 1, "kategori": 1}).to_list(50000)
+    opd_map = {o["id"]: o for o in opd_list}
+
+    groups = {category: [] for category in EXPORT_CATEGORY_ORDER}
+
+    for item in partisipasi_list:
+        opd = opd_map.get(item.get("opd_id"), {})
+        category = (opd.get("kategori") or "OPD").upper()
+        if category not in EXPORT_CATEGORY_LABELS:
+            category = "OPD"
+
+        if selected != "all" and category != selected:
+            continue
+
+        item["_opd_nama"] = opd.get("nama", "Unknown")
+        item["_kategori"] = category
+        groups.setdefault(category, []).append(item)
+
+    ordered_categories = [category for category in EXPORT_CATEGORY_ORDER if groups.get(category)]
+    total_partisipan = sum(len(groups.get(category, [])) for category in ordered_categories)
+    total_pohon = sum(
+        sum(int(item.get("jumlah_pohon") or 0) for item in groups.get(category, []))
+        for category in ordered_categories
+    )
+
+    return selected, groups, ordered_categories, total_partisipan, total_pohon
+
+
 @api_router.get("/export/excel")
-async def export_excel(current_user: dict = Depends(get_current_user)):
-    partisipasi_list = await db.partisipasi.find({}, {"_id": 0}).to_list(10000)
-    opd_list = await db.opd.find({}, {"_id": 0}).to_list(10000)
-    opd_map = {o["id"]: o["nama"] for o in opd_list}
-    
-    # Tentukan jumlah maksimum lokasi
+async def export_excel(kategori: str = "all", current_user: dict = Depends(get_current_user)):
+    selected, groups, ordered_categories, total_partisipan, total_pohon = await get_grouped_partisipasi_for_export(kategori)
+
     max_lokasi = 1
-    for p in partisipasi_list:
-        lokasi_list = p.get("lokasi_list", [])
-        if len(lokasi_list) > max_lokasi:
-            max_lokasi = len(lokasi_list)
-    
+    for category in ordered_categories:
+        for item in groups[category]:
+            max_lokasi = max(max_lokasi, len(get_lokasi_list_for_export(item)))
+
     wb = Workbook()
     ws = wb.active
     ws.title = "Data Partisipasi"
-    
-    # Header yang sesuai dengan format import
-    # Format: Nama, NIP, Alamat, No. WhatsApp, OPD, Jumlah Pohon, Jenis Pohon, Sumber Bibit, Lokasi Tanam 1, Latitude 1, Longitude 1, ...
-    headers = ["Nama", "NIP", "Alamat", "No. WhatsApp", "OPD", "Jumlah Pohon", "Jenis Pohon", "Sumber Bibit"]
-    
-    # Tambah kolom lokasi dinamis dengan Latitude dan Longitude terpisah
+
+    filter_label = "Semua Kelompok" if selected == "all" else EXPORT_CATEGORY_LABELS[selected]
+    ws.append(["Laporan Data Partisipasi Program Agro Mopomulo"])
+    ws.append([f"Kabupaten Gorontalo Utara - {datetime.now().strftime('%d %B %Y')}"])
+    ws.append([f"Filter Export", filter_label])
+    ws.append([f"Grand Total Partisipan", total_partisipan, "Grand Total Pohon", total_pohon])
+    ws.append([])
+
+    headers = ["No", "Nama", "NIP", "Alamat", "No. WhatsApp", "OPD/Instansi", "Kategori", "Jumlah Pohon", "Jenis Pohon", "Sumber Bibit"]
     for i in range(1, max_lokasi + 1):
         if max_lokasi == 1:
             headers.extend(["Lokasi Tanam", "Latitude", "Longitude"])
         else:
             headers.extend([f"Lokasi Tanam {i}", f"Latitude {i}", f"Longitude {i}"])
-    
-    ws.append(headers)
-    
-    for idx, p in enumerate(partisipasi_list, 1):
-        row = [
-            p.get("nama_lengkap", ""),
-            p.get("nip", ""),
-            p.get("alamat", ""),
-            p.get("nomor_whatsapp", ""),
-            opd_map.get(p.get("opd_id"), "Unknown"),
-            p.get("jumlah_pohon", 0),
-            p.get("jenis_pohon", ""),
-            p.get("sumber_bibit", ""),
-        ]
-        
-        # Tambahkan data lokasi dengan Latitude dan Longitude terpisah
-        lokasi_list = p.get("lokasi_list", [])
-        if not lokasi_list and p.get("lokasi_tanam"):
-            # Fallback untuk data lama dengan single lokasi
-            lokasi_list = [{"lokasi_tanam": p.get("lokasi_tanam", ""), "titik_lokasi": p.get("titik_lokasi", "")}]
-        
-        for i in range(max_lokasi):
-            if i < len(lokasi_list):
-                loc = lokasi_list[i]
-                row.append(loc.get("lokasi_tanam", ""))
-                # Parse titik_lokasi untuk mendapatkan lat/lng terpisah
-                titik = loc.get("titik_lokasi", "")
-                if titik and titik != "None" and "," in titik:
-                    coords = titik.split(",")
-                    row.append(coords[0].strip())  # Latitude
-                    row.append(coords[1].strip() if len(coords) > 1 else "")  # Longitude
-                else:
-                    row.append("")  # Latitude
-                    row.append("")  # Longitude
-            else:
-                row.append("")  # Lokasi Tanam
-                row.append("")  # Latitude
-                row.append("")  # Longitude
-        
-        ws.append(row)
-    
+
+    if not ordered_categories:
+        ws.append(["Tidak ada data untuk filter ini"])
+    else:
+        for category in ordered_categories:
+            rows = groups[category]
+            category_label = EXPORT_CATEGORY_LABELS[category]
+            subtotal_pohon = sum(int(item.get("jumlah_pohon") or 0) for item in rows)
+
+            ws.append([f"KELOMPOK {category_label}", f"Jumlah Partisipan: {len(rows)}", f"Jumlah Pohon: {subtotal_pohon}"])
+            ws.append(headers)
+
+            for idx, item in enumerate(rows, 1):
+                row = [
+                    idx,
+                    item.get("nama_lengkap", ""),
+                    item.get("nip", ""),
+                    item.get("alamat", ""),
+                    item.get("nomor_whatsapp", ""),
+                    item.get("_opd_nama", "Unknown"),
+                    category_label,
+                    item.get("jumlah_pohon", 0),
+                    item.get("jenis_pohon", ""),
+                    item.get("sumber_bibit", ""),
+                ]
+
+                lokasi_list = get_lokasi_list_for_export(item)
+                for i in range(max_lokasi):
+                    if i < len(lokasi_list):
+                        loc = lokasi_list[i]
+                        lat, lng = split_lat_lng(loc.get("titik_lokasi", ""))
+                        row.extend([loc.get("lokasi_tanam", ""), lat, lng])
+                    else:
+                        row.extend(["", "", ""])
+
+                ws.append(row)
+
+            subtotal_row = [""] * len(headers)
+            subtotal_row[0] = f"SUBTOTAL {category_label}"
+            subtotal_row[1] = f"{len(rows)} partisipan"
+            subtotal_row[7] = subtotal_pohon
+            ws.append(subtotal_row)
+            ws.append([])
+
+        grand_row = [""] * len(headers)
+        grand_row[0] = "GRAND TOTAL"
+        grand_row[1] = f"{total_partisipan} partisipan"
+        grand_row[7] = total_pohon
+        ws.append(grand_row)
+
     output = io.BytesIO()
     wb.save(output)
     output.seek(0)
-    
+
+    suffix = "all" if selected == "all" else selected.lower()
     return StreamingResponse(
         output,
         media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-        headers={"Content-Disposition": "attachment; filename=data_partisipasi_agro_mopomulo.xlsx"}
+        headers={"Content-Disposition": f"attachment; filename=data_partisipasi_agro_mopomulo_{suffix}.xlsx"}
     )
 
+
 @api_router.get("/export/pdf")
-async def export_pdf(current_user: dict = Depends(get_current_user)):
-    partisipasi_list = await db.partisipasi.find({}, {"_id": 0}).to_list(50000)
-    opd_list = await db.opd.find({}, {"_id": 0}).to_list(50000)
-    opd_map = {o["id"]: o["nama"] for o in opd_list}
-    
-    # Tentukan jumlah maksimum lokasi (batasi 3 untuk PDF agar tidak terlalu lebar)
+async def export_pdf(kategori: str = "all", current_user: dict = Depends(get_current_user)):
+    selected, groups, ordered_categories, total_partisipan, total_pohon = await get_grouped_partisipasi_for_export(kategori)
+
     max_lokasi = 1
-    for p in partisipasi_list:
-        lokasi_list = p.get("lokasi_list", [])
-        if len(lokasi_list) > max_lokasi:
-            max_lokasi = min(len(lokasi_list), 3)  # Batasi max 3 kolom lokasi untuk PDF
-    
+    for category in ordered_categories:
+        for item in groups[category]:
+            max_lokasi = max(max_lokasi, min(len(get_lokasi_list_for_export(item)), 3))
+
     buffer = io.BytesIO()
     doc = SimpleDocTemplate(buffer, pagesize=landscape(A4), rightMargin=30, leftMargin=30, topMargin=30, bottomMargin=30)
-    
+
     elements = []
     styles = getSampleStyleSheet()
-    title_style = ParagraphStyle('CustomTitle', parent=styles['Heading1'], fontSize=16, spaceAfter=20, alignment=1)
-    
+    title_style = ParagraphStyle('CustomTitle', parent=styles['Heading1'], fontSize=16, spaceAfter=12, alignment=1)
+    group_style = ParagraphStyle('GroupTitle', parent=styles['Heading2'], fontSize=12, spaceBefore=12, spaceAfter=6)
+
+    filter_label = "Semua Kelompok" if selected == "all" else EXPORT_CATEGORY_LABELS[selected]
     elements.append(Paragraph("Laporan Data Partisipasi Program Agro Mopomulo", title_style))
     elements.append(Paragraph(f"Kabupaten Gorontalo Utara - {datetime.now().strftime('%d %B %Y')}", styles['Normal']))
-    elements.append(Spacer(1, 20))
-    
-    # Header dinamis
+    elements.append(Paragraph(f"Filter Export: {filter_label}", styles['Normal']))
+    elements.append(Paragraph(f"Grand Total Partisipan: {total_partisipan} | Grand Total Pohon: {total_pohon}", styles['Normal']))
+    elements.append(Spacer(1, 16))
+
     headers = ["No", "Nama", "NIP", "OPD", "Pohon", "Jenis"]
     for i in range(1, max_lokasi + 1):
-        if max_lokasi == 1:
-            headers.append("Lokasi")
-        else:
-            headers.append(f"Lokasi {i}")
-    
-    data = [headers]
-    
-    for idx, p in enumerate(partisipasi_list[:99999], 1):
-        row = [
-            str(idx),
-            p.get("nama_lengkap", "")[:20],
-            p.get("nip", "")[:15],
-            opd_map.get(p.get("opd_id"), "")[:15],
-            str(p.get("jumlah_pohon", 0)),
-            p.get("jenis_pohon", "")[:12],
+        headers.append("Lokasi" if max_lokasi == 1 else f"Lokasi {i}")
+
+    if not ordered_categories:
+        elements.append(Paragraph("Tidak ada data untuk filter ini.", styles['Normal']))
+    else:
+        for category in ordered_categories:
+            rows = groups[category]
+            category_label = EXPORT_CATEGORY_LABELS[category]
+            subtotal_pohon = sum(int(item.get("jumlah_pohon") or 0) for item in rows)
+
+            elements.append(Paragraph(f"Kelompok {category_label}", group_style))
+            elements.append(Paragraph(f"Jumlah Partisipan: {len(rows)} | Jumlah Pohon: {subtotal_pohon}", styles['Normal']))
+            elements.append(Spacer(1, 6))
+
+            data = [headers]
+            for idx, item in enumerate(rows, 1):
+                row = [
+                    str(idx),
+                    item.get("nama_lengkap", "")[:22],
+                    item.get("nip", "")[:15],
+                    item.get("_opd_nama", "")[:18],
+                    str(item.get("jumlah_pohon", 0)),
+                    item.get("jenis_pohon", "")[:14],
+                ]
+
+                lokasi_list = get_lokasi_list_for_export(item)
+                for i in range(max_lokasi):
+                    if i < len(lokasi_list):
+                        row.append(lokasi_list[i].get("lokasi_tanam", "")[:18])
+                    else:
+                        row.append("")
+
+                data.append(row)
+
+            subtotal_row = [""] * len(headers)
+            subtotal_row[0] = "Subtotal"
+            subtotal_row[1] = f"{len(rows)} partisipan"
+            subtotal_row[4] = str(subtotal_pohon)
+            data.append(subtotal_row)
+
+            table = Table(data, repeatRows=1)
+            table.setStyle(TableStyle([
+                ('BACKGROUND', (0, 0), (-1, 0), colors.Color(0.02, 0.59, 0.41)),
+                ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+                ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+                ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+                ('FONTSIZE', (0, 0), (-1, 0), 8),
+                ('BOTTOMPADDING', (0, 0), (-1, 0), 8),
+                ('BACKGROUND', (0, 1), (-1, -2), colors.beige),
+                ('BACKGROUND', (0, -1), (-1, -1), colors.lightgrey),
+                ('FONTNAME', (0, -1), (-1, -1), 'Helvetica-Bold'),
+                ('TEXTCOLOR', (0, 1), (-1, -1), colors.black),
+                ('FONTNAME', (0, 1), (-1, -2), 'Helvetica'),
+                ('FONTSIZE', (0, 1), (-1, -1), 7),
+                ('GRID', (0, 0), (-1, -1), 0.5, colors.black),
+                ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+            ]))
+
+            elements.append(table)
+            elements.append(Spacer(1, 12))
+
+        grand_data = [
+            ["Grand Total Partisipan", "Grand Total Pohon"],
+            [str(total_partisipan), str(total_pohon)],
         ]
-        
-        # Tambahkan data lokasi
-        lokasi_list = p.get("lokasi_list", [])
-        if not lokasi_list and p.get("lokasi_tanam"):
-            lokasi_list = [{"lokasi_tanam": p.get("lokasi_tanam", "")}]
-        
-        for i in range(max_lokasi):
-            if i < len(lokasi_list):
-                loc = lokasi_list[i]
-                row.append(loc.get("lokasi_tanam", "")[:15])
-            else:
-                row.append("")
-        
-        data.append(row)
-    
-    table = Table(data, repeatRows=1)
-    table.setStyle(TableStyle([
-        ('BACKGROUND', (0, 0), (-1, 0), colors.Color(0.02, 0.59, 0.41)),
-        ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
-        ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
-        ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
-        ('FONTSIZE', (0, 0), (-1, 0), 9),
-        ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
-        ('BACKGROUND', (0, 1), (-1, -1), colors.beige),
-        ('TEXTCOLOR', (0, 1), (-1, -1), colors.black),
-        ('FONTNAME', (0, 1), (-1, -1), 'Helvetica'),
-        ('FONTSIZE', (0, 1), (-1, -1), 7),
-        ('GRID', (0, 0), (-1, -1), 1, colors.black),
-        ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
-    ]))
-    
-    elements.append(table)
+        grand_table = Table(grand_data)
+        grand_table.setStyle(TableStyle([
+            ('BACKGROUND', (0, 0), (-1, 0), colors.Color(0.02, 0.59, 0.41)),
+            ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+            ('FONTNAME', (0, 0), (-1, -1), 'Helvetica-Bold'),
+            ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+            ('GRID', (0, 0), (-1, -1), 0.5, colors.black),
+        ]))
+        elements.append(grand_table)
+
     doc.build(elements)
-    
+
     buffer.seek(0)
+    suffix = "all" if selected == "all" else selected.lower()
     return StreamingResponse(
         buffer,
         media_type="application/pdf",
-        headers={"Content-Disposition": "attachment; filename=laporan_agro_mopomulo.pdf"}
+        headers={"Content-Disposition": f"attachment; filename=laporan_agro_mopomulo_{suffix}.pdf"}
     )
 
 # ============== IMPORT ENDPOINTS ==============
