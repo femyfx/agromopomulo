@@ -1388,6 +1388,12 @@ def make_report_paragraph(text, style):
 @api_router.get("/export/pdf")
 async def export_pdf(kategori: str = "all", current_user: dict = Depends(get_current_user)):
     selected, summaries, grand_summary = await get_entity_summary_for_export(kategori)
+    _, groups, ordered_categories, total_partisipan, total_pohon = await get_grouped_partisipasi_for_export(kategori)
+
+    max_lokasi = 1
+    for category in ordered_categories:
+        for item in groups[category]:
+            max_lokasi = max(max_lokasi, min(len(get_lokasi_list_for_export(item)), 3))
 
     buffer = io.BytesIO()
     doc = SimpleDocTemplate(
@@ -1405,8 +1411,6 @@ async def export_pdf(kategori: str = "all", current_user: dict = Depends(get_cur
     green = colors.Color(0.02, 0.48, 0.35)
     soft_green = colors.Color(0.90, 0.98, 0.94)
     pale_green = colors.Color(0.95, 0.99, 0.97)
-    orange = colors.Color(0.88, 0.45, 0.10)
-    light_orange = colors.Color(1.00, 0.94, 0.86)
     dark_text = colors.Color(0.10, 0.16, 0.24)
     border = colors.Color(0.78, 0.84, 0.82)
 
@@ -1418,13 +1422,6 @@ async def export_pdf(kategori: str = "all", current_user: dict = Depends(get_cur
         leading=22,
         textColor=green,
         spaceAfter=4,
-    )
-    subtitle_style = ParagraphStyle(
-        "ReportSubtitle",
-        parent=styles["Normal"],
-        fontSize=8.5,
-        leading=11,
-        textColor=dark_text,
     )
     section_style = ParagraphStyle(
         "SectionTitle",
@@ -1471,6 +1468,16 @@ async def export_pdf(kategori: str = "all", current_user: dict = Depends(get_cur
         textColor=dark_text,
         alignment=1,
     )
+    detail_group_style = ParagraphStyle(
+        "DetailGroupTitle",
+        parent=styles["Heading2"],
+        fontName="Helvetica-Bold",
+        fontSize=12,
+        leading=15,
+        textColor=colors.black,
+        spaceBefore=12,
+        spaceAfter=5,
+    )
 
     filter_label = "Semua Kelompok" if selected == "all" else EXPORT_CATEGORY_LABELS[selected]
     today = datetime.now().strftime("%d %B %Y")
@@ -1479,7 +1486,7 @@ async def export_pdf(kategori: str = "all", current_user: dict = Depends(get_cur
         make_report_paragraph("AGRO MOPOMULO<br/><font size='7'>ADMIN PANEL</font>", brand_style),
         make_report_paragraph(
             "LAPORAN EKSPORT PARTISIPASI<br/>"
-            "<font size='8' color='#334155'>Struktur laporan PDF dengan ringkasan per kelompok dan tabel detail yang menampilkan entitas yang sudah berpartisipasi.</font>",
+            "<font size='8' color='#334155'>Ringkasan sebaran ditambahkan sebagai pembuka, kemudian dilanjutkan tabel detail partisipasi lengkap.</font>",
             title_style,
         ),
         make_report_paragraph(f"Tanggal: {today}<br/>Filter: {filter_label}", meta_style),
@@ -1499,7 +1506,7 @@ async def export_pdf(kategori: str = "all", current_user: dict = Depends(get_cur
 
     elements.append(Paragraph("1. RINGKASAN SEBARAN PER KELOMPOK", section_style))
 
-    summary_headers = [
+    summary_data = [[
         "Kelompok",
         "Total Entitas",
         "Sudah Berpartisipasi",
@@ -1507,8 +1514,7 @@ async def export_pdf(kategori: str = "all", current_user: dict = Depends(get_cur
         "Persentase",
         "Total Partisipan",
         "Total Pohon",
-    ]
-    summary_data = [summary_headers]
+    ]]
 
     for summary in summaries:
         summary_data.append([
@@ -1551,8 +1557,7 @@ async def export_pdf(kategori: str = "all", current_user: dict = Depends(get_cur
 
     for section_index, summary in enumerate(summaries, 2):
         label = summary["label"]
-        title = f"{section_index}. JUMLAH SEBARAN PARTISIPAN MASING-MASING {label.upper()}"
-        elements.append(Paragraph(title, section_style))
+        elements.append(Paragraph(f"{section_index}. JUMLAH SEBARAN PARTISIPAN MASING-MASING {label.upper()}", section_style))
 
         kpi_data = [[
             make_report_paragraph(f"Total {label}<br/><font size='16'><b>{format_report_number(summary['total_entities'])}</b></font>", normal_style),
@@ -1588,8 +1593,8 @@ async def export_pdf(kategori: str = "all", current_user: dict = Depends(get_cur
         else:
             detail_data.append(["-", f"Belum ada {label} yang berpartisipasi", "-", "0", "0"])
 
-        detail_table = Table(detail_data, repeatRows=1, colWidths=[35, 430, 70, 110, 95])
-        detail_table.setStyle(TableStyle([
+        entity_table = Table(detail_data, repeatRows=1, colWidths=[35, 430, 70, 110, 95])
+        entity_table.setStyle(TableStyle([
             ("BACKGROUND", (0, 0), (-1, 0), green),
             ("TEXTCOLOR", (0, 0), (-1, 0), colors.whitesmoke),
             ("FONTNAME", (0, 0), (-1, 0), "Helvetica-Bold"),
@@ -1605,12 +1610,12 @@ async def export_pdf(kategori: str = "all", current_user: dict = Depends(get_cur
             ("TOPPADDING", (0, 0), (-1, -1), 4),
             ("BOTTOMPADDING", (0, 0), (-1, -1), 4),
         ]))
-        elements.append(detail_table)
-        elements.append(Spacer(1, 10))
+        elements.append(entity_table)
+        elements.append(Spacer(1, 8))
 
     note = Table([[
         make_report_paragraph(
-            "<b>Catatan:</b> Entitas yang belum memiliki partisipasi tetap dihitung pada ringkasan dan persentase, namun tidak ditampilkan pada tabel detail kelompok.",
+            "<b>Catatan:</b> Entitas yang belum memiliki partisipasi tetap dihitung pada ringkasan dan persentase, namun tidak ditampilkan pada tabel ringkasan entitas. Tabel detail partisipasi lengkap tetap ditampilkan setelah ringkasan.",
             small_bold_style,
         )
     ]], colWidths=[745])
@@ -1623,6 +1628,86 @@ async def export_pdf(kategori: str = "all", current_user: dict = Depends(get_cur
         ("BOTTOMPADDING", (0, 0), (-1, -1), 7),
     ]))
     elements.append(note)
+    elements.append(Spacer(1, 14))
+
+    elements.append(Paragraph("DETAIL DATA PARTISIPASI PROGRAM AGRO MOPOMULO", section_style))
+
+    detail_headers = ["No", "Nama", "NIP", "OPD", "Pohon", "Jenis"]
+    for i in range(1, max_lokasi + 1):
+        detail_headers.append("Lokasi" if max_lokasi == 1 else f"Lokasi {i}")
+
+    if not ordered_categories:
+        elements.append(Paragraph("Tidak ada data partisipasi untuk filter ini.", normal_style))
+    else:
+        for category in ordered_categories:
+            rows = groups[category]
+            category_label = EXPORT_CATEGORY_LABELS[category]
+            subtotal_pohon = sum(int(item.get("jumlah_pohon") or 0) for item in rows)
+
+            elements.append(Paragraph(f"Kelompok {category_label}", detail_group_style))
+            elements.append(Paragraph(f"Jumlah Partisipan: {len(rows)} | Jumlah Pohon: {subtotal_pohon}", normal_style))
+            elements.append(Spacer(1, 5))
+
+            data = [detail_headers]
+            for idx, item in enumerate(rows, 1):
+                row = [
+                    str(idx),
+                    item.get("nama_lengkap", "")[:22],
+                    item.get("nip", "")[:15],
+                    item.get("_opd_nama", "")[:18],
+                    str(item.get("jumlah_pohon", 0)),
+                    item.get("jenis_pohon", "")[:14],
+                ]
+
+                lokasi_list = get_lokasi_list_for_export(item)
+                for i in range(max_lokasi):
+                    if i < len(lokasi_list):
+                        row.append(lokasi_list[i].get("lokasi_tanam", "")[:18])
+                    else:
+                        row.append("")
+
+                data.append(row)
+
+            subtotal_row = [""] * len(detail_headers)
+            subtotal_row[0] = "Subtotal"
+            subtotal_row[1] = f"{len(rows)} partisipan"
+            subtotal_row[4] = str(subtotal_pohon)
+            data.append(subtotal_row)
+
+            participation_table = Table(data, repeatRows=1)
+            participation_table.setStyle(TableStyle([
+                ("BACKGROUND", (0, 0), (-1, 0), colors.Color(0.02, 0.59, 0.41)),
+                ("TEXTCOLOR", (0, 0), (-1, 0), colors.whitesmoke),
+                ("ALIGN", (0, 0), (-1, -1), "CENTER"),
+                ("FONTNAME", (0, 0), (-1, 0), "Helvetica-Bold"),
+                ("FONTSIZE", (0, 0), (-1, 0), 8),
+                ("BOTTOMPADDING", (0, 0), (-1, 0), 8),
+                ("BACKGROUND", (0, 1), (-1, -2), colors.beige),
+                ("BACKGROUND", (0, -1), (-1, -1), colors.lightgrey),
+                ("FONTNAME", (0, -1), (-1, -1), "Helvetica-Bold"),
+                ("TEXTCOLOR", (0, 1), (-1, -1), colors.black),
+                ("FONTNAME", (0, 1), (-1, -2), "Helvetica"),
+                ("FONTSIZE", (0, 1), (-1, -1), 7),
+                ("GRID", (0, 0), (-1, -1), 0.5, colors.black),
+                ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
+            ]))
+
+            elements.append(participation_table)
+            elements.append(Spacer(1, 12))
+
+        grand_data = [
+            ["Grand Total Partisipan", "Grand Total Pohon"],
+            [str(total_partisipan), str(total_pohon)],
+        ]
+        grand_table = Table(grand_data)
+        grand_table.setStyle(TableStyle([
+            ("BACKGROUND", (0, 0), (-1, 0), colors.Color(0.02, 0.59, 0.41)),
+            ("TEXTCOLOR", (0, 0), (-1, 0), colors.whitesmoke),
+            ("FONTNAME", (0, 0), (-1, -1), "Helvetica-Bold"),
+            ("ALIGN", (0, 0), (-1, -1), "CENTER"),
+            ("GRID", (0, 0), (-1, -1), 0.5, colors.black),
+        ]))
+        elements.append(grand_table)
 
     doc.build(elements)
 
