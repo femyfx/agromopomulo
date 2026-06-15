@@ -15,6 +15,7 @@ export const AdminPartisipasiPage = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [kategoriFilter, setKategoriFilter] = useState('all');
   const [opdFilter, setOpdFilter] = useState('all');
+  const [currentPage, setCurrentPage] = useState(1);
   const [importing, setImporting] = useState(false);
   const [exporting, setExporting] = useState(false);
   const fileInputRef = useRef(null);
@@ -52,6 +53,10 @@ export const AdminPartisipasiPage = () => {
   useEffect(() => {
     loadData();
   }, []);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm, kategoriFilter, opdFilter]);
 
   const loadData = async () => {
     try {
@@ -377,6 +382,13 @@ export const AdminPartisipasiPage = () => {
     ? opdList 
     : opdList.filter(opd => opd.kategori === kategoriFilter);
 
+  const itemsPerPage = 50;
+  const totalPages = Math.max(1, Math.ceil(filteredList.length / itemsPerPage));
+  const currentPageSafe = Math.min(currentPage, totalPages);
+  const startIndex = (currentPageSafe - 1) * itemsPerPage;
+  const endIndex = Math.min(startIndex + itemsPerPage, filteredList.length);
+  const paginatedList = filteredList.slice(startIndex, endIndex);
+
   // Function to open Google Maps with coordinates
   const openLocationInMaps = (titikLokasi, lokasiTanam) => {
     if (titikLokasi && titikLokasi !== 'None') {
@@ -550,7 +562,7 @@ export const AdminPartisipasiPage = () => {
                 </thead>
 
                 <tbody>
-                  {filteredList.map((p) => {
+                  {paginatedList.map((p) => {
                     const opd = opdList.find(o => o.id === p.opd_id);
                     const kategori = opd?.kategori || 'OPD';
                     const lokasiCount =
@@ -694,6 +706,35 @@ export const AdminPartisipasiPage = () => {
                 </tbody>
               </table>
             </div>
+
+            {filteredList.length > itemsPerPage && (
+              <div className="flex flex-col sm:flex-row items-center justify-between gap-3 border-t border-slate-200 px-4 py-3">
+                <p className="text-sm text-slate-500">
+                  Menampilkan {startIndex + 1}-{endIndex} dari {filteredList.length} data
+                </p>
+                <div className="flex items-center gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setCurrentPage((page) => Math.max(1, page - 1))}
+                    disabled={currentPageSafe <= 1}
+                  >
+                    Sebelumnya
+                  </Button>
+                  <span className="text-sm text-slate-600">
+                    Halaman {currentPageSafe} / {totalPages}
+                  </span>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setCurrentPage((page) => Math.min(totalPages, page + 1))}
+                    disabled={currentPageSafe >= totalPages}
+                  >
+                    Berikutnya
+                  </Button>
+                </div>
+              </div>
+            )}
           </CardContent>
         </Card>
       ) : (
