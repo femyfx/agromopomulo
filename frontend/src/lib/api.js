@@ -23,6 +23,7 @@ export const opdApi = {
 export const partisipasiApi = {
   getAll: () => axios.get(`${API}/partisipasi`),
   getAdminList: () => axios.get(`${API}/partisipasi/admin-list`),
+  getMapPoints: () => axios.get(`${API}/partisipasi/map-points`),
   getRecent: (limit = 5) => axios.get(`${API}/partisipasi/recent?limit=${limit}`),
   getById: (id) => axios.get(`${API}/partisipasi/${id}`),
   create: (data) => axios.post(`${API}/partisipasi`, data),

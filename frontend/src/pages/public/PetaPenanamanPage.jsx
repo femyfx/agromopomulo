@@ -217,7 +217,7 @@ export const PetaPenanamanPage = () => {
     try {
       const [statsRes, partisipasiRes] = await Promise.all([
         statsApi.get(),
-        partisipasiApi.getAll()
+        partisipasiApi.getMapPoints()
       ]);
       setStats(statsRes.data);
       setPartisipasi(partisipasiRes.data || []);

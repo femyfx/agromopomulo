@@ -528,6 +528,41 @@ async def get_admin_partisipasi_list():
 
     return partisipasi_list
 
+
+@api_router.get("/partisipasi/map-points")
+async def get_partisipasi_map_points():
+    projection = {
+        "_id": 0,
+        "id": 1,
+        "nama_lengkap": 1,
+        "opd_id": 1,
+        "jumlah_pohon": 1,
+        "jenis_pohon": 1,
+        "lokasi_tanam": 1,
+        "titik_lokasi": 1,
+        "lokasi_list.lokasi_tanam": 1,
+        "lokasi_list.titik_lokasi": 1,
+    }
+
+    partisipasi_list = await db.partisipasi.find(
+        {
+            "$or": [
+                {"titik_lokasi": {"$exists": True, "$nin": [None, ""]}},
+                {"lokasi_list.titik_lokasi": {"$exists": True, "$nin": [None, ""]}},
+            ]
+        },
+        projection,
+    ).sort("created_at", -1).to_list(20000)
+
+    opd_ids = list({p.get("opd_id") for p in partisipasi_list if p.get("opd_id")})
+    opd_list = await db.opd.find({"id": {"$in": opd_ids}}, {"_id": 0, "id": 1, "nama": 1}).to_list(1000) if opd_ids else []
+    opd_map = {o["id"]: o["nama"] for o in opd_list}
+
+    for item in partisipasi_list:
+        item["opd_nama"] = opd_map.get(item.get("opd_id"), "Unknown")
+
+    return partisipasi_list
+
 @api_router.get("/partisipasi/recent", response_model=List[PartisipasiResponse])
 async def get_recent_partisipasi(limit: int = 5):
     safe_limit = max(1, min(limit, 20))
