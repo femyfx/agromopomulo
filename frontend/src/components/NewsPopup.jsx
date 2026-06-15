@@ -14,8 +14,8 @@ export const NewsPopup = memo(() => {
   const loadData = useCallback(async () => {
     try {
       const [beritaRes, settingsRes] = await Promise.all([
-        beritaApi.getActive(),
-        settingsApi.get()
+        beritaApi.getActiveLight(),
+        settingsApi.getPublic()
       ]);
       setNews(beritaRes.data);
       setIntervalTime(settingsRes.data.berita_popup_interval || 5);

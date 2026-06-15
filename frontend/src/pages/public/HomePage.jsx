@@ -333,10 +333,10 @@ export const HomePage = () => {
   const loadData = useCallback(async () => {
     try {
       const [statsRes, settingsRes, agendaRes, beritaRes] = await Promise.all([
-        statsApi.get(),
-        settingsApi.get(),
+        statsApi.getHome(),
+        settingsApi.getPublic(),
         agendaApi.getUpcoming(),
-        beritaApi.getActive()
+        beritaApi.getActiveLight()
       ]);
       setStats(statsRes.data);
       setSettings(settingsRes.data);

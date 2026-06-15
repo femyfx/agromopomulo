@@ -44,6 +44,7 @@ export const partisipasiApi = {
 // Settings API
 export const settingsApi = {
   get: () => axios.get(`${API}/settings`),
+  getPublic: () => axios.get(`${API}/settings/public`),
   update: (data) => axios.put(`${API}/settings`, data),
   uploadLogo: (file) => {
     const formData = new FormData();
@@ -82,6 +83,7 @@ export const agendaApi = {
 export const beritaApi = {
   getAll: () => axios.get(`${API}/berita`),
   getActive: () => axios.get(`${API}/berita/active`),
+  getActiveLight: () => axios.get(`${API}/berita/active-light`),
   getById: (id) => axios.get(`${API}/berita/${id}`),
   create: (data) => axios.post(`${API}/berita`, data),
   update: (id, data) => axios.put(`${API}/berita/${id}`, data),
@@ -91,6 +93,7 @@ export const beritaApi = {
 // Stats API
 export const statsApi = {
   get: () => axios.get(`${API}/stats`),
+  getHome: () => axios.get(`${API}/stats/home`),
   getProgress: () => axios.get(`${API}/progress`),
 };
 

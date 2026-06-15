@@ -676,6 +676,28 @@ async def delete_partisipasi(partisipasi_id: str, current_user: dict = Depends(g
 
 # ============== SETTINGS ENDPOINTS ==============
 
+@api_router.get("/settings/public")
+async def get_public_settings():
+    settings = await db.settings.find_one(
+        {},
+        {
+            "_id": 0,
+            "hero_title": 1,
+            "hero_subtitle": 1,
+            "hero_image_url": 1,
+            "berita_popup_interval": 1,
+        },
+    )
+    if not settings:
+        return {
+            "hero_title": "Gerakan Agro Mopomulo",
+            "hero_subtitle": "Satu Orang Sepuluh Pohon untuk Masa Depan Daerah",
+            "hero_image_url": "https://images.unsplash.com/photo-1765333534690-ad3a985e7c42?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDQ2NDJ8MHwxfHNlYXJjaHwxfHxsdXNoJTIwZ3JlZW4lMjBmb3Jlc3QlMjBsYW5kc2NhcGUlMjBpbmRvbmVzaWF8ZW58MHx8fHwxNzY4NDQ1ODE1fDA&ixlib=rb-4.1.0&q=85",
+            "berita_popup_interval": 5,
+        }
+    settings["berita_popup_interval"] = settings.get("berita_popup_interval") or 5
+    return settings
+
 @api_router.get("/settings", response_model=SettingsResponse)
 async def get_settings():
     settings = await db.settings.find_one({}, {"_id": 0})
@@ -887,6 +909,39 @@ async def get_all_berita():
     items = await db.berita.find({}, {"_id": 0}).sort("created_at", -1).to_list(1000)
     return items
 
+def sanitize_public_image_url(url):
+    if not url:
+        return None
+    if isinstance(url, str) and (url.startswith("data:") or len(url) > 500):
+        return None
+    return url
+
+
+@api_router.get("/berita/active-light")
+async def get_active_berita_light():
+    """Get lightweight active news for homepage and popup."""
+    projection = {
+        "_id": 0,
+        "id": 1,
+        "judul": 1,
+        "deskripsi_singkat": 1,
+        "link_berita": 1,
+        "isi_berita": 1,
+        "gambar_url": 1,
+        "created_at": 1,
+    }
+    items = await db.berita.find(
+        {"is_active": True},
+        projection,
+    ).sort("created_at", -1).to_list(8)
+
+    for item in items:
+        item["gambar_url"] = sanitize_public_image_url(item.get("gambar_url"))
+        if item.get("isi_berita") and len(str(item["isi_berita"])) > 1200:
+            item["isi_berita"] = str(item["isi_berita"])[:1200] + "..."
+
+    return items
+
 @api_router.get("/berita/active", response_model=List[BeritaResponse])
 async def get_active_berita():
     """Get active news for popup"""
@@ -934,6 +989,60 @@ async def delete_berita(berita_id: str, current_user: dict = Depends(get_current
     return {"message": "Berita berhasil dihapus"}
 
 # ============== STATS ENDPOINTS ==============
+
+@api_router.get("/stats/home")
+async def get_home_stats():
+    projection = {
+        "_id": 0,
+        "opd_id": 1,
+        "jumlah_pohon": 1,
+        "lokasi_tanam": 1,
+        "lokasi_list.lokasi_tanam": 1,
+    }
+    partisipasi_list = await db.partisipasi.find({}, projection).to_list(10000)
+    total_partisipan = len(partisipasi_list)
+    total_pohon = sum(int(p.get("jumlah_pohon") or 0) for p in partisipasi_list)
+
+    opd_stats = {}
+    lokasi_set = set()
+
+    for p in partisipasi_list:
+        opd_id = p.get("opd_id")
+        if opd_id:
+            if opd_id not in opd_stats:
+                opd_stats[opd_id] = {"jumlah_pohon": 0, "jumlah_partisipan": 0}
+            opd_stats[opd_id]["jumlah_pohon"] += int(p.get("jumlah_pohon") or 0)
+            opd_stats[opd_id]["jumlah_partisipan"] += 1
+
+        if p.get("lokasi_tanam"):
+            lokasi_set.add(str(p.get("lokasi_tanam")).strip())
+
+        for loc in p.get("lokasi_list") or []:
+            lokasi = loc.get("lokasi_tanam")
+            if lokasi:
+                lokasi_set.add(str(lokasi).strip())
+
+    opd_list = await db.opd.find({}, {"_id": 0, "id": 1, "nama": 1}).to_list(1000)
+    opd_map = {o["id"]: o["nama"] for o in opd_list}
+
+    opd_stats_list = []
+    for opd_id, stats in opd_stats.items():
+        opd_stats_list.append({
+            "opd_id": opd_id,
+            "opd_nama": opd_map.get(opd_id, "Unknown"),
+            "jumlah_pohon": stats["jumlah_pohon"],
+            "jumlah_partisipan": stats["jumlah_partisipan"],
+        })
+
+    opd_stats_list.sort(key=lambda x: x["jumlah_pohon"], reverse=True)
+
+    return {
+        "total_pohon": total_pohon,
+        "total_partisipan": total_partisipan,
+        "total_opd": len(opd_stats),
+        "lokasi_stats": [{} for _ in lokasi_set],
+        "opd_stats": opd_stats_list[:3],
+    }
 
 @api_router.get("/stats")
 async def get_stats():
