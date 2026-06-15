@@ -1440,6 +1440,13 @@ async def export_pdf(kategori: str = "all", current_user: dict = Depends(get_cur
         leading=10,
         textColor=dark_text,
     )
+    kpi_style = ParagraphStyle(
+        "KpiCard",
+        parent=styles["Normal"],
+        fontSize=7.5,
+        leading=15,
+        textColor=dark_text,
+    )
     small_style = ParagraphStyle(
         "ReportSmall",
         parent=styles["Normal"],
@@ -1560,10 +1567,10 @@ async def export_pdf(kategori: str = "all", current_user: dict = Depends(get_cur
         elements.append(Paragraph(f"{section_index}. JUMLAH SEBARAN PARTISIPAN MASING-MASING {label.upper()}", section_style))
 
         kpi_data = [[
-            make_report_paragraph(f"Total {label}<br/><font size='16'><b>{format_report_number(summary['total_entities'])}</b></font>", normal_style),
-            make_report_paragraph(f"{label} Sudah Berpartisipasi<br/><font size='16'><b>{format_report_number(summary['participated_count'])}</b></font> ({format_report_percent(summary['percentage'])})", normal_style),
-            make_report_paragraph(f"{label} Belum Berpartisipasi<br/><font size='16'><b>{format_report_number(summary['not_participated_count'])}</b></font>", normal_style),
-            make_report_paragraph(f"Total Pohon<br/><font size='16'><b>{format_report_number(summary['total_trees'])}</b></font>", normal_style),
+            make_report_paragraph(f"Total {label}<br/><font size='14'><b>{format_report_number(summary['total_entities'])}</b></font>", kpi_style),
+            make_report_paragraph(f"{label} Sudah Berpartisipasi<br/><font size='14'><b>{format_report_number(summary['participated_count'])}</b></font> ({format_report_percent(summary['percentage'])})", kpi_style),
+            make_report_paragraph(f"{label} Belum Berpartisipasi<br/><font size='14'><b>{format_report_number(summary['not_participated_count'])}</b></font>", kpi_style),
+            make_report_paragraph(f"Total Pohon<br/><font size='14'><b>{format_report_number(summary['total_trees'])}</b></font>", kpi_style),
         ]]
         kpi_table = Table(kpi_data, colWidths=[185, 185, 185, 185])
         kpi_table.setStyle(TableStyle([
